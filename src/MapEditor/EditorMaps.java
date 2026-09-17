@@ -11,6 +11,7 @@ public class EditorMaps {
         return new ArrayList<String>() {{
             add("TestMap");
             add("TitleScreen");
+            add("ProlougeMap");
         }};
     }
 
@@ -19,6 +20,8 @@ public class EditorMaps {
             case "TestMap":
                 return new TestMap();
             case "TitleScreen":
+                return new TitleScreenMap();
+            case "ProlougeMap":
                 return new TitleScreenMap();
             default:
                 throw new RuntimeException("Unrecognized map name");
