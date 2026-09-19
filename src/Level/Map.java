@@ -58,6 +58,9 @@ public abstract class Map {
     protected ArrayList<NPC> npcs;
     protected ArrayList<Trigger> triggers;
 
+    // purely visual images placed anywhere on the map (not locked to the tile grid), loaded from the map's decorations file
+    protected ArrayList<Decoration> decorations;
+
     // current script that is being executed (if any)
     protected Script activeScript;
 
@@ -99,6 +102,11 @@ public abstract class Map {
         animatedMapTiles = new ArrayList<>();
 
         loadMapFile();
+
+        this.decorations = DecorationFile.load(this.mapFileName);
+        for (Decoration decoration : this.decorations) {
+            decoration.setMap(this);
+        }
 
         this.enhancedMapTiles = loadEnhancedMapTiles();
         for (EnhancedMapTile enhancedMapTile: this.enhancedMapTiles) {
@@ -307,6 +315,18 @@ public abstract class Map {
         return npcs;
     }
     public ArrayList<Trigger> getTriggers() { return triggers; }
+
+    public ArrayList<Decoration> getDecorations() { return decorations; }
+
+    // add a decoration to the map's list of decorations
+    public void addDecoration(Decoration decoration) {
+        decoration.setMap(this);
+        this.decorations.add(decoration);
+    }
+
+    public void removeDecoration(Decoration decoration) {
+        this.decorations.remove(decoration);
+    }
 
     public ArrayList<MapTile> getAnimatedMapTiles() {
         return animatedMapTiles;

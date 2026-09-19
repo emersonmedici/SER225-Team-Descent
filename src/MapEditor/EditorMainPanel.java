@@ -11,9 +11,10 @@ public class EditorMainPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
         SelectedTileIndexHolder selectedTileIndexHolder = new SelectedTileIndexHolder();
-        mapBuilder = new MapBuilder(selectedTileIndexHolder);
+        DecorationEditorState decorationEditorState = new DecorationEditorState();
+        mapBuilder = new MapBuilder(selectedTileIndexHolder, decorationEditorState);
         add(mapBuilder, BorderLayout.CENTER);
-        editorControlPanel = new EditorControlPanel(selectedTileIndexHolder, mapBuilder, parent);
+        editorControlPanel = new EditorControlPanel(selectedTileIndexHolder, decorationEditorState, mapBuilder, parent);
         mapBuilder.setMap(editorControlPanel.getSelectedMap());;
         add(editorControlPanel, BorderLayout.WEST);
     }

@@ -36,6 +36,10 @@ public class MenuBar extends JMenuBar {
             }
         });
         options.add(showTriggers);
+        // decorations are always shown on the Decorations tab, this lets them be hidden while painting tiles underneath them
+        JCheckBoxMenuItem showDecorations = new JCheckBoxMenuItem("Show Decorations", tileBuilder.getShowDecorations());
+        showDecorations.addActionListener(e -> tileBuilder.setShowDecorations(showDecorations.isSelected()));
+        options.add(showDecorations);
         add(options);
     }
 }

@@ -12,7 +12,8 @@ public class EditorWindow {
         editorMainPanel = new EditorMainPanel(editorWindow);
         editorWindow.setContentPane(editorMainPanel);
         editorWindow.setResizable(true);
-        editorWindow.setSize(800, 600);
+        // a bit taller than the minimum size by default so the Decorations tab has room for its image preview
+        editorWindow.setSize(900, 700);
         editorWindow.setMinimumSize(new Dimension(800, 600));
         editorWindow.setLocationRelativeTo(null);
         editorWindow.setVisible(true);
