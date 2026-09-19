@@ -28,7 +28,7 @@ It was a standard platformer game (with some VERY odd design choices), but the l
 If you're curious, [here](https://www.youtube.com/watch?v=haRt2Z8-7-A) is a video of the Speedy Eggbert map editor being used.
 
 While this game's map editor is limited compared to commercial map editors for other video games you may have seen/used, it is still very useful for designing a map and being able to see what you are doing as you go. 
-It is currently only usable for placing map tiles and [decorations](#decorations) -- other entities like NPCs must be created and added through code.
+It is currently only usable for placing map tiles -- other entities like NPCs must be created and added through code.
 
 To start the map editor, run the `main` method in the `MapEditor` class. 
 Remember that this is a separate program from the actual game code, although both make use of the same classes in this project.
@@ -41,7 +41,6 @@ This Map Editor allows you to do the following:
 - Add a new Map to the game
 - Change the individual tiles of a map (which maintain their tile logic defined in code)
 - Change the dimensions of a map (how many tiles the map contains width and height wise)
-- Place decorative images anywhere on a map, without being locked to the tile grid (see [Decorations](#decorations))
 
 ![map-editor.png](../assets/images/map-editor.PNG)
 
@@ -72,79 +71,6 @@ It'll also allow you to choose which side of the map to apply changes to when gr
 Something to keep in mind is after a map has been created using that `Tileset`, you should not rearrange the order the tiles are defined and added to the list in a `Tileset's` `defineTiles` method. 
 Doing so will break existing maps. 
 You should ALWAYS just append tiles on to the end of the `defineTiles` method, even though it may feel disorganized, in order to preserve the tile map's integrity.
-
-## Decorations
-
-Decorations are purely visual images that can be placed anywhere on a map, at any pixel position, instead of being locked to the tile grid.
-They are good for adding detail like flowers, rocks, signs, rugs, or tree canopies without having to make a tile for each one.
-Decorations have no collision and cannot be interacted with -- if the player needs to bump into something or talk to it, use a tile, NPC, or enhanced map tile instead.
-
-### Placing decorations
-
-Click the "Decorations" tab on the left-hand sidebar (next to the "Tiles" tab) to switch the map editor into decoration mode.
-
-1. Choose an image from the dropdown. It lists every image file in the `Resources` folder, including subfolders (for example `Resources/Decorations/Flower.png` shows up as `Decorations/Flower.png`). If you add or change an image file while the map editor is open, hit "Reload".
-2. By default the whole image is used. To use just part of an image, such as one sprite out of a sprite sheet or tileset, click a cell in the image preview, or drag across several cells. The "Crop grid" dropdown sets the grid size the selection snaps to. "Use whole image" undoes the crop.
-3. Set the scale, flip, and layer (layers are explained below). The scale starts at 3, which matches how big map tiles are drawn.
-4. Move the mouse over the map to see a see-through preview of the decoration, then click to place it.
-
-Once decorations are on the map:
-
-| Action | What it does |
-|---|---|
-| Click a decoration | Selects it (outlined in cyan). The sidebar controls now edit this decoration. |
-| Drag a decoration | Moves it freely, pixel by pixel. Hold Shift to snap it to the tile grid. |
-| Arrow keys | Nudge the selected decoration by 1 pixel. Hold Shift to move by a whole tile. |
-| Right-click a decoration, or press Delete | Deletes it. |
-| Esc | Deselects, so the sidebar controls go back to setting up new decorations. |
-
-Clicking on a see-through part of a decoration's image does not select it, so you can place decorations close together.
-Selecting a decoration also copies its settings, so clicking an empty spot afterwards (after pressing Esc) places a matching copy.
-
-Decorations are saved along with the map's tiles when you hit "Save Map".
-
-### Layers
-
-Each decoration is drawn on one of three layers:
-
-- **Ground**: drawn right on top of the map tiles, underneath the player and NPCs. Use this for things that lie flat on the ground, like flowers, rugs, or puddles.
-- **Depth sorted**: the player walks behind it when the player's feet are above the bottom of the decoration, and in front of it when the player's feet are below. Use this for standing objects, like barrels, signs, or lamp posts.
-- **Overhead**: drawn over everything, including the player. Use this for things above the player's head, like tree canopies or roofs.
-
-Some tiles, such as tree trunks and house roofs, have a "top layer" that is drawn over the player.
-Ground and depth sorted decorations are drawn underneath those tile top layers too, the same way the player is. Only overhead decorations are drawn above them.
-
-### Decoration image files
-
-Any PNG, GIF, JPG, or BMP file in the `Resources` folder can be used.
-Images can use real transparency (a PNG with an alpha channel), or the game's usual magenta (255, 0, 255) background color, which is treated as transparent.
-
-If a decoration's image file is missing, the decoration is drawn as a magenta box with an X through it (and a message is printed), so it is easy to spot and nothing is lost.
-
-### Decoration files
-
-Decorations are saved in their own file in the `MapFiles` folder, next to the map's tile file, so the tile file format does not change.
-For example, the decorations for `test_map.txt` are saved in `test_map_decorations.txt`.
-A map without a decorations file simply has no decorations.
-
-Each line of the file is one decoration:
-
-```
-# x y scale flip layer crop image
-312 480 3 NONE GROUND full Flower.png
-96 144 3 FLIP_HORIZONTAL DEPTH_SORTED 16,32,16,16 CommonTileset.png
-```
-
-- `x` and `y` are the decoration's top left corner on the map, in pixels (the same coordinates map tiles, NPCs, and the player use).
-- `flip` is `NONE`, `FLIP_HORIZONTAL`, `FLIP_VERTICAL`, or `FLIP_H_AND_V`.
-- `layer` is `GROUND`, `DEPTH_SORTED`, or `OVERHEAD`.
-- `crop` is `full` to use the whole image, or `x,y,width,height` of the part of the image file to use.
-- `image` is the image file name inside the `Resources` folder. It is last so it can contain spaces.
-
-The file is meant to be edited through the map editor, but it is plain text, so it can be edited by hand too.
-Any line the game can't understand is skipped with a message printed, instead of crashing the game.
-
-In code, a map's decorations can be accessed with the `Map` class's `getDecorations`, `addDecoration`, and `removeDecoration` methods.
 
 ## Adding a new map to the map editor
 
@@ -210,15 +136,12 @@ Map files can be found in the project's `MapFiles` folder.
 ## Options Menu
 
 At the top left of the Map Editor window, there is a menu strip with an "Options" menu item. 
-Clicking it will reveal four options - "Show NPCs", "Show Enhanced Map Tiles", "Show Triggers", and "Show Decorations". 
+Clicking it will reveal three options - "Show NPCs", "Show Enhanced Map Tiles", and "Show Triggers". 
 Toggling an option on will show the desired entities in the map editor. 
 The entities cannot be moved or interacted with in the editor, but it does at least show you where these entities are placed on the map.
 
 Since triggers are invisible and can't normally be seen on the map, the map editor will draw them as magenta boxes with a black border to help with visualizing and positioning them.
 They will not appear like this in the actual game.
-
-"Show Decorations" is on by default. Turning it off hides decorations while on the "Tiles" tab, which can help when painting tiles that are underneath decorations.
-Decorations are always shown on the "Decorations" tab.
 
 ## How does the map editor work?
 
@@ -240,12 +163,6 @@ The `EditorMainPanel` is a JPanel that holds two other JPanel components:
 
 The `EditorControlPanel` utilizes the `TilePicker`, which is ANOTHER JPanel that displays the tile graphics that can be selected on the left side panel, and is where that tile selection logic takes place. 
 The `SelectedTileIndexHolder` class is used to store the currently selected tile, which is passed around to allow other classes to access that data.
-
-The `EditorControlPanel` puts the `TilePicker` and the `DecorationPicker` in two tabs. 
-The `DecorationPicker` is the "Decorations" tab (image dropdown, crop preview, and scale/flip/layer settings).
-Its settings are stored in a `DecorationEditorState`, which is shared with the `TileBuilder` in the same way as the `SelectedTileIndexHolder`.
-When the "Decorations" tab is showing, the `TileBuilder` places, selects, and moves decorations instead of painting tiles.
-On the game side, decorations are the `Decoration` class, they are read and written by the `DecorationFile` class, and the `Camera` class draws them on their layer.
 
 The `MapBuilder` JPanel defines the scroll pane and map info labels (like "width" and "height" at the bottom of the map display).
 Inside the scroll pane, it places the `TileBuilder` JPanel, which is where tiles can be replaced by the selected tile from the `TilePicker` based on the value in `SelectedTileIndexHolder`.

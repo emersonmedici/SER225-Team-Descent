@@ -14,14 +14,14 @@ public class MapBuilder extends JPanel {
     private JLabel mapHeightLabel;
     private JLabel hoveredTileIndexLabel;
 
-    public MapBuilder(SelectedTileIndexHolder controlPanelHolder, DecorationEditorState decorationEditorState) {
+    public MapBuilder(SelectedTileIndexHolder controlPanelHolder) {
         setBackground(Colors.CORNFLOWER_BLUE);
         setLocation(205, 5);
         setLayout(new BorderLayout());
 
         JPanel labelPanel = new JPanel();
         labelPanel.setLayout(null);
-        labelPanel.setPreferredSize(new Dimension(200, 50));
+        labelPanel.setPreferredSize(new Dimension(200, 30));
         labelPanel.setBackground(Colors.CORNFLOWER_BLUE);
         mapWidthLabel = new JLabel("Width: ");
         mapWidthLabel.setSize(70, 20);
@@ -32,22 +32,12 @@ public class MapBuilder extends JPanel {
         mapHeightLabel.setLocation(76, 5);
         labelPanel.add(mapHeightLabel);
         hoveredTileIndexLabel = new JLabel("X: , Y:");
-        hoveredTileIndexLabel.setSize(300, 20);
+        hoveredTileIndexLabel.setSize(140, 20);
         hoveredTileIndexLabel.setLocation(152, 5);
         labelPanel.add(hoveredTileIndexLabel);
-
-        // controls reminder, only shown while editing decorations
-        JLabel decorationControlsLabel = new JLabel("Click: place/select    Drag: move (Shift snaps to tiles)    Right-click or Del: delete    Arrows: nudge");
-        decorationControlsLabel.setFont(decorationControlsLabel.getFont().deriveFont(11f));
-        decorationControlsLabel.setSize(700, 20);
-        decorationControlsLabel.setLocation(2, 26);
-        decorationControlsLabel.setVisible(false);
-        labelPanel.add(decorationControlsLabel);
-        decorationEditorState.addChangeListener(() -> decorationControlsLabel.setVisible(decorationEditorState.isDecorationModeActive()));
-
         add(labelPanel, BorderLayout.SOUTH);
 
-        tileBuilder = new TileBuilder(controlPanelHolder, hoveredTileIndexLabel, decorationEditorState);
+        tileBuilder = new TileBuilder(controlPanelHolder, hoveredTileIndexLabel);
         tileBuilderScroll = new JScrollPane();
         tileBuilderScroll.setViewportView(tileBuilder);
         scrollToMaxY();

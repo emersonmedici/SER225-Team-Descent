@@ -1,6 +1,5 @@
 package MapEditor;
 
-import Level.Decoration;
 import Level.Map;
 import Level.MapTile;
 import Utils.Colors;
@@ -145,8 +144,6 @@ public class ChangeMapSizeWindow {
                 resizeMapHeight(newHeight, MapHeightDirection.BOTTOM);
             }
 
-            removeDecorationsOutsideMap();
-
             this.close();
         }
     }
@@ -208,11 +205,6 @@ public class ChangeMapSizeWindow {
                     }
                 }
             }
-
-            // decorations move along with the tiles, so they stay in the same spot relative to them
-            for (Decoration decoration : map.getDecorations()) {
-                decoration.moveX(map.getTileset().getScaledSpriteWidth() * difference);
-            }
         }
 
         for (int i = 0; i < map.getHeight(); i++) {
@@ -253,11 +245,6 @@ public class ChangeMapSizeWindow {
                     }
                 }
             }
-
-            // decorations move along with the tiles, so they stay in the same spot relative to them
-            for (Decoration decoration : map.getDecorations()) {
-                decoration.moveY(map.getTileset().getScaledSpriteHeight() * difference);
-            }
         }
 
         for (int i = 0; i < newHeight; i++) {
@@ -273,13 +260,5 @@ public class ChangeMapSizeWindow {
 
         map.setMapTiles(mapTilesSizeChange);
         map.setHeight(newHeight);
-    }
-
-    // shrinking a map removes the tiles that got cut off, so decorations that are now completely off of the map are removed as well
-    // decorations that only partially hang off the edge of the map are kept
-    public void removeDecorationsOutsideMap() {
-        map.getDecorations().removeIf(decoration ->
-                decoration.getX() >= map.getWidthPixels() || decoration.getX() + decoration.getWidth() <= 0 ||
-                decoration.getY() >= map.getHeightPixels() || decoration.getY() + decoration.getHeight() <= 0);
     }
 }

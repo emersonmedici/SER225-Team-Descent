@@ -1,7 +1,6 @@
 package MapEditor;
 
 import Engine.Config;
-import Level.DecorationFile;
 import Level.Map;
 import Level.MapTile;
 import Utils.Colors;
@@ -19,11 +18,10 @@ public class EditorControlPanel extends JPanel {
     private ArrayList<String> mapNames;
     private JComboBox<String> mapNamesComboBox;
     private TilePicker tilePicker;
-    private DecorationPicker decorationPicker;
     private MapBuilder mapBuilder;
     private Map selectedMap;
 
-    public EditorControlPanel(SelectedTileIndexHolder selectedTileIndexHolder, DecorationEditorState decorationEditorState, MapBuilder mapBuilder, JFrame parent) {
+    public EditorControlPanel(SelectedTileIndexHolder selectedTileIndexHolder, MapBuilder mapBuilder, JFrame parent) {
         setLayout(new BorderLayout());
         setBackground(Colors.CORNFLOWER_BLUE);
         setLocation(0, 0);
@@ -67,18 +65,8 @@ public class EditorControlPanel extends JPanel {
         tilePickerScroll.setViewportView(tilePicker);
         tilePickerScroll.setLocation(5, 78);
         tilePickerScroll.setSize(190, 394);
+        add(tilePickerScroll, BorderLayout.CENTER);
         tilePicker.setTileset(getSelectedMap(), getSelectedMap().getTileset());
-
-        // new decorations start at the same scale as the map's tiles so their pixels line up in size
-        decorationEditorState.setScale(getSelectedMap().getTileset().getTileScale());
-        decorationPicker = new DecorationPicker(decorationEditorState, mapBuilder.getTileBuilder());
-
-        // the Tiles tab paints map tiles, the Decorations tab places decorations anywhere on the map
-        JTabbedPane pickerTabs = new JTabbedPane();
-        pickerTabs.addTab("Tiles", tilePickerScroll);
-        pickerTabs.addTab("Decorations", decorationPicker);
-        pickerTabs.addChangeListener(e -> decorationEditorState.setDecorationModeActive(pickerTabs.getSelectedComponent() == decorationPicker));
-        add(pickerTabs, BorderLayout.CENTER);
 
 
         JPanel mapButtonsPanel = new JPanel();
@@ -139,13 +127,6 @@ public class EditorControlPanel extends JPanel {
         } catch (IOException ex) {
             ex.printStackTrace();
             System.out.println("Unable to save map file! That's really not great!");
-        }
-
-        try {
-            DecorationFile.save(fileName, map.getDecorations());
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            System.out.println("Unable to save decorations file " + DecorationFile.getDecorationFileName(fileName) + "!");
         }
     }
     public void setMap() {
