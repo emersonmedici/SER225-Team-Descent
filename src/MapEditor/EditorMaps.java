@@ -1,6 +1,7 @@
 package MapEditor;
 
 import Level.Map;
+import Maps.ProlougeMap;
 import Maps.TestMap;
 import Maps.TitleScreenMap;
 
@@ -22,7 +23,7 @@ public class EditorMaps {
             case "TitleScreen":
                 return new TitleScreenMap();
             case "ProlougeMap":
-                return new TitleScreenMap();
+                return new ProlougeMap();
             default:
                 throw new RuntimeException("Unrecognized map name");
         }
