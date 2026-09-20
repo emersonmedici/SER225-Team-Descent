@@ -14,6 +14,6 @@ import java.util.ArrayList;
 public class ProlougeMap extends Map {
     public ProlougeMap() {
         super("ProlougeMap.txt", new CommonTileset());
-        this.playerStartPosition = getMapTile(17, 20).getLocation();
+        this.playerStartPosition = getMapTile(15, 35).getLocation();
     }
 }
