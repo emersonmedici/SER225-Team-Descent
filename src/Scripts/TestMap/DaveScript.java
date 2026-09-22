@@ -18,6 +18,7 @@ public class DaveScript extends Script {
 
         scriptActions.add(new NPCFacePlayerScriptAction());
 
+        /* 
         scriptActions.add(new ConditionalScriptAction() {{
             addConditionalScriptActionGroup(new ConditionalScriptActionGroup() {{
                 addRequirement(new FlagRequirement("hasTalkedToDave", false));
@@ -25,14 +26,13 @@ public class DaveScript extends Script {
                     addText("Hello!");
                     addText("I am Dave now.", new String[] { "Yes", "No" });
                 }});
-                addScriptAction(new ChangeFlagScriptAction("hasTalkedToDave", true));
+               // addScriptAction(new ChangeFlagScriptAction("hasTalkedToDave", true));
             }});
 
             addConditionalScriptActionGroup(new ConditionalScriptActionGroup() {{
                 addRequirement(new FlagRequirement("hasTalkedToDave", true));
                 addScriptAction(new TextboxScriptAction("You've already spoken to me!"));
             }});
-        }});
 
             scriptActions.add(new ConditionalScriptAction() {{
             addConditionalScriptActionGroup(new ConditionalScriptActionGroup() {{
@@ -48,6 +48,7 @@ public class DaveScript extends Script {
                     addText("This is a conditional response.");
                     addText("I'm going to let you in on a little secret...\nYou can push some rocks out of the way.");
                 }});
+                //addScriptAction(new ChangeFlagScriptAction("hasTalkedToDave", true));
             }});
 
             addConditionalScriptActionGroup(new ConditionalScriptActionGroup() {{
@@ -60,19 +61,22 @@ public class DaveScript extends Script {
                 });
                 
                 addScriptAction(new TextboxScriptAction("This is the other conditional response."));
+                //addScriptAction(new ChangeFlagScriptAction("hasTalkedToDave", true));
             }});
+            
         }});
 
-        //}});
+        }});
+*/
 
+//////
 
-
-        /*scriptActions.add(new TextboxScriptAction() {{
+        scriptActions.add(new TextboxScriptAction() {{
             addText("Hello!");
             addText("I am Dave now.", new String[] { "Yes", "No" });
-        }});*/
+        }});
 
-        /*scriptActions.add(new ConditionalScriptAction() {{
+        scriptActions.add(new ConditionalScriptAction() {{
             addConditionalScriptActionGroup(new ConditionalScriptActionGroup() {{
                 addRequirement(new CustomRequirement() {
                     @Override
@@ -99,7 +103,7 @@ public class DaveScript extends Script {
                 
                 addScriptAction(new TextboxScriptAction("This is the other conditional response."));
             }});
-        }});*/
+        }});
 
         scriptActions.add(new NPCUnlockScriptAction());
         scriptActions.add(new UnlockPlayerScriptAction());
