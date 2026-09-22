@@ -6,6 +6,7 @@ import Game.GameState;
 import Game.ScreenCoordinator;
 import Level.*;
 import Maps.ProlougeMap;
+import Maps.TempMap;
 import Maps.TestMap;
 import Players.Cat;
 import Utils.Direction;
@@ -32,7 +33,9 @@ public class PlayLevelScreen extends Screen implements GameListener {
         flagManager.addFlag("hasFoundBall", false);
 
         // define/setup map
-        map = new ProlougeMap();
+        //map = new ProlougeMap();
+        //temporarily using the temp map to test dave npc
+        map = new TempMap();
         map.setFlagManager(flagManager);
 
         // setup player
