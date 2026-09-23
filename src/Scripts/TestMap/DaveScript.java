@@ -72,8 +72,8 @@ public class DaveScript extends Script {
 //////
 
         scriptActions.add(new TextboxScriptAction() {{
-            addText("Hello!");
-            addText("I am Dave now.", new String[] { "Yes", "No" });
+            addText("Ow! My leg!!--");
+            addText("Help me!!", new String[] {"I'll find help!", "..."});
         }});
 
         scriptActions.add(new ConditionalScriptAction() {{
@@ -87,8 +87,8 @@ public class DaveScript extends Script {
                 });
 
                 addScriptAction(new TextboxScriptAction() {{
-                    addText("This is a conditional response.");
-                    addText("I'm going to let you in on a little secret...\nYou can push some rocks out of the way.");
+                    addText("Hurry...");
+                    //addText("I'm going to let you in on a little secret...\nYou can push some rocks out of the way.");
                 }});
             }});
 
@@ -101,7 +101,7 @@ public class DaveScript extends Script {
                     }
                 });
                 
-                addScriptAction(new TextboxScriptAction("This is the other conditional response."));
+                addScriptAction(new TextboxScriptAction("Tyson, do something!!"));
             }});
         }});
 

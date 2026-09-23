@@ -6,11 +6,7 @@ import Game.GameState;
 import Game.ScreenCoordinator;
 import Level.*;
 import Maps.ProlougeMap;
-<<<<<<< HEAD
-import Maps.TempMap;
-=======
 import Maps.Level1Map;
->>>>>>> a5efe4454ee1c95c23134c312b68844a9a107bd8
 import Maps.TestMap;
 import Players.Cat;
 import Utils.Direction;
@@ -40,14 +36,8 @@ public class PlayLevelScreen extends Screen implements GameListener {
         flagManager.addFlag("hasTalkedToDave", false);
 
         // define/setup map
-<<<<<<< HEAD
-        map = new ProlougeMap();
-        //temporarily using the temp map to test dave npc
-        //map = new TempMap();
-=======
         //map = new ProlougeMap();
         map = new Level1Map();
->>>>>>> a5efe4454ee1c95c23134c312b68844a9a107bd8
         map.setFlagManager(flagManager);
 
         // setup player
