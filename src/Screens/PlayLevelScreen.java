@@ -32,6 +32,9 @@ public class PlayLevelScreen extends Screen implements GameListener {
         flagManager.addFlag("hasTalkedToDinosaur", false);
         flagManager.addFlag("hasFoundBall", false);
 
+        //adding a flag for dave npc
+        flagManager.addFlag("hasTalkedToDave", false);
+
         // define/setup map
         map = new ProlougeMap();
         //map = new Level1Map();
