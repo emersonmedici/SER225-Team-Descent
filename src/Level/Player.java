@@ -1,11 +1,9 @@
 package Level;
 
-import java.awt.Color;
-
-import Engine.GraphicsHandler;
 import Engine.Key;
 import Engine.KeyLocker;
 import Engine.Keyboard;
+import EnhancedMapTiles.CarriableObject;
 import GameObject.GameObject;
 import GameObject.Rectangle;
 import GameObject.SpriteSheet;
@@ -40,6 +38,10 @@ public abstract class Player extends GameObject {
     protected Key INTERACT_KEY = Key.SPACE;
 
     protected boolean isLocked = false;
+
+    // values for player pick up and drop
+
+    protected CarriableObject carriedObject = null;
 
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
         super(spriteSheet, x, y, startingAnimationName);
@@ -254,6 +256,20 @@ public abstract class Player extends GameObject {
             moveX(speed);
         }
     }
+    
+    //pickup objects interaction
+    public boolean pickUpObject(CarriableObject object) {
+    if (carriedObject != null || object == null) {
+        return false;
+    }
+
+    if (!object.pickUp(this)) {
+        return false;
+    }
+
+    carriedObject = object;
+    return true;
+}
 
     // Uncomment this to have game draw player's bounds to make it easier to visualize
     /*
