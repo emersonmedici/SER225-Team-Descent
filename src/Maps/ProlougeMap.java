@@ -23,6 +23,8 @@ public class ProlougeMap extends Map {
         item1.setInteractScript(new PickupObjectScript());
         enhancedMapTiles.add(item1);
 
+        
+
         return enhancedMapTiles;
     }
 
