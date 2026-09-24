@@ -33,8 +33,8 @@ public class PlayLevelScreen extends Screen implements GameListener {
         flagManager.addFlag("hasFoundBall", false);
 
         // define/setup map
-        //map = new ProlougeMap();
-        map = new Level1Map();
+        map = new ProlougeMap();
+        //map = new Level1Map();
         map.setFlagManager(flagManager);
 
         // setup player
