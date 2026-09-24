@@ -6,6 +6,7 @@ import Game.GameState;
 import Game.ScreenCoordinator;
 import Level.*;
 import Maps.ProlougeMap;
+import Maps.Level1Map;
 import Maps.TestMap;
 import Players.Cat;
 import Utils.Direction;
@@ -31,8 +32,12 @@ public class PlayLevelScreen extends Screen implements GameListener {
         flagManager.addFlag("hasTalkedToDinosaur", false);
         flagManager.addFlag("hasFoundBall", false);
 
+        //adding a flag for dave npc
+        flagManager.addFlag("hasTalkedToDave", false);
+
         // define/setup map
         map = new ProlougeMap();
+        //map = new Level1Map();
         map.setFlagManager(flagManager);
 
         // setup player
