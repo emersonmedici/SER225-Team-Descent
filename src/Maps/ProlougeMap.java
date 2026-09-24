@@ -1,15 +1,11 @@
 package Maps;
 
-import EnhancedMapTiles.PushableRock;
+import EnhancedMapTiles.CarriableObject;
 import Level.*;
-import NPCs.Bug;
 import NPCs.Dave;
-import NPCs.Dinosaur;
-import NPCs.Walrus;
-import Scripts.SimpleTextScript;
+import Scripts.PickupObjectScript;
 import Scripts.TestMap.*;
 import Tilesets.CommonTileset;
-
 import java.util.ArrayList;
 
 public class ProlougeMap extends Map {
@@ -18,18 +14,29 @@ public class ProlougeMap extends Map {
         this.playerStartPosition = getMapTile(15, 35).getLocation();
     }
 
-//an array list of npcs, only contains one right now
+    @Override
+    public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
+        ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
+
+        CarriableObject item1 =
+                new CarriableObject(getMapTile(13, 33).getLocation());
+        item1.setInteractScript(new PickupObjectScript());
+        enhancedMapTiles.add(item1);
+
+        return enhancedMapTiles;
+    }
+
     @Override
     public ArrayList<NPC> loadNPCs() {
         ArrayList<NPC> npcs = new ArrayList<>();
-        
-        //dave's
-        Dave dave = new Dave(4, getMapTile(7, 35).getLocation().subtractX(20));
-        // dave.setExistenceFlag("hasTalkedToDave");
+
+        Dave dave = new Dave(
+                4,
+                getMapTile(7, 35).getLocation().subtractX(20)
+        );
         dave.setInteractScript(new DaveScript());
         npcs.add(dave);
 
         return npcs;
     }
-
 }
