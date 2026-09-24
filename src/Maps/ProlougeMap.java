@@ -1,6 +1,7 @@
 package Maps;
 
 import EnhancedMapTiles.CarriableObject;
+import EnhancedMapTiles.PushableRock;
 import Level.*;
 import NPCs.Dave;
 import Scripts.PickupObjectScript;
@@ -23,7 +24,8 @@ public class ProlougeMap extends Map {
         item1.setInteractScript(new PickupObjectScript());
         enhancedMapTiles.add(item1);
 
-        
+        PushableRock pushableRock = new PushableRock(getMapTile(10, 28).getLocation());
+        enhancedMapTiles.add(pushableRock);
 
         return enhancedMapTiles;
     }
