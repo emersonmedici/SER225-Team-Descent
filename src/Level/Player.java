@@ -106,6 +106,12 @@ public abstract class Player extends GameObject {
             map.entityInteract(this);
         }
 
+        if (Keyboard.isKeyDown(Key.R) == true) {
+            walkSpeed = 5f;
+        } else {
+            walkSpeed = 2.3f;
+        }
+
         // if walk left key is pressed, move player to the left
         if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
             moveAmountX -= walkSpeed;
