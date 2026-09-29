@@ -115,7 +115,11 @@ public class EditorControlPanel extends JPanel {
             MapTile[] mapTiles = map.getMapTiles();
             for (int i = 0; i < map.getHeight(); i++) {
                 for (int j = 0; j < map.getWidth(); j++) {
-                    fileWriter.write(String.valueOf(mapTiles[j + map.getWidth() * i].getTileIndex()));
+                    MapTile mapTile = mapTiles[j + map.getWidth() * i];
+                    fileWriter.write(String.valueOf(mapTile.getTileIndex()));
+                    if (mapTile.getRotation() != 0) {
+                        fileWriter.write(":" + mapTile.getRotation());
+                    }
                     if (j < map.getWidth() - 1) {
                         fileWriter.write(" ");
                     } else if (j >= map.getWidth() -1 && i < map.getHeight() - 1) {

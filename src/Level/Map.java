@@ -152,10 +152,13 @@ public abstract class Map {
         // read in each tile index from the map file, use the defined tileset to get the associated MapTile to that tileset, and place it in the array
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                int tileIndex = fileInput.nextInt();
+                                // each entry is either "tileIndex" or "tileIndex:rotation" (rotation = number of 90 degree clockwise turns)
+                String[] tileEntry = fileInput.next().split(":");
+                int tileIndex = Integer.parseInt(tileEntry[0]);
+                int rotation = tileEntry.length > 1 ? Integer.parseInt(tileEntry[1]) : 0;
                 int xLocation = j * tileset.getScaledSpriteWidth();
                 int yLocation = i * tileset.getScaledSpriteHeight();
-                MapTile tile = tileset.getTile(tileIndex).build(xLocation, yLocation);
+                MapTile tile = tileset.getTile(tileIndex).build(xLocation, yLocation, rotation);
                 tile.setMap(this);
                 setMapTile(j, i, tile);
 

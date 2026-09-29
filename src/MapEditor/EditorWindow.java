@@ -21,5 +21,4 @@ public class EditorWindow {
         editorWindow.validate();
         editorMainPanel.getMapBuilder().scrollToMaxY();
     }
-
 }

@@ -115,7 +115,7 @@ public class TileBuilder extends JPanel {
         int selectedTileIndex = getSelectedTileIndex(selectedPoint);
         if (selectedTileIndex != -1) {
             MapTile oldMapTile = map.getMapTiles()[selectedTileIndex];
-            MapTile newMapTile =  map.getTileset().getTile(controlPanelHolder.getSelectedTileIndex()).build(oldMapTile.getX(), oldMapTile.getY());
+            MapTile newMapTile =  map.getTileset().getTile(controlPanelHolder.getSelectedTileIndex()).build(oldMapTile.getX(), oldMapTile.getY(), controlPanelHolder.getSelectedTileRotation());
             newMapTile.setMap(map);
             map.getMapTiles()[selectedTileIndex] = newMapTile;
 

@@ -31,6 +31,23 @@ public class ImageUtils {
 		return newImage;
 	}
 
+	public static BufferedImage rotateImage(BufferedImage image, int quarterTurns) {
+    int turns = ((quarterTurns % 4) + 4) % 4;
+    if (turns == 0) return image;
+    int w = image.getWidth(), h = image.getHeight();
+    boolean swap = turns % 2 == 1;
+    BufferedImage out = new BufferedImage(swap ? h : w, swap ? w : h, BufferedImage.TYPE_INT_ARGB);
+    for (int x = 0; x < w; x++) {
+        for (int y = 0; y < h; y++) {
+            int rgb = image.getRGB(x, y);
+            if (turns == 1)      out.setRGB(h - 1 - y, x, rgb);
+            else if (turns == 2) out.setRGB(w - 1 - x, h - 1 - y, rgb);
+            else                 out.setRGB(y, w - 1 - x, rgb);
+        }
+    }
+    return out;
+}
+
 	// https://stackoverflow.com/a/4216315
 	// resizes an image
 	public static BufferedImage resizeImage(BufferedImage image, int newWidth, int newHeight) {
