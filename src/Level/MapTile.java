@@ -19,6 +19,7 @@ public class MapTile extends MapEntity {
     protected GameObject topLayer;
 
     private int tileIndex;
+    private int rotation;
 
     public MapTile(float x, float y, GameObject bottomLayer, GameObject topLayer, TileType tileType, int tileIndex) {
         super(x, y);
@@ -56,6 +57,14 @@ public class MapTile extends MapEntity {
 
     public int getTileIndex() {
         return tileIndex;
+    }
+
+    public int getRotation() {
+        return rotation;
+    }
+
+    public void setRotation(int rotation) {
+        this.rotation = ((rotation % 4) + 4) % 4;
     }
 
     public GameObject getBottomLayer() { return bottomLayer; }

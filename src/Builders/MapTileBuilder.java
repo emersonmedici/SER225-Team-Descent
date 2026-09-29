@@ -66,13 +66,33 @@ public class MapTileBuilder {
         return animationsCopy;
     }
 
+    public HashMap<String, Frame[]> cloneAnimations(HashMap<String, Frame[]> animations, int rotation) {
+        HashMap<String, Frame[]> animationsCopy = new HashMap<>();
+        for (String key : animations.keySet()) {
+            Frame[] frames = animations.get(key);
+            Frame[] framesCopy = new Frame[frames.length];
+            for (int i = 0; i < framesCopy.length; i++) {
+                framesCopy[i] = frames[i].rotated(rotation);
+            }
+            animationsCopy.put(key, framesCopy);
+        }
+        return animationsCopy;
+    }
+
     public MapTile build(float x, float y) {
-        GameObject bottomLayerAnimation = new GameObject(x, y, cloneAnimations(bottomLayer), "DEFAULT");
+        return build(x, y, 0);
+    }
+
+    // rotation is the number of 90 degree clockwise turns to apply to the tile's images
+    public MapTile build(float x, float y, int rotation) {
+        GameObject bottomLayerAnimation = new GameObject(x, y, cloneAnimations(bottomLayer, rotation), "DEFAULT");
         GameObject topLayerAnimation = null;
         if (!topLayer.isEmpty()) {
-            topLayerAnimation = new GameObject(x, y, cloneAnimations(topLayer), "DEFAULT");
+            topLayerAnimation = new GameObject(x, y, cloneAnimations(topLayer, rotation), "DEFAULT");
         }
 
-        return new MapTile(x, y, bottomLayerAnimation, topLayerAnimation, tileType, tileIndex);
+        MapTile mapTile = new MapTile(x, y, bottomLayerAnimation, topLayerAnimation, tileType, tileIndex);
+        mapTile.setRotation(rotation);
+        return mapTile;
     }
 }

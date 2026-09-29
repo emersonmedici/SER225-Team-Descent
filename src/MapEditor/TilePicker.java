@@ -15,6 +15,8 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 public class TilePicker extends JPanel {
 
@@ -22,7 +24,9 @@ public class TilePicker extends JPanel {
     private GraphicsHandler graphicsHandler = new GraphicsHandler();
     private HashMap<Integer, MapTile> mapTiles = new HashMap<>();
     private int selectedTileIndex = 0;
+    private int selectedTileRotation = 0;
     private SelectedTileIndexHolder selectedTileIndexHolder;
+    private Map map;
 
     public TilePicker(SelectedTileIndexHolder selectedTileIndexHolder) {
         setBackground(Colors.MAGENTA);
@@ -43,9 +47,22 @@ public class TilePicker extends JPanel {
                 tileHovered(e.getPoint());
             }
         });
+
+        getInputMap(WHEN_IN_FOCUSED_WINDOW)
+        .put(KeyStroke.getKeyStroke(KeyEvent.VK_R, 0), "rotateTile");
+        getActionMap().put("rotateTile", new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+        rotateSelectedTile();
+            }
+        });
     }
 
     public void setTileset(Map map, Tileset tileset) {
+        mapTiles.clear();
+        this.map = map;
+        this.tileset = tileset;
+
         mapTiles.clear();
         this.tileset = tileset;
         HashMap<Integer, MapTileBuilder> mapTileBuilders = this.tileset.mapDefinedTilesToIndex();
@@ -72,13 +89,16 @@ public class TilePicker extends JPanel {
 
                 int x = j * tileset.getScaledSpriteWidth() + ((j * 5) + 5);
                 int y = i * tileset.getScaledSpriteHeight() + ((i * 5) + 5);
-                MapTile tile = mapTileBuilders.get(tileKeys[currentKeyIndex]).build(x, y);
+                MapTile tile = mapTileBuilders.get(tileKeys[currentKeyIndex]).build(x, y, selectedTileRotation);
+
                 tile.setMap(map);
                 mapTiles.put(currentKeyIndex, tile);
                 currentKeyIndex++;
             }
         }
         repaint();
+
+        
     }
 
     public void draw() {
@@ -107,6 +127,17 @@ public class TilePicker extends JPanel {
         graphicsHandler.setGraphics((Graphics2D) g);
         draw();
     }
+    
+        protected void rotateSelectedTile() {
+            if (tileset == null) {
+                return;
+            }
+            selectedTileRotation = (selectedTileRotation + 1) % 4;
+            selectedTileIndexHolder.setSelectedTileRotation(selectedTileRotation);
+
+            // rebuild the picker's tiles so they preview the current rotation
+            setTileset(map, tileset);
+        }
 
     protected void tileSelected(Point clickedPoint) {
         int selectedTileIndex = getClickedTileIndex(clickedPoint);
