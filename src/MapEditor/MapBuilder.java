@@ -14,7 +14,7 @@ public class MapBuilder extends JPanel {
     private JLabel mapHeightLabel;
     private JLabel hoveredTileIndexLabel;
 
-    public MapBuilder(SelectedTileIndexHolder controlPanelHolder) {
+    public MapBuilder(SelectedTileIndexHolder controlPanelHolder, LightEditorState lightEditorState) {
         setBackground(Colors.CORNFLOWER_BLUE);
         setLocation(205, 5);
         setLayout(new BorderLayout());
@@ -37,7 +37,7 @@ public class MapBuilder extends JPanel {
         labelPanel.add(hoveredTileIndexLabel);
         add(labelPanel, BorderLayout.SOUTH);
 
-        tileBuilder = new TileBuilder(controlPanelHolder, hoveredTileIndexLabel);
+        tileBuilder = new TileBuilder(controlPanelHolder, hoveredTileIndexLabel, lightEditorState);
         tileBuilderScroll = new JScrollPane();
         tileBuilderScroll.setViewportView(tileBuilder);
         scrollToMaxY();
