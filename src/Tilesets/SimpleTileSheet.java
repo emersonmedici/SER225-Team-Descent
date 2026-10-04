@@ -26,7 +26,8 @@ public class SimpleTileSheet extends Tileset {
                 .withScale(tileScale)
                 .build();
 
-        MapTileBuilder voidTile = new MapTileBuilder(voidFrame);
+        MapTileBuilder voidTile = new MapTileBuilder(voidFrame)
+                .withTileType(TileType.NOT_PASSABLE);
 
         mapTiles.add(voidTile);
 

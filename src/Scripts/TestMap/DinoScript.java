@@ -27,8 +27,9 @@ public class DinoScript extends Script {
             addConditionalScriptActionGroup(new ConditionalScriptActionGroup() {{
                 addRequirement(new FlagRequirement("hasTalkedToWalrus", true));
                 addRequirement(new FlagRequirement("hasTalkedToDinosaur", false));
-
+                System.out.println("Start boy");
                 addScriptAction(new WaitScriptAction(70));
+                System.out.println("Waited 70 frames");
                 addScriptAction(new NPCFacePlayerScriptAction());
                 addScriptAction(new TextboxScriptAction () {{
                     addText("Oh, you're still here...");
