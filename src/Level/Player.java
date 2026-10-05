@@ -43,12 +43,16 @@ public abstract class Player extends GameObject {
 
     protected CarriableObject carriedObject = null;
 
-    public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
+    // Player health
+    protected int health;
+
+    public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName, int health) {
         super(spriteSheet, x, y, startingAnimationName);
         facingDirection = Direction.RIGHT;
         playerState = PlayerState.STANDING;
         previousPlayerState = playerState;
         this.affectedByTriggers = true;
+        this.health = health;
     }
 
     public void update() {
@@ -276,6 +280,18 @@ public abstract class Player extends GameObject {
     carriedObject = object;
     return true;
 }
+
+    public void DecreaseHealth(int amount) {
+        this.health -= amount;
+    }
+
+    public void SetHealth(int amount) {
+        this.health = amount;
+    }
+
+    public int GetHealth() {
+        return this.health;
+    }
 
     // Uncomment this to have game draw player's bounds to make it easier to visualize
     /*
