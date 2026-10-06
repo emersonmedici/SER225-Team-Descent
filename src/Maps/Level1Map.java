@@ -25,7 +25,7 @@ public class Level1Map extends Map {
 
         PushableRock pushableRock = new PushableRock(getMapTile(2, 7).getLocation());
         enhancedMapTiles.add(pushableRock);
-
+       
         return enhancedMapTiles;
     }
 
