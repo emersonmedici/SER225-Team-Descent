@@ -68,9 +68,9 @@ public abstract class Player extends GameObject {
         this.affectedByTriggers = true;
         this.health = health;
 
-        flashlight.setSteps(8);
+        flashlight.setSteps(24);
         flashlightGlow.setIntensity(0.6f);
-        flashlightGlow.setSteps(3);;  
+        flashlightGlow.setSteps(24);;  
     }
 
     public void update() {
@@ -86,7 +86,7 @@ public abstract class Player extends GameObject {
             } while (previousPlayerState != playerState);
 
             // move player with respect to map collisions based on how much player needs to move this frame
-                       lastAmountMovedY = super.moveYHandleCollision(moveAmountY);
+            lastAmountMovedY = super.moveYHandleCollision(moveAmountY);
             lastAmountMovedX = super.moveXHandleCollision(moveAmountX);
 
             handleFlashlightToggle();

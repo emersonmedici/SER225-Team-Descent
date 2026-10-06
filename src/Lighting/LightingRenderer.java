@@ -84,9 +84,8 @@ public class LightingRenderer {
                 float wx = originX + col * P + P / 2f;      // world x of this cell's center
                 float b = light.brightnessAt(wx - lx, wy - ly);
                 int i = row * cols + col;
-                if (b > lightLevel[i]) {
-                    lightLevel[i] = b;                      // overlapping lights: brightest wins
-                }
+                // overlapping lights combine: each light removes part of the darkness that's left
+                lightLevel[i] = 1f - (1f - lightLevel[i]) * (1f - b);
             }
         }
     }

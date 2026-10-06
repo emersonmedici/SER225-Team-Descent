@@ -713,9 +713,13 @@ public abstract class Map {
 
     // darkness goes over the world but under the textbox
     if (ambientDarkness > 0) {
+        // the map's own lights plus whatever the player is carrying (flashlight)
+        ArrayList<Light> frameLights = new ArrayList<>(lights);
+        frameLights.addAll(player.getLights());
+
         int camX = Math.round(camera.getX());
         int camY = Math.round(camera.getY());
-        lightingRenderer.render(graphicsHandler, lights, ambientDarkness, ambientColor,
+        lightingRenderer.render(graphicsHandler, frameLights, ambientDarkness, ambientColor,
                 camX, camY, ScreenManager.getScreenWidth(), ScreenManager.getScreenHeight(),
                 camX, camY);
     }

@@ -1,6 +1,7 @@
 package MapEditor;
 
 import Level.Map;
+import MapEditor.LightEditorState;
 import Utils.Colors;
 
 import javax.swing.*;
