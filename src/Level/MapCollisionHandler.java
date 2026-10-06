@@ -209,6 +209,8 @@ public class MapCollisionHandler {
             switch (mapTile.getTileType()) {
                 case PASSABLE:
                     return false;
+                case VENT:
+                    return false;
                 case NOT_PASSABLE:
                     return gameObject.intersects(mapTile);
                 default:

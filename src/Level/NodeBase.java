@@ -1,4 +1,4 @@
-package EnhancedMapTiles;
+package Level;
 
 public class NodeBase {
     private int x;
@@ -33,6 +33,7 @@ public class NodeBase {
         return this.y;
     }
 
+
     public void setWalkable(boolean shouldWalk) {
         this.walkable = shouldWalk;
     }
@@ -55,6 +56,10 @@ public class NodeBase {
 
     public int getHCost() {
         return this.hCost;
+    }
+
+    public int getFCost() {
+        return this.hCost + this.gCost;
     }
 
     public void setParent(NodeBase parent) {

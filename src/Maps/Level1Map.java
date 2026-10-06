@@ -27,7 +27,8 @@ public class Level1Map extends Map {
         // PushableRock pushableRock = new PushableRock(getMapTile(2, 7).getLocation());
         // enhancedMapTiles.add(pushableRock);
 
-        DangerEntity enemy = new DangerEntity(getMapTile(82, 94).getLocation());
+        DangerEntity enemy = new DangerEntity(getMapTile(93, 38).getLocation());
+        enemy.setIsUpdateOffScreen(true);
         enhancedMapTiles.add(enemy);
 
         return enhancedMapTiles;

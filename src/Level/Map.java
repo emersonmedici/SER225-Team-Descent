@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+
+
 /*
     This class is for defining a map that is used for a specific level
     The map class handles/manages a lot of different things, including:
@@ -78,6 +80,9 @@ public abstract class Map {
 
     // other external classes can use this to listen for events
     protected ArrayList<GameListener> listeners = new ArrayList<>();
+
+    //Creates nodes for pathfinding
+    protected NodeBase[][] nodes;
 
     public Map(String mapFileName, Tileset tileset) {
         this.mapFileName = mapFileName;
@@ -149,6 +154,8 @@ public abstract class Map {
         this.mapTiles = new MapTile[this.height * this.width];
         fileInput.nextLine();
 
+        nodes = new NodeBase[this.width][this.height];
+
         // read in each tile index from the map file, use the defined tileset to get the associated MapTile to that tileset, and place it in the array
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -159,6 +166,15 @@ public abstract class Map {
                 int xLocation = j * tileset.getScaledSpriteWidth();
                 int yLocation = i * tileset.getScaledSpriteHeight();
                 MapTile tile = tileset.getTile(tileIndex).build(xLocation, yLocation, rotation);
+                TileType type = tile.getTileType();
+                boolean walkable;
+                if(type == TileType.NOT_PASSABLE || type == TileType.VENT) {
+                    walkable = false;
+                } else {
+                    walkable = true;
+                }
+                nodes[j][i] = new NodeBase(j, i, walkable);
+                
                 tile.setMap(this);
                 setMapTile(j, i, tile);
 
@@ -617,5 +633,9 @@ public abstract class Map {
 
     public ArrayList<GameListener> getListeners() {
         return listeners;
+    }
+
+    public NodeBase[][] getNodes() {
+        return nodes;
     }
 }
