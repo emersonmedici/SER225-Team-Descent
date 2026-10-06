@@ -43,4 +43,16 @@ public class ProlougeMap extends Map {
 
         return npcs;
     }
+
+
+    //adding a trigger to the facility door to go inside
+    @Override
+    public ArrayList<Trigger> loadTriggers() {
+        ArrayList<Trigger> triggers = new ArrayList<>();
+        //need to fix the coordinates
+        triggers.add(new Trigger(11, 9, 5, 5, new FacilityDoorScript()));
+        
+        return triggers;
+    }
+
 }
