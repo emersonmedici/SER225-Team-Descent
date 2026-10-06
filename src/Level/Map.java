@@ -1,5 +1,12 @@
 package Level;
 
+import Lighting.Light;
+import Lighting.LightingRenderer;
+import Lighting.PointLight;
+import Lighting.SpotLight;
+
+import java.awt.Color;
+
 import Engine.Config;
 import Engine.GraphicsHandler;
 import Engine.ScreenManager;
@@ -79,6 +86,18 @@ public abstract class Map {
     // other external classes can use this to listen for events
     protected ArrayList<GameListener> listeners = new ArrayList<>();
 
+    // lighting: ambientDarkness 0 = lighting off (title screen, maps without lights)
+    protected ArrayList<Light> lights = new ArrayList<>();
+    protected float ambientDarkness = 0f;
+    protected Color ambientColor = new Color(10, 10, 26);
+    protected LightingRenderer lightingRenderer;
+
+    public ArrayList<Light> getLights() { return lights; }
+    public float getAmbientDarkness() { return ambientDarkness; }
+    public void setAmbientDarkness(float ambientDarkness) { this.ambientDarkness = ambientDarkness; }
+    public Color getAmbientColor() { return ambientColor; }
+    public void setAmbientColor(Color ambientColor) { this.ambientColor = ambientColor; }
+
     public Map(String mapFileName, Tileset tileset) {
         this.mapFileName = mapFileName;
         this.tileset = tileset;
@@ -99,6 +118,7 @@ public abstract class Map {
         animatedMapTiles = new ArrayList<>();
 
         loadMapFile();
+        loadLightsFile();
 
         this.enhancedMapTiles = loadEnhancedMapTiles();
         for (EnhancedMapTile enhancedMapTile: this.enhancedMapTiles) {
@@ -118,8 +138,111 @@ public abstract class Map {
         this.loadScripts();
 
         this.camera = new Camera(0, 0, tileset.getScaledSpriteWidth(), tileset.getScaledSpriteHeight(), this);
+        this.lightingRenderer = new LightingRenderer(Math.round(tileset.getTileScale()));
         this.textbox = new Textbox(this);
     }
+
+    // "Level1Map.txt" -> "MapFiles/Level1Map.lights"
+    private String getLightsFilePath() {
+        int dot = mapFileName.lastIndexOf('.');
+        String baseName = dot >= 0 ? mapFileName.substring(0, dot) : mapFileName;
+        return Config.MAP_FILES_PATH + baseName + ".lights";
+    }
+
+    // reads this map's .lights file; no file means no lighting
+    private void loadLightsFile() {
+        // setupMap() also runs on reset(), so start clean or lights would double up
+        lights.clear();
+        ambientDarkness = 0f;
+
+        File file = new File(getLightsFilePath());
+        if (!file.exists()) {
+            return;
+        }
+
+        int tileWidth = tileset.getScaledSpriteWidth();
+        int tileHeight = tileset.getScaledSpriteHeight();
+
+        try (Scanner fileInput = new Scanner(file)) {
+            int lineNumber = 0;
+            while (fileInput.hasNextLine()) {
+                lineNumber++;
+                String line = fileInput.nextLine().trim();
+                if (line.isEmpty() || line.startsWith("#")) {
+                    continue;
+                }
+
+                String[] parts = line.split("\\s+");   // split on any amount of whitespace
+                try {
+                    if (parts[0].equals("ambient")) {
+                        ambientDarkness = Float.parseFloat(parts[1]);
+                        ambientColor = new Color(Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), Integer.parseInt(parts[4]));
+                    }
+                    else if (parts[0].equals("point") || parts[0].equals("spot")) {
+                        // the first five values are the same for every light type
+                        float x = Integer.parseInt(parts[1]) * tileWidth + tileWidth / 2f;    // center of the tile
+                        float y = Integer.parseInt(parts[2]) * tileHeight + tileHeight / 2f;
+                        float radius = Float.parseFloat(parts[3]) * tileWidth;                // tiles -> pixels
+
+                        Light light;
+                        if (parts[0].equals("point")) {
+                            light = new PointLight(x, y, radius);
+                        } else {
+                            SpotLight spot = new SpotLight(x, y, radius, Float.parseFloat(parts[6]));
+                            spot.setDirection(Float.parseFloat(parts[7]), Float.parseFloat(parts[8]));
+                            light = spot;
+                        }
+                        light.setIntensity(Float.parseFloat(parts[4]));
+                        light.setSteps(Integer.parseInt(parts[5]));
+                        lights.add(light);
+                    }
+                    else {
+                        System.out.println("Unknown light type on line " + lineNumber + " of " + getLightsFilePath() + ": " + line);
+                    }
+                } catch (NumberFormatException | ArrayIndexOutOfBoundsException ex) {
+                    // a typo should skip one line, not crash the game
+                    System.out.println("Bad line " + lineNumber + " in " + getLightsFilePath() + ": " + line);
+                }
+            }
+        } catch (FileNotFoundException ex) {
+            System.out.println("Could not open " + getLightsFilePath());
+        }
+    }
+
+    // writes this map's lights back to its .lights file (the map editor calls this)
+    public void saveLightsFile() {
+        // maps that don't use lighting shouldn't get an empty .lights file
+        if (ambientDarkness == 0 && lights.isEmpty() && !new File(getLightsFilePath()).exists()) {
+            return;
+        }
+
+        int tileWidth = tileset.getScaledSpriteWidth();
+        int tileHeight = tileset.getScaledSpriteHeight();
+
+        try (FileWriter fileWriter = new FileWriter(getLightsFilePath())) {
+            fileWriter.write("ambient " + ambientDarkness + " " + ambientColor.getRed() + " "
+                    + ambientColor.getGreen() + " " + ambientColor.getBlue() + "\n");
+
+            for (Light light : lights) {
+                int tileX = (int) (light.getX() / tileWidth);        // pixel center -> tile index
+                int tileY = (int) (light.getY() / tileHeight);
+                float radiusTiles = Math.round(light.getRadius() / tileWidth * 100) / 100f;  // 2 decimals
+
+                String common = tileX + " " + tileY + " " + radiusTiles + " " + light.getIntensity() + " " + light.getSteps();
+
+                if (light instanceof SpotLight) {
+                    SpotLight spot = (SpotLight) light;
+                    fileWriter.write("spot " + common + " " + spot.getHalfAngle() + " " + spot.getDirX() + " " + spot.getDirY() + "\n");
+                } else {
+                    fileWriter.write("point " + common + "\n");
+                }
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            System.out.println("Unable to save lights file " + getLightsFilePath());
+        }
+    }
+    
 
     // reads in a map file to create the map's tilemap
     private void loadMapFile() {
@@ -586,11 +709,25 @@ public abstract class Map {
     }
 
     public void draw(Player player, GraphicsHandler graphicsHandler) {
-        camera.draw(player, graphicsHandler);
-        if (textbox.isActive()) {
-            textbox.draw(graphicsHandler);
-        }
+    camera.draw(player, graphicsHandler);
+
+    // darkness goes over the world but under the textbox
+    if (ambientDarkness > 0) {
+        // the map's own lights plus whatever the player is carrying (flashlight)
+        ArrayList<Light> frameLights = new ArrayList<>(lights);
+        frameLights.addAll(player.getLights());
+
+        int camX = Math.round(camera.getX());
+        int camY = Math.round(camera.getY());
+        lightingRenderer.render(graphicsHandler, frameLights, ambientDarkness, ambientColor,
+                camX, camY, ScreenManager.getScreenWidth(), ScreenManager.getScreenHeight(),
+                camX, camY);
     }
+
+    if (textbox.isActive()) {
+        textbox.draw(graphicsHandler);
+    }
+}
 
     public FlagManager getFlagManager() { return flagManager; }
 
