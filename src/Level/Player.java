@@ -135,7 +135,7 @@ public abstract class Player extends GameObject {
             map.entityInteract(this);
         }
 
-        if (Keyboard.isKeyDown(Key.R) == true) {
+        if (Keyboard.isKeyDown(Key.SHIFT) == true) {
             walkSpeed = 5f;
         } else {
             walkSpeed = 2.3f;
