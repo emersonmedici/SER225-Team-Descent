@@ -88,10 +88,8 @@ public abstract class Map {
     // other external classes can use this to listen for events
     protected ArrayList<GameListener> listeners = new ArrayList<>();
 
-<<<<<<< HEAD
     //Creates nodes for pathfinding
     protected NodeBase[][] nodes;
-=======
     // lighting: ambientDarkness 0 = lighting off (title screen, maps without lights)
     protected ArrayList<Light> lights = new ArrayList<>();
     protected float ambientDarkness = 0f;
@@ -103,7 +101,6 @@ public abstract class Map {
     public void setAmbientDarkness(float ambientDarkness) { this.ambientDarkness = ambientDarkness; }
     public Color getAmbientColor() { return ambientColor; }
     public void setAmbientColor(Color ambientColor) { this.ambientColor = ambientColor; }
->>>>>>> master
 
     public Map(String mapFileName, Tileset tileset) {
         this.mapFileName = mapFileName;
