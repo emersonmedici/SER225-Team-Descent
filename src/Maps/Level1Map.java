@@ -24,6 +24,12 @@ public class Level1Map extends Map {
         this.screen = screen;
     }
 
+    public Level1Map() {
+        super("Level1Map.txt", new SimpleTileSheet());
+        this.playerStartPosition = getMapTile(82, 97).getLocation();
+        this.screen = null;
+    }
+
     @Override
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
         ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
