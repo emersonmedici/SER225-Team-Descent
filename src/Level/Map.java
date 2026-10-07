@@ -101,6 +101,7 @@ public abstract class Map {
     public void setAmbientDarkness(float ambientDarkness) { this.ambientDarkness = ambientDarkness; }
     public Color getAmbientColor() { return ambientColor; }
     public void setAmbientColor(Color ambientColor) { this.ambientColor = ambientColor; }
+    
 
     public Map(String mapFileName, Tileset tileset) {
         this.mapFileName = mapFileName;
@@ -272,12 +273,16 @@ public abstract class Map {
         this.width = fileInput.nextInt();
         this.height = fileInput.nextInt();
 
+
+
         // define array size for map tiles, which is width * height (this is a standard array, NOT a 2D array)
         this.mapTiles = new MapTile[this.height * this.width];
         fileInput.nextLine();
 
         nodes = new NodeBase[this.width][this.height];
-
+        System.out.println(
+            "Node dimensions: " + nodes.length + " x " + nodes[0].length
+        );
         // read in each tile index from the map file, use the defined tileset to get the associated MapTile to that tileset, and place it in the array
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {

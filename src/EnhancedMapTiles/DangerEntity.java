@@ -8,6 +8,7 @@ import GameObject.GameObject;
 import GameObject.ImageEffect;
 import GameObject.SpriteSheet;
 import Level.EnhancedMapTile;
+import Level.GameListener;
 import Level.NPC;
 import Level.Player;
 import Level.PlayerState;
@@ -15,6 +16,7 @@ import Level.TileType;
 import Level.Map;
 import Level.NodeBase;
 import Level.AStar;
+
 import Utils.Direction;
 import Utils.Point;
 
@@ -40,35 +42,34 @@ public class DangerEntity extends EnhancedMapTile {
         private NodeBase nextNode;
         private int indexInPath = 1;
 
+
     public DangerEntity(Point location) {
-        super(location.x, location.y, new SpriteSheet(ImageLoader.load("Dinosaur.png"), 16, 16), TileType.PASSABLE);
+        super(location.x, location.y, new SpriteSheet(ImageLoader.load("Dinosaur.png"), 14, 17), TileType.PASSABLE);
     }
 
     public void start(Player player) {
         nodes = map.getNodes();
-        //System.out.println(nodes[5][5].getX());
+
         AStar aStar = new AStar(nodes);
-        //Point playerStart = map.getplayer.getLocation();
-        //Point entityStart = getLocation();
+
         Point playerStart = map.getTileIndexByPosition(player.getLocation().x, player.getLocation().y);
         lastPlayerPos = playerStart;
         Point entityStart = map.getTileIndexByPosition(getLocation().x, getLocation().y);
-    //    System.out.println("EntityStart: " + entityStart.x + " " + entityStart.y);
-   //     System.out.println("PlayerEnd: " + playerStart.x + " " + playerStart.y);
-     //   System.out.println("Size: " + nodes.length + " " + nodes[0].length);
+
         path = aStar.findPath(nodes[(int)entityStart.x][(int)entityStart.y], nodes[(int)playerStart.x][(int)playerStart.y]);
-        nextNode = path.get(indexInPath);
-     //   System.out.println("NextNode: " + nextNode.getX() + "  " + nextNode.getY());
-    //  for(int i = 0; i < path.size(); i++) {
-    //     System.out.println("Node: " + path.get(i).getX() + " " + path.get(i).getY());
-    //  }
-    System.out.println("should walk on + " + nodes[73][99].getWalkable());
+        
+        if (path.size() > 1) {
+            indexInPath = 1;
+            nextNode = path.get(indexInPath);
+        }
+
     }
 
     @Override
     public void update(Player player) {
         if (hasStarted == false) {
             start(player);
+            player.setHealth(3);
         }
         else {
             super.update(player);
@@ -77,28 +78,69 @@ public class DangerEntity extends EnhancedMapTile {
 
             // Attack the player if touching them
             if (player.touching(this) == true && canAttack() == true) {
-                player.DecreaseHealth(1);
-                System.out.println("Attack");
+                player.decreaseHealth(1);
+                System.out.println("ATTACK");
+            }
+
+            if(player.getHealth() <= 0) {
+                for (GameListener listener : map.getListeners()) {
+                    listener.onRestart();
+                    hasStarted = false;
+                }
             }
 
             // Get the current grid position of the entity and player
-            Point entityPos = map.getTileIndexByPosition(
-                getLocation().x,
-                getLocation().y
-            );
+            // Point entityPos = map.getTileIndexByPosition(
+            //     getLocation().x,
+            //     getLocation().y
+            // );
+
+            // Point playerPos = map.getTileIndexByPosition(
+            //     player.getLocation().x,
+            //     player.getLocation().y
+            // );
+
+            float playerCenterX =
+                player.getX() + player.getWidth() / 2.0f;
+
+            float playerCenterY =
+                player.getY() + player.getHeight() / 2.0f;
 
             Point playerPos = map.getTileIndexByPosition(
-                player.getLocation().x,
-                player.getLocation().y
+                playerCenterX,
+                playerCenterY
             );
 
-            // Make sure the entity has a valid path
-            if (path != null && path.size() > 1) {
+            float entityCenterX =
+                getX() + getWidth() / 2.0f;
 
-                // Make sure indexInPath is still valid
-                if (indexInPath >= path.size()) {
-                    indexInPath = path.size() - 1;
-                }
+            float entityCenterY =
+                getY() + getHeight() / 2.0f;
+
+            Point entityPos = map.getTileIndexByPosition(
+                entityCenterX,
+                entityCenterY
+            );
+
+            // System.out.println(
+            //     "Entity Node X: " + entityPos.x +
+            //     " | Entity Node Y: " + entityPos.y + 
+            //     " | Player Node X: " + playerPos.x +
+            //     " | Player Node Y: " + playerPos.y
+            // );
+
+            // Recalculate the path when the player enters a new tile
+            if (lastPlayerPos == null ||
+                playerPos.x != lastPlayerPos.x ||
+                playerPos.y != lastPlayerPos.y) {
+
+                updatePath(entityPos, playerPos);
+
+                lastPlayerPos = playerPos;
+            }
+
+            // Make sure there is a valid path
+            if (path != null && path.size() > 1 && indexInPath < path.size()) {
 
                 // Get the direction toward the next node
                 direction = getMoveDirection(
@@ -140,20 +182,14 @@ public class DangerEntity extends EnhancedMapTile {
                 if (entityPos.x == path.get(indexInPath).getX()
                         && entityPos.y == path.get(indexInPath).getY()) {
 
-                    // Move to the next node in the path
                     indexInPath++;
 
                     // If we reached the end of the path,
-                    // calculate a new path to the player's current position
+                    // get a new path to the player's current position
                     if (indexInPath >= path.size()) {
                         updatePath(entityPos, playerPos);
                     }
                 }
-            }
-            else {
-                // There is no valid path to the player
-                // Try to find one again
-                updatePath(entityPos, playerPos);
             }
         }
 
@@ -194,16 +230,32 @@ public class DangerEntity extends EnhancedMapTile {
 
 
     private void updatePath(Point entityPos, Point playerPos) {
+
         AStar aStar = new AStar(nodes);
 
         List<NodeBase> newPath = aStar.findPath(
             nodes[(int)entityPos.x][(int)entityPos.y],
             nodes[(int)playerPos.x][(int)playerPos.y]
         );
+        // System.out.println("PATH:");
+
+        // for (NodeBase node : newPath) {
+        //     System.out.println(
+        //         "(" + node.getX() + ", " + node.getY() + ")"
+        //     );
+        // }
+        
+
+   //     System.out.println("New path size: " + newPath.size());
 
         if (newPath.size() > 1) {
             path = newPath;
             indexInPath = 1;
+
+         //   System.out.println("New path found!");
+        }
+        else {
+         //   System.out.println("NO PATH FOUND!");
         }
     }
 

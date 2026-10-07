@@ -11,13 +11,17 @@ import Scripts.TestMap.*;
 import Tilesets.CommonTileset;
 import Tilesets.SimpleTileSheet;
 import java.util.ArrayList;
+import Screens.PlayLevelScreen;
 
 // Represents a test map to be used in a level
 public class Level1Map extends Map {
 
-    public Level1Map() {
+    private PlayLevelScreen screen;
+
+    public Level1Map(PlayLevelScreen screen) {
         super("Level1Map.txt", new SimpleTileSheet());
         this.playerStartPosition = getMapTile(82, 97).getLocation();
+        this.screen = screen;
     }
 
     @Override
@@ -59,6 +63,10 @@ public class Level1Map extends Map {
         //npcs.add(enemy);
 
         return npcs;
+    }
+
+    public PlayLevelScreen getScreen() {
+        return this.screen;
     }
 
     // @Override

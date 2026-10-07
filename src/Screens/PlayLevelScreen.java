@@ -36,8 +36,8 @@ public class PlayLevelScreen extends Screen implements GameListener {
         flagManager.addFlag("hasTalkedToDave", false);
 
         // define/setup map
-        map = new ProlougeMap();
-        //map = new Level1Map();
+        //map = new ProlougeMap();
+        map = new Level1Map(this);
         map.setFlagManager(flagManager);
 
         // setup player
@@ -83,6 +83,12 @@ public class PlayLevelScreen extends Screen implements GameListener {
         // when this method is called within the game, it signals the game has been "won"
         playLevelScreenState = PlayLevelScreenState.LEVEL_COMPLETED;
     }
+
+    @Override 
+    public void onRestart() {
+        resetLevel();
+    }
+
 
     public void draw(GraphicsHandler graphicsHandler) {
         // based on screen state, draw appropriate graphics
