@@ -76,6 +76,7 @@ public abstract class Player extends GameObject {
         if (carriedObject != null) carriedObject.setEquipped(true);
     }
 
+    //looks through all the inventory keys and selects what was pressed
     private void handleInventoryKeys() {
         for (int i = 0; i < INVENTORY_KEYS.length; i++) {
             Key key = INVENTORY_KEYS[i];
@@ -85,6 +86,7 @@ public abstract class Player extends GameObject {
                 selectInventorySlot(i);
             }
         }
+        //when key is let go, unlocks it
         if (Keyboard.isKeyUp(Key.ZERO)) keyLocker.unlockKey(Key.ZERO);
         else if (!keyLocker.isKeyLocked(Key.ZERO)) {
             keyLocker.lockKey(Key.ZERO);
