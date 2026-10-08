@@ -135,7 +135,7 @@ public abstract class Player extends GameObject {
             interactOrDrop();
         }
 
-        if (Keyboard.isKeyDown(Key.R) == true) {
+        if (Keyboard.isKeyDown(Key.SHIFT) == true) {
             walkSpeed = 5f;
         } else {
             walkSpeed = 2.3f;
@@ -208,10 +208,10 @@ public abstract class Player extends GameObject {
     // points the flashlight where the player last walked and moves it to the player
     protected void updateFlashlight() {
         // last walking directions give 8-way aim; they're null until the player first moves
-        float aimX = lastWalkingXDirection != null ? lastWalkingXDirection.getVelocity() : 0;
-        float aimY = lastWalkingYDirection != null ? lastWalkingYDirection.getVelocity() : 0;
+        float aimX = lastWalkingXDirection != null ? lastWalkingXDirection.getVelocityX() : 0;
+        float aimY = lastWalkingYDirection != null ? lastWalkingYDirection.getVelocityY() : 0;
         if (aimX == 0 && aimY == 0) {
-            aimX = facingDirection.getVelocity();
+            aimX = facingDirection.getVelocityX();
         }
         flashlight.setDirection(aimX, aimY);
 
@@ -380,15 +380,15 @@ public abstract class Player extends GameObject {
     return true;
 }
 
-    public void DecreaseHealth(int amount) {
+    public void decreaseHealth(int amount) {
         this.health -= amount;
     }
 
-    public void SetHealth(int amount) {
+    public void setHealth(int amount) {
         this.health = amount;
     }
 
-    public int GetHealth() {
+    public int getHealth() {
         return this.health;
     }
 

@@ -11,23 +11,37 @@ import Scripts.TestMap.*;
 import Tilesets.CommonTileset;
 import Tilesets.SimpleTileSheet;
 import java.util.ArrayList;
+import Screens.PlayLevelScreen;
 
 // Represents a test map to be used in a level
 public class Level1Map extends Map {
 
+    private PlayLevelScreen screen;
+
+    public Level1Map(PlayLevelScreen screen) {
+        super("Level1Map.txt", new SimpleTileSheet());
+        this.playerStartPosition = getMapTile(82, 97).getLocation();
+        this.screen = screen;
+    }
+
     public Level1Map() {
         super("Level1Map.txt", new SimpleTileSheet());
         this.playerStartPosition = getMapTile(82, 97).getLocation();
+        this.screen = null;
     }
 
     @Override
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
         ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
 
+        PushableRock pushableRock = new PushableRock(getMapTile(2, 7).getLocation());
+        enhancedMapTiles.add(pushableRock);
+       
         // PushableRock pushableRock = new PushableRock(getMapTile(2, 7).getLocation());
         // enhancedMapTiles.add(pushableRock);
 
-        DangerEntity enemy = new DangerEntity(getMapTile(82, 94).getLocation());
+        DangerEntity enemy = new DangerEntity(getMapTile(93, 38).getLocation());
+        enemy.setIsUpdateOffScreen(true);
         enhancedMapTiles.add(enemy);
 
         return enhancedMapTiles;
@@ -55,6 +69,10 @@ public class Level1Map extends Map {
         //npcs.add(enemy);
 
         return npcs;
+    }
+
+    public PlayLevelScreen getScreen() {
+        return this.screen;
     }
 
     // @Override

@@ -34,6 +34,8 @@ public class ScreenCoordinator extends Screen {
 		gameState = GameState.MENU;
 	}
 
+	
+
 	@Override
 	public void update() {
 		do {

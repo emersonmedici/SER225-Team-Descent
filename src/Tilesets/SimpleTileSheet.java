@@ -125,7 +125,8 @@ public class SimpleTileSheet extends Tileset {
                 .withScale(tileScale)
                 .build();
 
-        MapTileBuilder ventFloorTile = new MapTileBuilder(ventFloorFrame);
+        MapTileBuilder ventFloorTile = new MapTileBuilder(ventFloorFrame)
+                .withTileType(TileType.VENT);
 
         mapTiles.add(ventFloorTile);
 
