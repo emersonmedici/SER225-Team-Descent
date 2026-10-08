@@ -16,18 +16,18 @@ import Screens.PlayLevelScreen;
 // Represents a test map to be used in a level
 public class Level1Map extends Map {
 
-    private PlayLevelScreen screen;
+    //private PlayLevelScreen screen;
 
-    public Level1Map(PlayLevelScreen screen) {
-        super("Level1Map.txt", new SimpleTileSheet());
-        this.playerStartPosition = getMapTile(82, 97).getLocation();
-        this.screen = screen;
-    }
+    // public Level1Map(PlayLevelScreen screen) {
+    //     super("Level1Map.txt", new SimpleTileSheet());
+    //     this.playerStartPosition = getMapTile(82, 97).getLocation();
+    //     this.screen = screen;
+    // }
 
     public Level1Map() {
         super("Level1Map.txt", new SimpleTileSheet());
         this.playerStartPosition = getMapTile(82, 97).getLocation();
-        this.screen = null;
+       // this.screen = null;
     }
 
     @Override
@@ -71,9 +71,9 @@ public class Level1Map extends Map {
         return npcs;
     }
 
-    public PlayLevelScreen getScreen() {
-        return this.screen;
-    }
+    // public PlayLevelScreen getScreen() {
+    //     return this.screen;
+    // }
 
     // @Override
     // public ArrayList<Trigger> loadTriggers() {
