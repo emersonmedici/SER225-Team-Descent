@@ -1,19 +1,19 @@
 package EnhancedMapTiles;
 
 import Builders.FrameBuilder;
-import Engine.ImageLoader;
 import Engine.GraphicsHandler;
+import Engine.ImageLoader;
 import GameObject.Frame;
 import GameObject.GameObject;
-import GameObject.SpriteSheet;
 import GameObject.Rectangle;
+import GameObject.SpriteSheet;
 import Level.EnhancedMapTile;
-import Level.Player;
-import Level.TileType;
-import Level.MapTile;
 import Level.MapEntity;
 import Level.MapEntityStatus;
+import Level.MapTile;
 import Level.NPC;
+import Level.Player;
+import Level.TileType;
 import Utils.Point;
 
 public class CarriableObject extends EnhancedMapTile {
@@ -26,7 +26,7 @@ public class CarriableObject extends EnhancedMapTile {
             new SpriteSheet(ImageLoader.load("Rock.png"), 16, 16),
             TileType.PASSABLE
         );
-        // Passable pickups can overlap the player when interacted with.
+        // player can walk over the object
         setIsUncollidable(true);
     }
 
@@ -34,7 +34,7 @@ public class CarriableObject extends EnhancedMapTile {
         return carrier != null;
     }
 
-    // Inventory items remain owned, but only the selected item is visible.
+    // hides all items when picked up, but shows the one that is being held at the time
     public void setEquipped(boolean equipped) {
         if (carrier != null) {
             setIsHidden(!equipped);
@@ -59,7 +59,7 @@ public class CarriableObject extends EnhancedMapTile {
         return true;
     }
 
-    // Check a proposed position without moving the carried object.
+    // check a the drop location
     public boolean canDropAt(float x, float y) {
         if (map == null || carrier == null) {
             return false;
@@ -107,7 +107,7 @@ public class CarriableObject extends EnhancedMapTile {
                 && entity.getMapEntityStatus() != MapEntityStatus.REMOVED;
     }
 
-    // Player.dropCarriedObject validates the position and clears its held-item slot.
+    // player.dropCarriedObject makes sure it can drop
     public void dropAt(float x, float y) {
         if (!isCarried()) {
             return;
