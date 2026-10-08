@@ -20,8 +20,13 @@ public class EditorControlPanel extends JPanel {
     private TilePicker tilePicker;
     private MapBuilder mapBuilder;
     private Map selectedMap;
+    private LightEditorState lightEditorState;
+    private LightPanel lightPanel;
+    
 
-    public EditorControlPanel(SelectedTileIndexHolder selectedTileIndexHolder, MapBuilder mapBuilder, JFrame parent) {
+    public EditorControlPanel(SelectedTileIndexHolder selectedTileIndexHolder, LightEditorState lightEditorState, MapBuilder mapBuilder, JFrame parent) 
+    {
+        this.lightEditorState = lightEditorState;
         setLayout(new BorderLayout());
         setBackground(Colors.CORNFLOWER_BLUE);
         setLocation(0, 0);
@@ -64,9 +69,21 @@ public class EditorControlPanel extends JPanel {
         JScrollPane tilePickerScroll = new JScrollPane();
         tilePickerScroll.setViewportView(tilePicker);
         tilePickerScroll.setLocation(5, 78);
-        tilePickerScroll.setSize(190, 394);
-        add(tilePickerScroll, BorderLayout.CENTER);
+                tilePickerScroll.setSize(190, 394);
+
+        // two tabs: the existing tile picker, and the light inspector
+        // whichever tab is open decides what clicking on the map does
+        lightPanel = new LightPanel(lightEditorState, () -> mapBuilder.getTileBuilder().repaint());
+        JTabbedPane tabs = new JTabbedPane();
+        tabs.addTab("Tiles", tilePickerScroll);
+        tabs.addTab("Lights", lightPanel);
+        tabs.addChangeListener(e -> {
+            lightEditorState.setMode(tabs.getSelectedIndex() == 1 ? LightEditorState.Mode.LIGHTS : LightEditorState.Mode.TILES);
+            mapBuilder.getTileBuilder().repaint();
+        });
+        add(tabs, BorderLayout.CENTER);
         tilePicker.setTileset(getSelectedMap(), getSelectedMap().getTileset());
+        lightPanel.setMap(getSelectedMap());
 
 
         JPanel mapButtonsPanel = new JPanel();
@@ -128,14 +145,18 @@ public class EditorControlPanel extends JPanel {
                 }
             }
             fileWriter.close();
+            map.saveLightsFile();
+
         } catch (IOException ex) {
             ex.printStackTrace();
             System.out.println("Unable to save map file! That's really not great!");
         }
     }
-    public void setMap() {
+        public void setMap() {
         selectedMap = EditorMaps.getMapByName(mapNamesComboBox.getSelectedItem().toString());
         tilePicker.setTileset(selectedMap, selectedMap.getTileset());
+        lightEditorState.setSelectedLight(null);
+        lightPanel.setMap(selectedMap);
         mapBuilder.setMap(selectedMap);
     }
 }

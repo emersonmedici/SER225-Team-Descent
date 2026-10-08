@@ -26,7 +26,8 @@ public class SimpleTileSheet extends Tileset {
                 .withScale(tileScale)
                 .build();
 
-        MapTileBuilder voidTile = new MapTileBuilder(voidFrame);
+        MapTileBuilder voidTile = new MapTileBuilder(voidFrame)
+                .withTileType(TileType.NOT_PASSABLE);
 
         mapTiles.add(voidTile);
 
@@ -124,7 +125,8 @@ public class SimpleTileSheet extends Tileset {
                 .withScale(tileScale)
                 .build();
 
-        MapTileBuilder ventFloorTile = new MapTileBuilder(ventFloorFrame);
+        MapTileBuilder ventFloorTile = new MapTileBuilder(ventFloorFrame)
+                .withTileType(TileType.VENT);
 
         mapTiles.add(ventFloorTile);
 

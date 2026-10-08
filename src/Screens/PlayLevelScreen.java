@@ -48,7 +48,8 @@ public class PlayLevelScreen extends Screen implements GameListener {
         map.setFlagManager(flagManager);
 
         // setup player
-        player = new Cat(map.getPlayerStartPosition().x, map.getPlayerStartPosition().y);
+        int playerHealth = 3;
+        player = new Cat(map.getPlayerStartPosition().x, map.getPlayerStartPosition().y, playerHealth);
         player.setMap(map);
         playLevelScreenState = PlayLevelScreenState.RUNNING;
         player.setFacingDirection(Direction.LEFT);
@@ -93,6 +94,12 @@ public class PlayLevelScreen extends Screen implements GameListener {
         // when this method is called within the game, it signals the game has been "won"
         playLevelScreenState = PlayLevelScreenState.LEVEL_COMPLETED;
     }
+
+    @Override 
+    public void onRestart() {
+        resetLevel();
+    }
+
 
     @Override
     public void onPrologueCompleted() {

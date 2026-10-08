@@ -7,7 +7,12 @@ import EnhancedMapTiles.CarriableObject;
 import GameObject.GameObject;
 import GameObject.Rectangle;
 import GameObject.SpriteSheet;
+import Lighting.Light;
+import Lighting.PointLight;
+import Lighting.SpotLight;
 import Utils.Direction;
+
+import java.util.ArrayList;
 
 public abstract class Player extends GameObject {
     // values that affect player movement
@@ -36,6 +41,15 @@ public abstract class Player extends GameObject {
     protected Key MOVE_UP_KEY = Key.UP;
     protected Key MOVE_DOWN_KEY = Key.DOWN;
     protected Key INTERACT_KEY = Key.SPACE;
+    protected Key FLASHLIGHT_KEY = Key.F;
+
+    // flashlight: a cone that follows the player and points where they last walked
+    // the glow is a small circle of spill light so the player's own sprite isn't pitch black
+    protected SpotLight flashlight = new SpotLight(0, 0, 288, 30);   // 6 tiles long, 60 degrees wide
+    protected PointLight flashlightGlow = new PointLight(0, 0, 60);
+    protected boolean flashlightOn = false;
+    // how far in front of the player's center the beam starts (world px)
+    protected float flashlightOffset = 12;
 
     protected boolean isLocked = false;
 
@@ -43,12 +57,20 @@ public abstract class Player extends GameObject {
 
     protected CarriableObject carriedObject = null;
 
-    public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName) {
+    // Player health
+    protected int health;
+
+    public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName, int health) {
         super(spriteSheet, x, y, startingAnimationName);
         facingDirection = Direction.RIGHT;
         playerState = PlayerState.STANDING;
         previousPlayerState = playerState;
         this.affectedByTriggers = true;
+        this.health = health;
+
+        flashlight.setSteps(24);
+        flashlightGlow.setIntensity(0.6f);
+        flashlightGlow.setSteps(24);;  
     }
 
     public void update() {
@@ -66,9 +88,14 @@ public abstract class Player extends GameObject {
             // move player with respect to map collisions based on how much player needs to move this frame
             lastAmountMovedY = super.moveYHandleCollision(moveAmountY);
             lastAmountMovedX = super.moveXHandleCollision(moveAmountX);
+
+            handleFlashlightToggle();
         }
 
         handlePlayerAnimation();
+
+        // after movement, so the light is where the player ended up this frame
+        updateFlashlight();
 
         updateLockedKeys();
 
@@ -108,7 +135,7 @@ public abstract class Player extends GameObject {
             map.entityInteract(this);
         }
 
-        if (Keyboard.isKeyDown(Key.R) == true) {
+        if (Keyboard.isKeyDown(Key.SHIFT) == true) {
             walkSpeed = 5f;
         } else {
             walkSpeed = 2.3f;
@@ -160,12 +187,54 @@ public abstract class Player extends GameObject {
         }
     }
 
-    protected void updateLockedKeys() {
+       protected void updateLockedKeys() {
         if (Keyboard.isKeyUp(INTERACT_KEY) && !isLocked) {
             keyLocker.unlockKey(INTERACT_KEY);
         }
+
+        if (Keyboard.isKeyUp(FLASHLIGHT_KEY)) {
+            keyLocker.unlockKey(FLASHLIGHT_KEY);
+        }
     }
 
+    // pressing F flips the flashlight; the key lock makes one press = one flip, even though update runs 60 times a second
+    protected void handleFlashlightToggle() {
+        if (Keyboard.isKeyDown(FLASHLIGHT_KEY) && !keyLocker.isKeyLocked(FLASHLIGHT_KEY)) {
+            flashlightOn = !flashlightOn;
+            keyLocker.lockKey(FLASHLIGHT_KEY);
+        }
+    }
+
+    // points the flashlight where the player last walked and moves it to the player
+    protected void updateFlashlight() {
+        // last walking directions give 8-way aim; they're null until the player first moves
+        float aimX = lastWalkingXDirection != null ? lastWalkingXDirection.getVelocityX() : 0;
+        float aimY = lastWalkingYDirection != null ? lastWalkingYDirection.getVelocityY() : 0;
+        if (aimX == 0 && aimY == 0) {
+            aimX = facingDirection.getVelocityX();
+        }
+        flashlight.setDirection(aimX, aimY);
+
+        float centerX = getX() + getWidth() / 2f;
+        float centerY = getY() + getHeight() / 2f;
+        flashlightGlow.setPosition(centerX, centerY);
+        // start the beam a little in front of the player, like it's held out in their hand
+        flashlight.setPosition(centerX + flashlight.getDirX() * flashlightOffset, centerY + flashlight.getDirY() * flashlightOffset);
+    }
+
+    // lights the player is carrying this frame (the map adds these to its own lights when drawing)
+    public ArrayList<Light> getLights() {
+        ArrayList<Light> playerLights = new ArrayList<>();
+        if (flashlightOn) {
+            playerLights.add(flashlight);
+            playerLights.add(flashlightGlow);
+        }
+        return playerLights;
+    }
+
+    public boolean isFlashlightOn() { return flashlightOn; }
+    public void setFlashlightOn(boolean flashlightOn) { this.flashlightOn = flashlightOn; }
+    public SpotLight getFlashlight() { return flashlight; }
     // anything extra the player should do based on interactions can be handled here
     protected void handlePlayerAnimation() {
         if (playerState == PlayerState.STANDING) {
@@ -276,6 +345,18 @@ public abstract class Player extends GameObject {
     carriedObject = object;
     return true;
 }
+
+    public void decreaseHealth(int amount) {
+        this.health -= amount;
+    }
+
+    public void setHealth(int amount) {
+        this.health = amount;
+    }
+
+    public int getHealth() {
+        return this.health;
+    }
 
     // Uncomment this to have game draw player's bounds to make it easier to visualize
     /*

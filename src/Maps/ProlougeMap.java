@@ -4,6 +4,8 @@ import EnhancedMapTiles.CarriableObject;
 import EnhancedMapTiles.PushableRock;
 import Level.*;
 import NPCs.Dave;
+import Scripts.MiniGameScript;
+import Scripts.MiniGame2Script;
 import Scripts.PickupObjectScript;
 import Scripts.TestMap.*;
 import Tilesets.CommonTileset;
@@ -42,6 +44,20 @@ public class ProlougeMap extends Map {
         );
         dave.setInteractScript(new DaveScript());
         npcs.add(dave);
+
+        Dave dave2 = new Dave(
+                4,
+                getMapTile(13, 10).getLocation().subtractX(20)
+        );
+        dave2.setInteractScript(new MiniGameScript());
+        npcs.add(dave2);
+
+        Dave dave3 = new Dave(
+                4,
+                getMapTile(15, 9).getLocation().subtractX(20)
+        );
+        dave3.setInteractScript(new MiniGame2Script());
+        npcs.add(dave3);
 
         return npcs;
     }
