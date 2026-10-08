@@ -4,8 +4,8 @@ import EnhancedMapTiles.CarriableObject;
 import EnhancedMapTiles.PushableRock;
 import Level.*;
 import NPCs.Dave;
-import Scripts.MiniGameScript;
 import Scripts.MiniGame2Script;
+import Scripts.MiniGameScript;
 import Scripts.PickupObjectScript;
 import Scripts.TestMap.*;
 import Tilesets.CommonTileset;
@@ -21,10 +21,12 @@ public class ProlougeMap extends Map {
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
         ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
 
-        CarriableObject item1 =
-                new CarriableObject(getMapTile(13, 33).getLocation());
+        CarriableObject item1 = new CarriableObject(getMapTile(13, 33).getLocation());
+        CarriableObject item2 = new CarriableObject(getMapTile(13, 34).getLocation());
         item1.setInteractScript(new PickupObjectScript());
+        item2.setInteractScript(new PickupObjectScript());
         enhancedMapTiles.add(item1);
+        enhancedMapTiles.add(item2);
 
         PushableRock pushableRock = new PushableRock(getMapTile(10, 28).getLocation());
         enhancedMapTiles.add(pushableRock);

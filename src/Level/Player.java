@@ -1,5 +1,6 @@
 package Level;
 
+import Engine.GraphicsHandler;
 import Engine.Key;
 import Engine.KeyLocker;
 import Engine.Keyboard;
@@ -11,7 +12,6 @@ import Lighting.Light;
 import Lighting.PointLight;
 import Lighting.SpotLight;
 import Utils.Direction;
-
 import java.util.ArrayList;
 
 public abstract class Player extends GameObject {
@@ -53,9 +53,44 @@ public abstract class Player extends GameObject {
 
     protected boolean isLocked = false;
 
-    // values for player pick up and drop
+    // values for player pick up, drop, and inventory
 
-    protected CarriableObject carriedObject = null;
+    protected CarriableObject carriedObject = null; //item currently being carried by the player, if any
+    private final CarriableObject[] inventory = new CarriableObject[9]; // 9 inventory slots, numbered 1-9, with 0 being empty hands
+    private int selectedInventorySlot = -1;
+    private static final Key[] INVENTORY_KEYS = {
+        Key.ONE, Key.TWO, Key.THREE, Key.FOUR, Key.FIVE,
+        Key.SIX, Key.SEVEN, Key.EIGHT, Key.NINE
+    }; // number keys 1-9 on keyboard to select inventory slots. the 0 key for holding nothing.
+
+    public int getSelectedInventorySlot() { return selectedInventorySlot; }
+    public int getInventorySize() { return inventory.length; }
+    public CarriableObject getInventoryItem(int slot) { return inventory[slot]; }
+
+    //selecting an empty slot (or -1 for empty hands) stores the current item.
+    public void selectInventorySlot(int slot) {
+        if (isLocked || slot < -1 || slot >= inventory.length) return;
+        if (carriedObject != null) carriedObject.setEquipped(false);
+        selectedInventorySlot = slot;
+        carriedObject = slot == -1 ? null : inventory[slot];
+        if (carriedObject != null) carriedObject.setEquipped(true);
+    }
+
+    private void handleInventoryKeys() {
+        for (int i = 0; i < INVENTORY_KEYS.length; i++) {
+            Key key = INVENTORY_KEYS[i];
+            if (Keyboard.isKeyUp(key)) keyLocker.unlockKey(key);
+            else if (!keyLocker.isKeyLocked(key)) {
+                keyLocker.lockKey(key);
+                selectInventorySlot(i);
+            }
+        }
+        if (Keyboard.isKeyUp(Key.ZERO)) keyLocker.unlockKey(Key.ZERO);
+        else if (!keyLocker.isKeyLocked(Key.ZERO)) {
+            keyLocker.lockKey(Key.ZERO);
+            selectInventorySlot(-1);
+        }
+    }
 
     // Player health
     protected int health;
@@ -74,6 +109,7 @@ public abstract class Player extends GameObject {
     }
 
     public void update() {
+        handleInventoryKeys();
         if (!isLocked) {
             moveAmountX = 0;
             moveAmountY = 0;
@@ -101,6 +137,14 @@ public abstract class Player extends GameObject {
 
         // update player's animation
         super.update();
+        // Selected items also follow when they were outside the camera's update range.
+        if (carriedObject != null) carriedObject.update(this);
+    }
+
+    @Override
+    public void draw(GraphicsHandler graphicsHandler) {
+        super.draw(graphicsHandler);
+        if (carriedObject != null) carriedObject.draw(graphicsHandler);
     }
 
     // based on player's current state, call appropriate player state handling method
@@ -332,7 +376,7 @@ public abstract class Player extends GameObject {
         }
     }
     
-    // A held item gets priority over nearby interaction scripts.
+    // held item gets priority over nearby interaction scripts, so u would use ur item first
     private void interactOrDrop() {
         if (carriedObject != null) {
             dropCarriedObject();
@@ -341,6 +385,7 @@ public abstract class Player extends GameObject {
         }
     }
 
+    // drop object when player is carrying one
     public boolean dropCarriedObject() {
         if (carriedObject == null || isLocked) {
             return false;
@@ -348,12 +393,14 @@ public abstract class Player extends GameObject {
 
         Rectangle playerBounds = getBounds();
         Rectangle itemBounds = carriedObject.getBounds();
-        // Position the item's collision bounds immediately beside the cat.
+        // gets x and y of the drop location based on which way the player is facing, and centers the item on the player's y if dropping left or right
         float boundsX = facingDirection == Direction.LEFT
                 ? playerBounds.getX1() - itemBounds.getWidth()
                 : playerBounds.getX2() + 1;
         float boundsY = playerBounds.getY1()
                 + (playerBounds.getHeight() - itemBounds.getHeight()) / 2f;
+
+        // place item at location with offset to the player
         float dropX = boundsX - (itemBounds.getX1() - carriedObject.getX());
         float dropY = boundsY - (itemBounds.getY1() - carriedObject.getY());
 
@@ -362,23 +409,30 @@ public abstract class Player extends GameObject {
         }
 
         carriedObject.dropAt(dropX, dropY);
+        inventory[selectedInventorySlot] = null;
         carriedObject = null;
         return true;
     }
 
-    //pickup objects interaction
+    // pickup objects interaction
     public boolean pickUpObject(CarriableObject object) {
-    if (carriedObject != null || object == null) {
-        return false;
-    }
+        if (object == null || object.isCarried() || isLocked) return false;
+        int freeSlot = -1;
+        for (int i = 0; i < inventory.length; i++) {
+            if (inventory[i] == null) {
+                freeSlot = i;
+                break;
+            }
+        }
 
-    if (!object.pickUp(this)) {
-        return false;
+        // finds a slot that is empty to put the item into, doesnt pick up if it is full
+        if (freeSlot == -1 || !object.pickUp(this)) return false;
+        inventory[freeSlot] = object;
+        object.setEquipped(false);
+        // filling a previously selected empty slot must not equip it
+        if (selectedInventorySlot == freeSlot) selectedInventorySlot = -1;
+        return true;
     }
-
-    carriedObject = object;
-    return true;
-}
 
     public void decreaseHealth(int amount) {
         this.health -= amount;

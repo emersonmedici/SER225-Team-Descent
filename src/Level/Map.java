@@ -587,7 +587,7 @@ public abstract class Map {
         ArrayList<MapEntity> surroundingMapEntities = getSurroundingMapEntities(player);
         ArrayList<MapEntity> playerTouchingMapEntities = new ArrayList<>();
         for (MapEntity mapEntity : surroundingMapEntities) {
-            if (mapEntity.getInteractScript() != null && mapEntity.intersects(player.getInteractionRange())) {
+            if (!mapEntity.isHidden() && mapEntity.getInteractScript() != null && mapEntity.intersects(player.getInteractionRange())) {
                 playerTouchingMapEntities.add(mapEntity);
             }
         }

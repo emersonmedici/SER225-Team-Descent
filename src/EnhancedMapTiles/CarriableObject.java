@@ -2,6 +2,7 @@ package EnhancedMapTiles;
 
 import Builders.FrameBuilder;
 import Engine.ImageLoader;
+import Engine.GraphicsHandler;
 import GameObject.Frame;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
@@ -33,12 +34,26 @@ public class CarriableObject extends EnhancedMapTile {
         return carrier != null;
     }
 
+    // Inventory items remain owned, but only the selected item is visible.
+    public void setEquipped(boolean equipped) {
+        if (carrier != null) {
+            setIsHidden(!equipped);
+            if (equipped) updateCarriedPosition();
+        }
+    }
+
+    @Override
+    public void drawBottomLayer(GraphicsHandler graphicsHandler) {
+        if (!isCarried() && !isHidden()) super.drawBottomLayer(graphicsHandler);
+    }
+
     public boolean pickUp(Player player) {
         if (player == null || isCarried()) {
             return false;
         }
 
         carrier = player;
+        setIsHidden(false);
         setIsUncollidable(true);
         updateCarriedPosition();
         return true;
@@ -100,6 +115,7 @@ public class CarriableObject extends EnhancedMapTile {
 
         setLocation(x, y);
         carrier = null;
+        setIsHidden(false);
         setIsUncollidable(true);
     }
 
