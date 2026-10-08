@@ -30,7 +30,7 @@ public class DangerEntity extends EnhancedMapTile {
         private float timeToAttack = 2;
         private float timer = timeToAttack * 60;
 
-        private float speed = 10;
+        private float speed = 2.3f;
         private Direction direction;
 
         private boolean hasStarted = false;

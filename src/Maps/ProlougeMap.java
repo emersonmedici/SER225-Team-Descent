@@ -9,6 +9,8 @@ import Scripts.MiniGameScript;
 import Scripts.PickupObjectScript;
 import Scripts.TestMap.*;
 import Tilesets.CommonTileset;
+import Utils.Point;
+
 import java.util.ArrayList;
 
 public class ProlougeMap extends Map {
@@ -61,4 +63,17 @@ public class ProlougeMap extends Map {
 
         return npcs;
     }
+
+
+    //adding a trigger to the facility door to go inside
+    @Override
+    public ArrayList<Trigger> loadTriggers() {
+        ArrayList<Trigger> triggers = new ArrayList<>();
+        //need to fix the coordinates
+        Point triggerPoint = getMapTile(12, 8).getLocation();
+        triggers.add(new Trigger(triggerPoint.x, triggerPoint.y, 150, 25, new FacilityDoorScript()));
+        
+        return triggers;
+    }
+
 }
