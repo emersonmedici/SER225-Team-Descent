@@ -62,6 +62,5 @@ public class Cutscene1Map extends Map {
         
         return triggers;
     }
- 
 }
 
