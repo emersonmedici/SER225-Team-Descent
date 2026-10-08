@@ -5,6 +5,8 @@ import Engine.Key;
 import Engine.KeyLocker;
 import Engine.Keyboard;
 import EnhancedMapTiles.CarriableObject;
+import EnhancedMapTiles.MudObject;
+import Maps.ProlougeMap;
 import GameObject.GameObject;
 import GameObject.Rectangle;
 import GameObject.SpriteSheet;
@@ -172,6 +174,7 @@ public abstract class Player extends GameObject {
         }
     }
 
+    private Player player;
     // player WALKING state logic
     protected void playerWalking() {
         if (!keyLocker.isKeyLocked(INTERACT_KEY) && Keyboard.isKeyDown(INTERACT_KEY)) {
@@ -183,7 +186,15 @@ public abstract class Player extends GameObject {
             walkSpeed = 5f;
         } else {
             walkSpeed = 2.3f;
-        }
+        } 
+        
+        /*boolean mudStatus = Maps.ProlougeMap.mudTile;
+
+        if (mudStatus == true){
+            walkSpeed = 1.0f;
+        } else {
+            walkSpeed = 2.3f;
+        }*/
 
         // if walk left key is pressed, move player to the left
         if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {

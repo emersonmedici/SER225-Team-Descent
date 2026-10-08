@@ -2,6 +2,7 @@ package Maps;
 
 import EnhancedMapTiles.CarriableObject;
 import EnhancedMapTiles.PushableRock;
+import EnhancedMapTiles.MudObject;
 import Level.*;
 import NPCs.Dave;
 import Scripts.MiniGame2Script;
@@ -32,6 +33,9 @@ public class ProlougeMap extends Map {
 
         PushableRock pushableRock = new PushableRock(getMapTile(10, 28).getLocation());
         enhancedMapTiles.add(pushableRock);
+
+        MudObject mudTile = new MudObject(getMapTile(12, 32).getLocation());
+        enhancedMapTiles.add(mudTile);
 
         return enhancedMapTiles;
     }
