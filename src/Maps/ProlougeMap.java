@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class ProlougeMap extends Map {
     public ProlougeMap() {
         super("ProlougeMap.txt", new CommonTileset());
-        this.playerStartPosition = getMapTile(15, 35).getLocation();
+        this.playerStartPosition = getMapTile(15, 37).getLocation();
     }
 
     @Override

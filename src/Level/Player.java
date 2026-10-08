@@ -119,7 +119,7 @@ public abstract class Player extends GameObject {
     protected void playerStanding() {
         if (!keyLocker.isKeyLocked(INTERACT_KEY) && Keyboard.isKeyDown(INTERACT_KEY)) {
             keyLocker.lockKey(INTERACT_KEY);
-            map.entityInteract(this);
+            interactOrDrop();
         }
 
         // if a walk key is pressed, player enters WALKING state
@@ -132,7 +132,7 @@ public abstract class Player extends GameObject {
     protected void playerWalking() {
         if (!keyLocker.isKeyLocked(INTERACT_KEY) && Keyboard.isKeyDown(INTERACT_KEY)) {
             keyLocker.lockKey(INTERACT_KEY);
-            map.entityInteract(this);
+            interactOrDrop();
         }
 
         if (Keyboard.isKeyDown(Key.R) == true) {
@@ -332,6 +332,40 @@ public abstract class Player extends GameObject {
         }
     }
     
+    // A held item gets priority over nearby interaction scripts.
+    private void interactOrDrop() {
+        if (carriedObject != null) {
+            dropCarriedObject();
+        } else {
+            map.entityInteract(this);
+        }
+    }
+
+    public boolean dropCarriedObject() {
+        if (carriedObject == null || isLocked) {
+            return false;
+        }
+
+        Rectangle playerBounds = getBounds();
+        Rectangle itemBounds = carriedObject.getBounds();
+        // Position the item's collision bounds immediately beside the cat.
+        float boundsX = facingDirection == Direction.LEFT
+                ? playerBounds.getX1() - itemBounds.getWidth()
+                : playerBounds.getX2() + 1;
+        float boundsY = playerBounds.getY1()
+                + (playerBounds.getHeight() - itemBounds.getHeight()) / 2f;
+        float dropX = boundsX - (itemBounds.getX1() - carriedObject.getX());
+        float dropY = boundsY - (itemBounds.getY1() - carriedObject.getY());
+
+        if (!carriedObject.canDropAt(dropX, dropY)) {
+            return false;
+        }
+
+        carriedObject.dropAt(dropX, dropY);
+        carriedObject = null;
+        return true;
+    }
+
     //pickup objects interaction
     public boolean pickUpObject(CarriableObject object) {
     if (carriedObject != null || object == null) {
