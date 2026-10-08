@@ -95,7 +95,7 @@ public class PlayLevelScreen extends Screen implements GameListener {
 
     @Override 
     public void onRestart() {
-        resetLevel();
+        onCutscene1Completed();
     }
 
 
