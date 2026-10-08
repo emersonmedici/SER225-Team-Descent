@@ -58,7 +58,7 @@ public class Cutscene1Map extends Map {
         triggers.add(new Trigger(540, 475, 10, 80, new Cutscene1Script1(), "hasEnteredBuilding"));
         triggers.add(new Trigger(650, 475, 10, 80, new Cutscene1Script1(), "hasEnteredBuilding"));
 
-        triggers.add(new Trigger(550, 320, 100, 10, new Cutscene1Script2()));
+        triggers.add(new Trigger(550, 330, 100, 10, new Cutscene1Script2()));
         
         return triggers;
     }
