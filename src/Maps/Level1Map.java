@@ -9,6 +9,8 @@ import Scripts.SimpleTextScript;
 import Scripts.TestMap.*;
 import Tilesets.CommonTileset;
 import Tilesets.SimpleTileSheet;
+import Utils.Point;
+
 import java.util.ArrayList;
 
 // Represents a test map to be used in a level
@@ -68,5 +70,19 @@ public class Level1Map extends Map {
 
     //     getMapTile(2, 6).setInteractScript(new TreeScript());
     // }
+
+
+
+    @Override
+    public ArrayList<Trigger> loadTriggers() {
+        ArrayList<Trigger> triggers = new ArrayList<>();
+        Point triggerPoint = getMapTile(82, 97).getLocation();
+        triggers.add(new Trigger(triggerPoint.x, triggerPoint.y, 100, 100, new Level1Script1(), "hasLanded"));
+        triggerPoint = getMapTile(88, 34).getLocation();
+        triggers.add(new Trigger(triggerPoint.x, triggerPoint.y, 530, 150, new Level1Script2(), "newFlagTest"));
+        return triggers;
+    }
+
+
 }
 
