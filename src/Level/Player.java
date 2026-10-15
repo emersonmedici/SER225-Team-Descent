@@ -66,6 +66,7 @@ public abstract class Player extends GameObject {
     }; // number keys 1-9 on keyboard to select inventory slots. the 0 key for holding nothing.
 
     public int getSelectedInventorySlot() { return selectedInventorySlot; }
+    public CarriableObject getCarriedObject() { return carriedObject; }
     public int getInventorySize() { return inventory.length; }
     public CarriableObject getInventoryItem(int slot) { return inventory[slot]; }
 
