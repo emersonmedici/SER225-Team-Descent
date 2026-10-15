@@ -66,6 +66,7 @@ public abstract class Player extends GameObject {
     }; // number keys 1-9 on keyboard to select inventory slots. the 0 key for holding nothing.
 
     public int getSelectedInventorySlot() { return selectedInventorySlot; }
+    public CarriableObject getCarriedObject() { return carriedObject; }
     public int getInventorySize() { return inventory.length; }
     public CarriableObject getInventoryItem(int slot) { return inventory[slot]; }
 
@@ -78,6 +79,7 @@ public abstract class Player extends GameObject {
         if (carriedObject != null) carriedObject.setEquipped(true);
     }
 
+    //looks through all the inventory keys and selects what was pressed
     private void handleInventoryKeys() {
         for (int i = 0; i < INVENTORY_KEYS.length; i++) {
             Key key = INVENTORY_KEYS[i];
@@ -87,6 +89,7 @@ public abstract class Player extends GameObject {
                 selectInventorySlot(i);
             }
         }
+        //when key is let go, unlocks it
         if (Keyboard.isKeyUp(Key.ZERO)) keyLocker.unlockKey(Key.ZERO);
         else if (!keyLocker.isKeyLocked(Key.ZERO)) {
             keyLocker.lockKey(Key.ZERO);
@@ -96,6 +99,7 @@ public abstract class Player extends GameObject {
 
     // Player health
     protected int health;
+    protected int maxHealth;
 
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName, int health) {
         super(spriteSheet, x, y, startingAnimationName);
@@ -104,6 +108,7 @@ public abstract class Player extends GameObject {
         previousPlayerState = playerState;
         this.affectedByTriggers = true;
         this.health = health;
+        this.maxHealth = health;
 
         flashlight.setSteps(24);
         flashlightGlow.setIntensity(0.6f);
@@ -455,6 +460,11 @@ public abstract class Player extends GameObject {
 
     public int getHealth() {
         return this.health;
+    }
+
+    public int getMaxHealth() 
+    {
+        return this.maxHealth;
     }
 
     // Uncomment this to have game draw player's bounds to make it easier to visualize
