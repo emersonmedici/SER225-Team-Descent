@@ -96,6 +96,7 @@ public abstract class Player extends GameObject {
 
     // Player health
     protected int health;
+    protected int maxHealth;
 
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName, int health) {
         super(spriteSheet, x, y, startingAnimationName);
@@ -104,6 +105,7 @@ public abstract class Player extends GameObject {
         previousPlayerState = playerState;
         this.affectedByTriggers = true;
         this.health = health;
+        this.maxHealth = health;
 
         flashlight.setSteps(24);
         flashlightGlow.setIntensity(0.6f);
@@ -455,6 +457,11 @@ public abstract class Player extends GameObject {
 
     public int getHealth() {
         return this.health;
+    }
+
+    public int getMaxHealth() 
+    {
+        return this.maxHealth;
     }
 
     // Uncomment this to have game draw player's bounds to make it easier to visualize

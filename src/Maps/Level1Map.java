@@ -29,6 +29,7 @@ public class Level1Map extends Map {
     public Level1Map() {
         super("Level1Map.txt", new SimpleTileSheet());
         this.playerStartPosition = getMapTile(82, 97).getLocation();
+        this.showHealthUI = true;
        // this.screen = null;
     }
 

@@ -1,9 +1,14 @@
 package Level;
 
+import Engine.GraphicsHandler;
+import Level.Player;
+import java.awt.Color;
+
 import Lighting.Light;
 import Lighting.LightingRenderer;
 import Lighting.PointLight;
 import Lighting.SpotLight;
+import Screens.HealthUI;
 
 import java.awt.Color;
 
@@ -91,6 +96,12 @@ public abstract class Map {
     //Creates nodes for pathfinding
     protected NodeBase[][] nodes;
     // lighting: ambientDarkness 0 = lighting off (title screen, maps without lights)
+    // only maps that set this to true show the health hearts
+    protected boolean showHealthUI = false;
+    protected HealthUI healthUI = new HealthUI();
+
+    public boolean isShowHealthUI() { return showHealthUI; }
+    public void setShowHealthUI(boolean showHealthUI) { this.showHealthUI = showHealthUI; }
     protected ArrayList<Light> lights = new ArrayList<>();
     protected float ambientDarkness = 0f;
     protected Color ambientColor = new Color(10, 10, 26);
@@ -729,6 +740,7 @@ public abstract class Map {
     }
 
     public void draw(Player player, GraphicsHandler graphicsHandler) {
+        
     camera.draw(player, graphicsHandler);
 
     // darkness goes over the world but under the textbox
@@ -742,6 +754,11 @@ public abstract class Map {
         lightingRenderer.render(graphicsHandler, frameLights, ambientDarkness, ambientColor,
                 camX, camY, ScreenManager.getScreenWidth(), ScreenManager.getScreenHeight(),
                 camX, camY);
+    }
+
+        // hearts go over the darkness so they're always readable, but under the textbox
+    if (showHealthUI) {
+        healthUI.draw(graphicsHandler, player);
     }
 
     if (textbox.isActive()) {
