@@ -89,7 +89,9 @@ public abstract class Map {
     protected ArrayList<GameListener> listeners = new ArrayList<>();
 
     //Creates nodes for pathfinding
-    protected NodeBase[][] nodes;
+    protected NodeBase[][] largeEntityNodes;
+    protected NodeBase[][] ventEntityNodes;
+
     // lighting: ambientDarkness 0 = lighting off (title screen, maps without lights)
     protected ArrayList<Light> lights = new ArrayList<>();
     protected float ambientDarkness = 0f;
@@ -279,10 +281,9 @@ public abstract class Map {
         this.mapTiles = new MapTile[this.height * this.width];
         fileInput.nextLine();
 
-        nodes = new NodeBase[this.width][this.height];
-        System.out.println(
-            "Node dimensions: " + nodes.length + " x " + nodes[0].length
-        );
+        largeEntityNodes = new NodeBase[this.width][this.height];
+        ventEntityNodes = new NodeBase[this.width][this.height];
+
         // read in each tile index from the map file, use the defined tileset to get the associated MapTile to that tileset, and place it in the array
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -294,13 +295,24 @@ public abstract class Map {
                 int yLocation = i * tileset.getScaledSpriteHeight();
                 MapTile tile = tileset.getTile(tileIndex).build(xLocation, yLocation, rotation);
                 TileType type = tile.getTileType();
-                boolean walkable;
+                boolean largeEntityWalk;
                 if(type == TileType.NOT_PASSABLE || type == TileType.VENT) {
-                    walkable = false;
+                    largeEntityWalk = false;
                 } else {
-                    walkable = true;
+                    largeEntityWalk = true;
                 }
-                nodes[j][i] = new NodeBase(j, i, walkable);
+                largeEntityNodes[j][i] = new NodeBase(j, i, largeEntityWalk);
+
+                boolean ventEntityWalk;
+                if(type == TileType.NOT_PASSABLE || type == TileType.PASSABLE) {
+                    ventEntityWalk = false;
+                }
+                else{
+                    ventEntityWalk = true;
+                }
+                ventEntityNodes[j][i] = new NodeBase(j, i, ventEntityWalk);
+
+                
                 
                 tile.setMap(this);
                 setMapTile(j, i, tile);
@@ -776,7 +788,11 @@ public abstract class Map {
         return listeners;
     }
 
-    public NodeBase[][] getNodes() {
-        return nodes;
+    public NodeBase[][] getLargeEntityNodes() {
+        return largeEntityNodes;
+    }
+
+    public NodeBase[][] getVentEntityNodes() {
+        return ventEntityNodes;
     }
 }

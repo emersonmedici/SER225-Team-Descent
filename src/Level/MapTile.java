@@ -43,6 +43,13 @@ public class MapTile extends MapEntity {
         this.tileType = tileType;
     }
 
+    public MapTile(float x, float y, SpriteSheet spriteSheet, String startingAnimation, TileType tileType) {
+        super(x, y, spriteSheet, startingAnimation);
+        this.bottomLayer = loadBottomLayer(spriteSheet);
+        this.topLayer = loadTopLayer(spriteSheet);
+        this.tileType = tileType;
+    }
+
     protected GameObject loadBottomLayer(SpriteSheet spriteSheet) {
         return null;
     }
