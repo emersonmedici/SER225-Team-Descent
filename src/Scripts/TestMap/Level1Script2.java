@@ -1,79 +1,59 @@
 package Scripts.TestMap;
 
 import java.util.ArrayList;
-
-import Level.FlagManager;
+import EnhancedMapTiles.Keycard1;
 import Level.GameListener;
 import Level.Script;
 import Level.ScriptState;
 import ScriptActions.*;
 
-
-
-// trigger script at beginning of game to set that heavy emotional plot
-// checkout the documentation website for a detailed guide on how this script works
+// The Level 1 exit requires the keycard to be selected above the cat.
 public class Level1Script2 extends Script {
-    //protected FlagManager fM;
-    //protected Map m;
-
-    /*public Level1Script2(FlagManager flagManager) {
-        fM = flagManager;
-    }*/
-
-    /*public Level1Script2(Map map) {
-        m = map;
-    }*/
+    private boolean hintShown;
 
     @Override
     public ArrayList<ScriptAction> loadScriptActions() {
-        ArrayList<ScriptAction> scriptActions = new ArrayList<>();
-
-        //if(fM.isFlagSet("hasLanded")) {
-        scriptActions.add(new ScriptAction() {
+        ArrayList<ScriptAction> actions = new ArrayList<>();
+        ConditionalScriptAction exit = new ConditionalScriptAction();
+        ConditionalScriptActionGroup unlocked = new ConditionalScriptActionGroup();
+        unlocked.addRequirement(new CustomRequirement() {
+            @Override
+            public boolean isRequirementMet() {
+                return player.getCarriedObject() instanceof Keycard1;
+            }
+        });
+        unlocked.addScriptAction(new ScriptAction() {
             @Override
             public ScriptState execute() {
-                for (GameListener listener: listeners) {
-                  
-                        listener.onLevel1Completed();
-                    
+                for (GameListener listener : listeners) {
+                    listener.onLevel1Completed();
                 }
                 return ScriptState.COMPLETED;
             }
         });
-        //}
+        exit.addConditionalScriptActionGroup(unlocked);
 
-        /*scriptActions.add(new ConditionalScriptAction() {{
-            addConditionalScriptActionGroup(new ConditionalScriptActionGroup() {{
-                addRequirement(new CustomRequirement() {
-                    @Override
-                    public boolean isRequirementMet() {
-                        int answer = outputManager.getFlagData("TEXTBOX_OPTION_SELECTION");
-                        return answer == 0;
-                        //return fM.isFlagSet("hasLanded");
-                    }
-                });
-
-                addScriptAction(new TextboxScriptAction() {{
-                    addText("Hurry...");
-                    //addText("I'm going to let you in on a little secret...\nYou can push some rocks out of the way.");
-                }});
-            }});
-
-            addConditionalScriptActionGroup(new ConditionalScriptActionGroup() {{
-                addRequirement(new CustomRequirement() {
-                    @Override
-                    public boolean isRequirementMet() {
-                        int answer = outputManager.getFlagData("TEXTBOX_OPTION_SELECTION");
-                        return answer == 1;
-                        return !(fM.isFlagSet("hasLanded"));
-                    }
-                });
-                
-                addScriptAction(new TextboxScriptAction("Tyson, do something!!"));
-            }});
-        }});
-
-        */
-        return scriptActions;
+        ConditionalScriptActionGroup locked = new ConditionalScriptActionGroup();
+        locked.addRequirement(new CustomRequirement() {
+            @Override
+            public boolean isRequirementMet() {
+                return !hintShown;
+            }
+        });
+        locked.addScriptAction(new LockPlayerScriptAction());
+        locked.addScriptAction(new TextboxScriptAction(
+                "This exit needs a keycard.\nSelect it with its number key, then approach the exit."));
+        locked.addScriptAction(new ScriptAction() {
+            @Override
+            public ScriptState execute() {
+                // Avoid reopening dialogue every frame while touching the exit.
+                hintShown = true;
+                return ScriptState.COMPLETED;
+            }
+        });
+        locked.addScriptAction(new UnlockPlayerScriptAction());
+        exit.addConditionalScriptActionGroup(locked);
+        actions.add(exit);
+        return actions;
     }
 }

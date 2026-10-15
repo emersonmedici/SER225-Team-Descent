@@ -20,10 +20,14 @@ public class CarriableObject extends EnhancedMapTile {
     private Player carrier;
 
     public CarriableObject(Point location) {
+        this(location, new SpriteSheet(ImageLoader.load("Rock.png"), 16, 16));
+    }
+
+    protected CarriableObject(Point location, SpriteSheet spriteSheet) {
         super(
             location.x,
             location.y,
-            new SpriteSheet(ImageLoader.load("Rock.png"), 16, 16),
+            spriteSheet,
             TileType.PASSABLE
         );
         // player can walk over the object
