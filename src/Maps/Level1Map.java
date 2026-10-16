@@ -4,6 +4,14 @@ import EnhancedMapTiles.DangerEntity;
 import EnhancedMapTiles.Keycard1;
 import EnhancedMapTiles.PushableRock;
 import Level.*;
+import NPCs.Bug;
+import NPCs.Dave;
+import NPCs.Dinosaur;
+import NPCs.Walrus;
+import EnhancedMapTiles.DangerEntity;
+import Scripts.MiniGame2Script;
+import Scripts.MiniGameScript;
+import Scripts.SimpleTextScript;
 import EnhancedMapTiles.DangerEntity;
 import EnhancedMapTiles.VentEntity;
 
@@ -59,6 +67,36 @@ public class Level1Map extends Map {
     public ArrayList<NPC> loadNPCs() {
         ArrayList<NPC> npcs = new ArrayList<>();
 
+        // Walrus walrus = new Walrus(1, getMapTile(4, 28).getLocation().subtractY(40));
+        // walrus.setInteractScript(new WalrusScript());
+        // npcs.add(walrus);
+
+        // Dinosaur dinosaur = new Dinosaur(2, getMapTile(82, 94).getLocation());
+        // dinosaur.setExistenceFlag("hasTalkedToDinosaur");
+        // dinosaur.setInteractScript(new DinoScript());
+        // npcs.add(dinosaur);
+        
+        // Bug bug = new Bug(3, getMapTile(7, 12).getLocation().subtractX(20));
+        // bug.setInteractScript(new BugScript());
+        // npcs.add(bug);
+
+        Dave dave2 = new Dave(
+                4,
+                getMapTile(86, 98).getLocation().subtractX(20)
+        );
+        dave2.setInteractScript(new MiniGameScript());
+        npcs.add(dave2);
+
+        Dave dave3 = new Dave(
+                4,
+                getMapTile(88, 98).getLocation().subtractX(20)
+        );
+        dave3.setInteractScript(new MiniGame2Script());
+        npcs.add(dave3);
+
+        //DangerEntity enemy = new DangerEntity(1, getMapTile(82, 94).getLocation());
+        //enemy.setInteractScript(new DangerEntityScript());
+        //npcs.add(enemy);
 
         return npcs;
     }
