@@ -6,7 +6,6 @@ import Engine.KeyLocker;
 import Engine.Keyboard;
 import EnhancedMapTiles.CarriableObject;
 import EnhancedMapTiles.MudObject;
-import Maps.ProlougeMap;
 import GameObject.GameObject;
 import GameObject.Rectangle;
 import GameObject.SpriteSheet;
@@ -15,6 +14,7 @@ import Lighting.PointLight;
 import Lighting.SpotLight;
 import Utils.Direction;
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Player extends GameObject {
     // values that affect player movement
@@ -179,7 +179,7 @@ public abstract class Player extends GameObject {
         }
     }
 
-    private Player player;
+   // private Player player;
     // player WALKING state logic
     protected void playerWalking() {
         if (!keyLocker.isKeyLocked(INTERACT_KEY) && Keyboard.isKeyDown(INTERACT_KEY)) {
@@ -187,19 +187,34 @@ public abstract class Player extends GameObject {
             interactOrDrop();
         }
 
-        if (Keyboard.isKeyDown(Key.SHIFT) == true) {
-            walkSpeed = 5f;
-        } else {
-            walkSpeed = 2.3f;
-        } 
-        
-        /*boolean mudStatus = Maps.ProlougeMap.mudTile;
+        ArrayList<EnhancedMapTile> allEnhancedMapTiles = new ArrayList<>(map.enhancedMapTiles);
+        ArrayList<EnhancedMapTile> sortedMudTiles = new ArrayList<>();
+        int k = 0;
+        boolean touching = false;
 
-        if (mudStatus == true){
+        for (int i = 0; i<allEnhancedMapTiles.size(); i++) {
+            if (allEnhancedMapTiles.get(i) instanceof MudObject) {
+                sortedMudTiles.add(allEnhancedMapTiles.get(i));
+            } else {
+                k++;
+            }
+        }
+
+        for (int j = 0; j<sortedMudTiles.size(); j++) {
+            if (touching(sortedMudTiles.get(j)) == true){
+                touching = true;
+            } else {
+                k++;
+            }
+        }
+        
+        if (Keyboard.isKeyDown(Key.SHIFT) == true && touching == false) {
+            walkSpeed = 5f;
+        } else if (Keyboard.isKeyDown(Key.SHIFT) == false && touching == true) {
             walkSpeed = 1.0f;
         } else {
             walkSpeed = 2.3f;
-        }*/
+        }
 
         // if walk left key is pressed, move player to the left
         if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
