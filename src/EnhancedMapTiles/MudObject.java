@@ -5,15 +5,14 @@ import Engine.ImageLoader;
 import GameObject.Frame;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
-import Maps.ProlougeMap;
+//import Maps.ProlougeMap;
 import Level.EnhancedMapTile;
-import Level.Player;
-import Level.PlayerState;
+//import Level.Player;
+//import Level.PlayerState;
 import Level.TileType;
 import Utils.Point;
 
 public class MudObject extends EnhancedMapTile {
-   // private Player player;
 
     public MudObject(Point location) {
         super(
@@ -22,8 +21,6 @@ public class MudObject extends EnhancedMapTile {
             new SpriteSheet(ImageLoader.load("Mud.png"), 16, 16),
             TileType.PASSABLE
         );
-        // Passable pickups can overlap the player when interacted with.
-        //setIsUncollidable(true);
     }
 
     @Override

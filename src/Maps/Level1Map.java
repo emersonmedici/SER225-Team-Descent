@@ -1,5 +1,7 @@
 package Maps;
 
+import EnhancedMapTiles.DangerEntity;
+import EnhancedMapTiles.Keycard1;
 import EnhancedMapTiles.PushableRock;
 import Level.*;
 import NPCs.Bug;
@@ -11,12 +13,9 @@ import Scripts.MiniGame2Script;
 import Scripts.MiniGameScript;
 import Scripts.SimpleTextScript;
 import Scripts.TestMap.*;
-import Tilesets.CommonTileset;
 import Tilesets.SimpleTileSheet;
 import Utils.Point;
-
 import java.util.ArrayList;
-import Screens.PlayLevelScreen;
 
 // Represents a test map to be used in a level
 public class Level1Map extends Map {
@@ -32,12 +31,16 @@ public class Level1Map extends Map {
     public Level1Map() {
         super("Level1Map.txt", new SimpleTileSheet());
         this.playerStartPosition = getMapTile(82, 97).getLocation();
+        this.showHealthUI = true;
        // this.screen = null;
     }
 
     @Override
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
         ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
+
+        // keycard is at the beginning of level for now, move to where puzzle is afterwards
+        enhancedMapTiles.add(new Keycard1(getMapTile(84, 95).getLocation()));
 
         PushableRock pushableRock = new PushableRock(getMapTile(2, 7).getLocation());
         enhancedMapTiles.add(pushableRock);

@@ -22,4 +22,6 @@ public class Config {
 
     // prevents Config from being instantiated
     private Config() { }
+
+    //GIT TEST
 }
