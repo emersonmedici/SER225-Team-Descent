@@ -131,7 +131,7 @@ public class GameObject extends AnimatedSprite {
 		boolean hasCollided = false;
 		GameObject entityCollidedWith = null;
 		for (int i = 0; i < amountToMove; i++) {
-			moveX(direction.getVelocity());
+			moveX(direction.getVelocityX());
 			MapCollisionCheckResult collisionCheckResult = MapCollisionHandler.getAdjustedPositionAfterCollisionCheckX(this, map, direction);
 			if (collisionCheckResult.getAdjustedLocation() != null) {
 				hasCollided = true;
@@ -150,7 +150,7 @@ public class GameObject extends AnimatedSprite {
 		// if a collision occurs from this move, the player is moved back to right in front of the "solid" map tile's position
 		// if a collision occurs with a trigger and entity is affected by triggers, the trigger is activated
 		if (!hasCollided) {
-			moveX(moveAmountXRemainder * direction.getVelocity());
+			moveX(moveAmountXRemainder * direction.getVelocityX());
 			MapCollisionCheckResult collisionCheckResult = MapCollisionHandler.getAdjustedPositionAfterCollisionCheckX(this, map, direction);
 			if (collisionCheckResult.getAdjustedLocation() != null) {
 				hasCollided = true;
@@ -178,7 +178,7 @@ public class GameObject extends AnimatedSprite {
 		}
 
 		// returns the amount actually moved
-		return amountMoved * direction.getVelocity();
+		return amountMoved * direction.getVelocityX();
 	}
 
 	// performs collision check logic for moving along the y axis against the map's tiles
@@ -199,7 +199,7 @@ public class GameObject extends AnimatedSprite {
 		boolean hasCollided = false;
 		GameObject entityCollidedWith = null;
 		for (int i = 0; i < amountToMove; i++) {
-			moveY(direction.getVelocity());
+			moveY(direction.getVelocityY());
 			MapCollisionCheckResult collisionCheckResult = MapCollisionHandler.getAdjustedPositionAfterCollisionCheckY(this, map, direction);
 			if (collisionCheckResult.getAdjustedLocation() != null) {
 				hasCollided = true;
@@ -218,7 +218,7 @@ public class GameObject extends AnimatedSprite {
 		// if a collision occurs from this move, the player is moved back to right in front of the "solid" map tile's position
 		// if a collision occurs with a trigger and entity is affected by triggers, the trigger is activated
 		if (!hasCollided) {
-			moveY(moveAmountYRemainder * direction.getVelocity());
+			moveY(moveAmountYRemainder * direction.getVelocityY());
 			MapCollisionCheckResult collisionCheckResult = MapCollisionHandler.getAdjustedPositionAfterCollisionCheckY(this, map, direction);
 			if (collisionCheckResult.getAdjustedLocation() != null) {
 				hasCollided = true;
@@ -246,7 +246,7 @@ public class GameObject extends AnimatedSprite {
 		}
 
 		// returns the amount actually moved
-		return amountMoved * direction.getVelocity();
+		return amountMoved * direction.getVelocityY();
 	}
 
 	// game object subclass can override this method to listen for x axis collision events and react accordingly after calling "moveXHandleCollision"

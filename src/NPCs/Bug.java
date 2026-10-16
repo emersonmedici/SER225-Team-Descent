@@ -27,7 +27,7 @@ public class Bug extends NPC {
     public void performAction(Player player) {
         // if bug has not yet moved 90 pixels in one direction, move bug forward
         if (totalAmountMoved < 90) {
-            float amountMoved = moveXHandleCollision(speed * direction.getVelocity());
+            float amountMoved = moveXHandleCollision(speed * direction.getVelocityX());
             totalAmountMoved += Math.abs(amountMoved);
         }
 

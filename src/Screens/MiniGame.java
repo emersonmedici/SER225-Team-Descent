@@ -12,12 +12,11 @@ public class MiniGame {
 	private JButton button1, button2, button3, button4, button5, button6;
     
     public MiniGame(String frameTitle, int frameWidth, int frameHeight) {
-
     	frame = new JFrame(frameTitle);
 		frame.setSize(frameWidth, frameHeight);
-        
         frame.setLayout(new GridBagLayout());
-		
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
 		mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
         mainPanel.setOpaque(true);
@@ -146,17 +145,11 @@ public class MiniGame {
         clickCountPanel5.setMaximumSize(new Dimension(60, 40));
         clickCountPanel5.add(orangeLabel);
 
-
 		keyPanel.add(clickCountPanel6);
-		//keyPanel.add(Box.createRigidArea(new Dimension(5, 0))); 
 		keyPanel.add(clickCountPanel);
-		//keyPanel.add(Box.createRigidArea(new Dimension(5, 0))); 
 		keyPanel.add(clickCountPanel2);
-		//keyPanel.add(Box.createRigidArea(new Dimension(5, 0))); 
 		keyPanel.add(clickCountPanel3);
-		//keyPanel.add(Box.createRigidArea(new Dimension(5, 0))); 
 		keyPanel.add(clickCountPanel4);
-		//keyPanel.add(Box.createRigidArea(new Dimension(5, 0))); 
 		keyPanel.add(clickCountPanel5);
 	
 		mainPanel.add(button1);
@@ -165,7 +158,6 @@ public class MiniGame {
 		mainPanel.add(button4);
 		mainPanel.add(button5);
 		submitPanel.add(button6);
-     //   mainPanel.add(Box.createRigidArea(new Dimension(0, 20))); 
    	
 		frame.add(mainPanel, l);
 		frame.add(keyPanel, k);
@@ -219,7 +211,6 @@ public class MiniGame {
 				correct++;
 			} 
 			
-			
 			if (correct == 5) {
 				isCorrect = true;
 			} else {
@@ -255,7 +246,6 @@ public class MiniGame {
 			}
 
 	}
-
 
     private void changeBackgroundColor(JButton button) {
 		Color[] colorChoices = {Color.MAGENTA, Color.GREEN, Color.ORANGE, Color.YELLOW, Color.BLUE};

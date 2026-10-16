@@ -86,6 +86,8 @@ public abstract class Map {
     // other external classes can use this to listen for events
     protected ArrayList<GameListener> listeners = new ArrayList<>();
 
+    //Creates nodes for pathfinding
+    protected NodeBase[][] nodes;
     // lighting: ambientDarkness 0 = lighting off (title screen, maps without lights)
     protected ArrayList<Light> lights = new ArrayList<>();
     protected float ambientDarkness = 0f;
@@ -97,6 +99,7 @@ public abstract class Map {
     public void setAmbientDarkness(float ambientDarkness) { this.ambientDarkness = ambientDarkness; }
     public Color getAmbientColor() { return ambientColor; }
     public void setAmbientColor(Color ambientColor) { this.ambientColor = ambientColor; }
+    
 
     public Map(String mapFileName, Tileset tileset) {
         this.mapFileName = mapFileName;
@@ -268,10 +271,16 @@ public abstract class Map {
         this.width = fileInput.nextInt();
         this.height = fileInput.nextInt();
 
+
+
         // define array size for map tiles, which is width * height (this is a standard array, NOT a 2D array)
         this.mapTiles = new MapTile[this.height * this.width];
         fileInput.nextLine();
 
+        nodes = new NodeBase[this.width][this.height];
+        System.out.println(
+            "Node dimensions: " + nodes.length + " x " + nodes[0].length
+        );
         // read in each tile index from the map file, use the defined tileset to get the associated MapTile to that tileset, and place it in the array
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -282,6 +291,15 @@ public abstract class Map {
                 int xLocation = j * tileset.getScaledSpriteWidth();
                 int yLocation = i * tileset.getScaledSpriteHeight();
                 MapTile tile = tileset.getTile(tileIndex).build(xLocation, yLocation, rotation);
+                TileType type = tile.getTileType();
+                boolean walkable;
+                if(type == TileType.NOT_PASSABLE || type == TileType.VENT) {
+                    walkable = false;
+                } else {
+                    walkable = true;
+                }
+                nodes[j][i] = new NodeBase(j, i, walkable);
+                
                 tile.setMap(this);
                 setMapTile(j, i, tile);
 
@@ -567,7 +585,7 @@ public abstract class Map {
         ArrayList<MapEntity> surroundingMapEntities = getSurroundingMapEntities(player);
         ArrayList<MapEntity> playerTouchingMapEntities = new ArrayList<>();
         for (MapEntity mapEntity : surroundingMapEntities) {
-            if (mapEntity.getInteractScript() != null && mapEntity.intersects(player.getInteractionRange())) {
+            if (!mapEntity.isHidden() && mapEntity.getInteractScript() != null && mapEntity.intersects(player.getInteractionRange())) {
                 playerTouchingMapEntities.add(mapEntity);
             }
         }
@@ -754,5 +772,9 @@ public abstract class Map {
 
     public ArrayList<GameListener> getListeners() {
         return listeners;
+    }
+
+    public NodeBase[][] getNodes() {
+        return nodes;
     }
 }

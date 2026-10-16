@@ -3,21 +3,36 @@ package Maps;
 import EnhancedMapTiles.PushableRock;
 import Level.*;
 import NPCs.Bug;
+import NPCs.Dave;
 import NPCs.Dinosaur;
 import NPCs.Walrus;
 import EnhancedMapTiles.DangerEntity;
+import Scripts.MiniGame2Script;
+import Scripts.MiniGameScript;
 import Scripts.SimpleTextScript;
 import Scripts.TestMap.*;
 import Tilesets.CommonTileset;
 import Tilesets.SimpleTileSheet;
+import Utils.Point;
+
 import java.util.ArrayList;
+import Screens.PlayLevelScreen;
 
 // Represents a test map to be used in a level
 public class Level1Map extends Map {
 
+    //private PlayLevelScreen screen;
+
+    // public Level1Map(PlayLevelScreen screen) {
+    //     super("Level1Map.txt", new SimpleTileSheet());
+    //     this.playerStartPosition = getMapTile(82, 97).getLocation();
+    //     this.screen = screen;
+    // }
+
     public Level1Map() {
         super("Level1Map.txt", new SimpleTileSheet());
         this.playerStartPosition = getMapTile(82, 97).getLocation();
+       // this.screen = null;
     }
 
     @Override
@@ -30,7 +45,8 @@ public class Level1Map extends Map {
         // PushableRock pushableRock = new PushableRock(getMapTile(2, 7).getLocation());
         // enhancedMapTiles.add(pushableRock);
 
-        DangerEntity enemy = new DangerEntity(getMapTile(82, 94).getLocation());
+        DangerEntity enemy = new DangerEntity(getMapTile(93, 38).getLocation());
+        enemy.setIsUpdateOffScreen(true);
         enhancedMapTiles.add(enemy);
 
         return enhancedMapTiles;
@@ -53,12 +69,30 @@ public class Level1Map extends Map {
         // bug.setInteractScript(new BugScript());
         // npcs.add(bug);
 
+        Dave dave2 = new Dave(
+                4,
+                getMapTile(86, 98).getLocation().subtractX(20)
+        );
+        dave2.setInteractScript(new MiniGameScript());
+        npcs.add(dave2);
+
+        Dave dave3 = new Dave(
+                4,
+                getMapTile(88, 98).getLocation().subtractX(20)
+        );
+        dave3.setInteractScript(new MiniGame2Script());
+        npcs.add(dave3);
+
         //DangerEntity enemy = new DangerEntity(1, getMapTile(82, 94).getLocation());
         //enemy.setInteractScript(new DangerEntityScript());
         //npcs.add(enemy);
 
         return npcs;
     }
+
+    // public PlayLevelScreen getScreen() {
+    //     return this.screen;
+    // }
 
     // @Override
     // public ArrayList<Trigger> loadTriggers() {
@@ -79,5 +113,19 @@ public class Level1Map extends Map {
 
     //     getMapTile(2, 6).setInteractScript(new TreeScript());
     // }
+
+
+
+    @Override
+    public ArrayList<Trigger> loadTriggers() {
+        ArrayList<Trigger> triggers = new ArrayList<>();
+        Point triggerPoint = getMapTile(82, 97).getLocation();
+        triggers.add(new Trigger(triggerPoint.x, triggerPoint.y, 100, 100, new Level1Script1(), "hasLanded"));
+        triggerPoint = getMapTile(88, 34).getLocation();
+        triggers.add(new Trigger(triggerPoint.x, triggerPoint.y, 530, 150, new Level1Script2(), "newFlagTest"));
+        return triggers;
+    }
+
+
 }
 
