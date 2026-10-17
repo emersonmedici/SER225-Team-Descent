@@ -13,6 +13,8 @@ import Lighting.Light;
 import Lighting.PointLight;
 import Lighting.SpotLight;
 import Utils.Direction;
+import Utils.Point;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -480,6 +482,26 @@ public abstract class Player extends GameObject {
     public int getMaxHealth() 
     {
         return this.maxHealth;
+    }
+
+    public boolean isPlayerInVent() {
+        float playerCenterX =
+                getX() + getWidth() / 2.0f;
+
+        float playerCenterY =
+                getY() + getHeight() / 2.0f;
+
+        Point playerPos = map.getTileIndexByPosition(playerCenterX, playerCenterY);
+
+        MapTile tile = map.getMapTile((int)playerPos.x, (int)playerPos.y);
+
+        if(tile.tileType == TileType.VENT) {
+            return true;
+        }
+        else {
+            return false;
+        }
+        
     }
 
     // Uncomment this to have game draw player's bounds to make it easier to visualize
