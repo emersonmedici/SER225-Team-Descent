@@ -5,6 +5,7 @@ import Builders.MapTileBuilder;
 import Engine.ImageLoader;
 import GameObject.Frame;
 import GameObject.ImageEffect;
+import Level.Surface;
 import Level.TileType;
 import Level.Tileset;
 
@@ -26,7 +27,8 @@ public class CommonTileset extends Tileset {
                 .withScale(tileScale)
                 .build();
 
-        MapTileBuilder grassTile = new MapTileBuilder(grassFrame);
+        MapTileBuilder grassTile = new MapTileBuilder(grassFrame)
+                .withSurface(Surface.GRASS);
 
         mapTiles.add(grassTile);
 
@@ -46,7 +48,8 @@ public class CommonTileset extends Tileset {
                 .withScale(tileScale)
                 .build();
 
-        MapTileBuilder sandTile = new MapTileBuilder(sandFrame);
+        MapTileBuilder sandTile = new MapTileBuilder(sandFrame)
+                .withSurface(Surface.DIRT);
 
         mapTiles.add(sandTile);
 
@@ -66,6 +69,7 @@ public class CommonTileset extends Tileset {
                 .build();
 
         MapTileBuilder treeTrunkWithFullHoleTile = new MapTileBuilder(grassFrame)
+                .withSurface(Surface.GRASS)
                 .withTopLayer(treeTrunkWithFullHoleFrame)
                 .withTileType(TileType.PASSABLE);
 
@@ -78,6 +82,7 @@ public class CommonTileset extends Tileset {
                 .build();
 
         MapTileBuilder leftEndBranchTile = new MapTileBuilder(grassFrame)
+                .withSurface(Surface.GRASS)
                 .withTopLayer(leftEndBranchFrame)
                 .withTileType(TileType.PASSABLE);
 
@@ -91,6 +96,7 @@ public class CommonTileset extends Tileset {
                 .build();
 
         MapTileBuilder rightEndBranchTile = new MapTileBuilder(grassFrame)
+                .withSurface(Surface.GRASS)
                 .withTopLayer(rightEndBranchFrame)
                 .withTileType(TileType.PASSABLE);
 
@@ -102,6 +108,7 @@ public class CommonTileset extends Tileset {
                 .build();
 
         MapTileBuilder treeTrunkTile = new MapTileBuilder(grassFrame)
+                .withSurface(Surface.GRASS)
                 .withTopLayer(treeTrunkFrame)
                 .withTileType(TileType.PASSABLE);
 
@@ -113,6 +120,7 @@ public class CommonTileset extends Tileset {
                 .build();
 
         MapTileBuilder treeTopLeavesTile = new MapTileBuilder(grassFrame)
+                .withSurface(Surface.GRASS)
                 .withTopLayer(treeTopLeavesFrame)
                 .withTileType(TileType.PASSABLE);
 
@@ -134,7 +142,8 @@ public class CommonTileset extends Tileset {
                         .build()
         };
 
-        MapTileBuilder yellowFlowerTile = new MapTileBuilder(yellowFlowerFrames);
+        MapTileBuilder yellowFlowerTile = new MapTileBuilder(yellowFlowerFrames)
+                .withSurface(Surface.GRASS);
 
         mapTiles.add(yellowFlowerTile);
 
@@ -154,7 +163,8 @@ public class CommonTileset extends Tileset {
                         .build()
         };
 
-        MapTileBuilder purpleFlowerTile = new MapTileBuilder(purpleFlowerFrames);
+        MapTileBuilder purpleFlowerTile = new MapTileBuilder(purpleFlowerFrames)
+                .withSurface(Surface.GRASS);
 
         mapTiles.add(purpleFlowerTile);
 
@@ -165,6 +175,7 @@ public class CommonTileset extends Tileset {
                 .build();
 
         MapTileBuilder middleBranchTile = new MapTileBuilder(grassFrame)
+                .withSurface(Surface.GRASS)
                 .withTopLayer(middleBranchFrame)
                 .withTileType(TileType.PASSABLE);
 
@@ -186,6 +197,7 @@ public class CommonTileset extends Tileset {
                 .build();
 
         MapTileBuilder mushroomTile = new MapTileBuilder(mushroomFrame)
+                .withSurface(Surface.GRASS)
                 .withTileType(TileType.PASSABLE);
 
         mapTiles.add(mushroomTile);
@@ -196,7 +208,9 @@ public class CommonTileset extends Tileset {
                 .withScale(tileScale)
                 .build();
 
+        // stone path: dirt is the closest of the three footstep sounds until there's a stone one
         MapTileBuilder greyRockTile = new MapTileBuilder(greyRockFrame)
+                .withSurface(Surface.DIRT)
                 .withTileType(TileType.PASSABLE);
 
         mapTiles.add(greyRockTile);
@@ -227,6 +241,7 @@ public class CommonTileset extends Tileset {
                 .build();
 
         MapTileBuilder houseRoofBodyTile = new MapTileBuilder(grassFrame)
+                .withSurface(Surface.GRASS)
                 .withTopLayer(houseRoofBodyFrame)
                 .withTileType(TileType.PASSABLE);
 
@@ -238,6 +253,7 @@ public class CommonTileset extends Tileset {
                 .build();
 
         MapTileBuilder leftHouseRoofTile = new MapTileBuilder(grassFrame)
+                .withSurface(Surface.GRASS)
                 .withTopLayer(leftHouseRoofFrame)
                 .withTileType(TileType.PASSABLE);
 
@@ -250,6 +266,7 @@ public class CommonTileset extends Tileset {
                 .build();
 
         MapTileBuilder rightHouseRoofTile = new MapTileBuilder(grassFrame)
+                .withSurface(Surface.GRASS)
                 .withTopLayer(rightHouseRoofFrame)
                 .withTileType(TileType.PASSABLE);
 

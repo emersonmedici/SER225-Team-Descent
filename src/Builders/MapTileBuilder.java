@@ -3,6 +3,7 @@ package Builders;
 import GameObject.Frame;
 import GameObject.GameObject;
 import Level.MapTile;
+import Level.Surface;
 import Level.TileType;
 
 import java.util.HashMap;
@@ -11,6 +12,8 @@ import java.util.HashMap;
 public class MapTileBuilder {
 
     private TileType tileType = TileType.PASSABLE;
+    // tiles that don't say what they're made of sound like dirt when walked on
+    private Surface surface = Surface.DIRT;
     private int tileIndex = -1;
     private HashMap<String, Frame[]> bottomLayer = new HashMap<>();;
     private HashMap<String, Frame[]> topLayer = new HashMap<>();;
@@ -25,6 +28,11 @@ public class MapTileBuilder {
 
     public MapTileBuilder withTileType(TileType tileType) {
         this.tileType = tileType;
+        return this;
+    }
+
+    public MapTileBuilder withSurface(Surface surface) {
+        this.surface = surface;
         return this;
     }
 
@@ -93,6 +101,7 @@ public class MapTileBuilder {
 
         MapTile mapTile = new MapTile(x, y, bottomLayerAnimation, topLayerAnimation, tileType, tileIndex);
         mapTile.setRotation(rotation);
+        mapTile.setSurface(surface);
         return mapTile;
     }
 }

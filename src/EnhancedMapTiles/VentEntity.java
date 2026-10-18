@@ -17,6 +17,10 @@ import Level.Map;
 import Level.NodeBase;
 import Level.AStar;
 import Level.MapTile;
+import Level.StepCounter;
+import Level.Threat;
+import Sound.SoundEffect;
+import Sound.SoundManager;
 
 import Utils.Direction;
 import Utils.Point;
@@ -26,7 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class VentEntity extends EnhancedMapTile {
+public class VentEntity extends EnhancedMapTile implements Threat {
 
         private float timeToAttack = 2;
         private float attackTimer = timeToAttack * 60;
@@ -48,6 +52,9 @@ public class VentEntity extends EnhancedMapTile {
 
         private boolean spawnedIn = false;
         private boolean despawnedOut = true;
+
+        // shorter stride than the big monster: quicker, scrabbling movement through the metal ducts
+        private StepCounter footsteps = new StepCounter(48);
 
 
     public VentEntity(Point location) {
@@ -189,6 +196,12 @@ public class VentEntity extends EnhancedMapTile {
                         moveY(dy / distance * speed);
                     }
 
+                    // crawling sounds come from where it is in the vents
+                    if (footsteps.addDistance(Math.min(distance, speed))) {
+                        Point center = getThreatCenter();
+                        SoundManager.playAt(SoundEffect.MONSTER_VENT_STEP, center.x, center.y);
+                    }
+
                     if (dx < 0) {
                         setAnimation("WALK_LEFT");
                     }
@@ -273,6 +286,18 @@ public class VentEntity extends EnhancedMapTile {
     private void clearPath() {
         path = null;
         indexInPath = 0;
+    }
+
+        // Threat: only counts while it's actually in the vents with the player
+    // when it isn't spawned in, it's parked at (0, 0), which must not set off the chase music
+    @Override
+    public boolean isHunting() {
+        return spawnedIn;
+    }
+
+    @Override
+    public Point getThreatCenter() {
+        return new Point(getX() + getWidth() / 2.0f, getY() + getHeight() / 2.0f);
     }
 
     // Teleport to the vent opening nearest the player and path from there
