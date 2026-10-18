@@ -37,6 +37,9 @@ public class Level1Map extends Map {
         super("Level1Map.txt", new SimpleTileSheet());
         this.playerStartPosition = getMapTile(82, 97).getLocation();
         this.showHealthUI = true;
+        this.ambientTrack = "level1_ambience.wav";
+        this.chaseTrack = "chase.wav";
+       // this.screen = null;
        // this.screen = null;
     }
 

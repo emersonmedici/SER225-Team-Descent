@@ -16,6 +16,7 @@ public class ProlougeMap extends Map {
     public ProlougeMap() {
         super("ProlougeMap.txt", new CommonTileset());
         this.playerStartPosition = getMapTile(15, 37).getLocation();
+        this.ambientTrack = "prologue_ambience.wav";
     }
 
     @Override

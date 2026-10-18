@@ -112,6 +112,13 @@ public abstract class Map {
     public void setAmbientDarkness(float ambientDarkness) { this.ambientDarkness = ambientDarkness; }
     public Color getAmbientColor() { return ambientColor; }
     public void setAmbientColor(Color ambientColor) { this.ambientColor = ambientColor; }
+
+    // music: file names inside Resources/Music/, set by each map's constructor -- null means silence
+    protected String ambientTrack = null;
+    protected String chaseTrack = null;
+
+    public String getAmbientTrack() { return ambientTrack; }
+    public String getChaseTrack() { return chaseTrack; }
     
 
     public Map(String mapFileName, Tileset tileset) {
@@ -474,6 +481,23 @@ public abstract class Map {
         return npcs;
     }
     public ArrayList<Trigger> getTriggers() { return triggers; }
+
+    // every enhanced map tile and npc on this map that can trigger the chase music
+    // this checks ALL of them, not just the ones near the camera, so a monster can be heard before it's on screen
+    public ArrayList<Threat> getThreats() {
+        ArrayList<Threat> threats = new ArrayList<>();
+        for (EnhancedMapTile enhancedMapTile : enhancedMapTiles) {
+            if (enhancedMapTile instanceof Threat) {
+                threats.add((Threat) enhancedMapTile);
+            }
+        }
+        for (NPC npc : npcs) {
+            if (npc instanceof Threat) {
+                threats.add((Threat) npc);
+            }
+        }
+        return threats;
+    }
 
     public ArrayList<MapTile> getAnimatedMapTiles() {
         return animatedMapTiles;

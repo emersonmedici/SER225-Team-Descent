@@ -12,6 +12,8 @@ import GameObject.SpriteSheet;
 import Lighting.Light;
 import Lighting.PointLight;
 import Lighting.SpotLight;
+import Sound.SoundEffect;
+import Sound.SoundManager;
 import Utils.Direction;
 import Utils.Point;
 
@@ -56,6 +58,9 @@ public abstract class Player extends GameObject {
     protected float flashlightOffset = 12;
 
     protected boolean isLocked = false;
+
+    // one footstep every 44 pixels walked: about 3 steps a second walking, 7 running, 1.5 in mud
+    protected StepCounter footsteps = new StepCounter(44);
 
     // values for player pick up, drop, and inventory
 
@@ -134,8 +139,13 @@ public abstract class Player extends GameObject {
             lastAmountMovedY = super.moveYHandleCollision(moveAmountY);
             lastAmountMovedX = super.moveXHandleCollision(moveAmountX);
 
+            updateFootsteps();
+
             handleFlashlightToggle();
         }
+
+        // the player is the "ears" for sounds that come from somewhere in the world, like the monster's footsteps
+        SoundManager.setListener(getX() + getWidth() / 2f, getY() + getHeight() / 2f, map.getTileset().getScaledSpriteWidth());
 
         handlePlayerAnimation();
 
@@ -271,6 +281,38 @@ public abstract class Player extends GameObject {
 
         if (Keyboard.isKeyUp(FLASHLIGHT_KEY)) {
             keyLocker.unlockKey(FLASHLIGHT_KEY);
+        }
+    }
+
+    // plays a footstep for whatever the player is standing on, once per stride
+    // uses how far the player ACTUALLY moved, so walking into a wall is silent
+    protected void updateFootsteps() {
+        float distanceMoved = (float) Math.sqrt(lastAmountMovedX * lastAmountMovedX + lastAmountMovedY * lastAmountMovedY);
+        if (distanceMoved == 0) {
+            footsteps.reset();
+            return;
+        }
+
+        if (footsteps.addDistance(distanceMoved)) {
+            // running (Shift sets walkSpeed to 5) is louder than walking -- noise is a risk the player chooses to take
+            boolean isRunning = walkSpeed > 3f;
+            SoundManager.play(getFootstepSound(), isRunning ? 1f : 0.6f);
+        }
+    }
+
+    // the footstep sound for the tile under the player's feet (the bottom middle of their collision box)
+    protected SoundEffect getFootstepSound() {
+        Rectangle bounds = getBounds();
+        MapTile tile = map.getTileByPosition(bounds.getX1() + bounds.getWidth() / 2f, bounds.getY2());
+        Surface surface = tile != null ? tile.getSurface() : Surface.DIRT;
+
+        switch (surface) {
+            case GRASS:
+                return SoundEffect.PLAYER_STEP_GRASS;
+            case METAL:
+                return SoundEffect.PLAYER_STEP_METAL;
+            default:
+                return SoundEffect.PLAYER_STEP_DIRT;
         }
     }
 
@@ -444,6 +486,7 @@ public abstract class Player extends GameObject {
         carriedObject.dropAt(dropX, dropY);
         inventory[selectedInventorySlot] = null;
         carriedObject = null;
+        SoundManager.play(SoundEffect.DROP);
         return true;
     }
 
@@ -464,6 +507,7 @@ public abstract class Player extends GameObject {
         object.setEquipped(false);
         // filling a previously selected empty slot must not equip it
         if (selectedInventorySlot == freeSlot) selectedInventorySlot = -1;
+        SoundManager.play(SoundEffect.PICKUP);
         return true;
     }
 

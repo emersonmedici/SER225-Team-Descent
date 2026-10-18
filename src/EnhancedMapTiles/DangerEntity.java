@@ -16,6 +16,10 @@ import Level.TileType;
 import Level.Map;
 import Level.NodeBase;
 import Level.AStar;
+import Level.StepCounter;
+import Level.Threat;
+import Sound.SoundEffect;
+import Sound.SoundManager;
 
 import Utils.Direction;
 import Utils.Point;
@@ -25,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class DangerEntity extends EnhancedMapTile {
+public class DangerEntity extends EnhancedMapTile implements Threat {
 
         private float timeToAttack = 2;
         private float timer = timeToAttack * 60;
@@ -40,6 +44,9 @@ public class DangerEntity extends EnhancedMapTile {
         private NodeBase[][] nodes;
         private List<NodeBase> path;
         private int indexInPath = 1;
+
+        // long stride = slow, heavy footsteps (about 2 a second) -- it doesn't need to hurry
+        private StepCounter footsteps = new StepCounter(64);
 
 
     public DangerEntity(Point location) {
@@ -155,6 +162,12 @@ public class DangerEntity extends EnhancedMapTile {
                     moveY(dy / distance * speed);
                 }
 
+                // footsteps come from where the monster is, so you can hear how close it is and which side it's on
+                if (footsteps.addDistance(Math.min(distance, speed))) {
+                    Point center = getThreatCenter();
+                    SoundManager.playAt(SoundEffect.MONSTER_STEP, center.x, center.y);
+                }
+
                 if (dx < 0) {
                     setAnimation("WALK_LEFT");
                 }
@@ -222,6 +235,17 @@ public class DangerEntity extends EnhancedMapTile {
         }
         timer = timeToAttack * 60;
         return true;
+    }
+
+    // Threat: this entity chases the player as soon as it has started, unless something has hidden it
+    @Override
+    public boolean isHunting() {
+        return hasStarted && !isHidden();
+    }
+
+    @Override
+    public Point getThreatCenter() {
+        return new Point(getX() + getWidth() / 2.0f, getY() + getHeight() / 2.0f);
     }
 
     // The node to start a new path from: the tile the entity is currently
