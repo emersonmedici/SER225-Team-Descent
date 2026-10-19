@@ -5,6 +5,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import Sound.SoundEffect;
+import Sound.SoundManager;
+
 public class MiniGame2 {	
 	private JFrame frame;
     private JLabel loseLabel, winLabel, sLabel;
@@ -172,6 +175,7 @@ public class MiniGame2 {
 			if (clickCounter < sCounter && playerButton == buttonChoices[placeHolder[clickCounter -1]]) {
 				clickCounter++;
 			} else if (clickCounter == 3 && playerButton == buttonChoices[placeHolder[clickCounter-1]]){ //&& playerButton == buttonChoices[placeHolder[clickCounter-1]]){
+				SoundManager.play(SoundEffect.PUZZLE_COMPLETE);
 				winPanel = new JPanel();  
 				winPanel.setBackground(Color.WHITE); 
 				winLabel = new JLabel("You win! Congrats", SwingConstants.CENTER);

@@ -5,6 +5,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import Sound.SoundEffect;
+import Sound.SoundManager;
+
 public class MiniGame {	
 	private JFrame frame;
 	private JLabel loseLabel, winLabel, keyLabel, blueLabel, yellowLabel, greenLabel, magentaLabel, orangeLabel;
@@ -217,6 +220,7 @@ public class MiniGame {
 			}
 			
 			if (isCorrect == true) {
+				SoundManager.play(SoundEffect.PUZZLE_COMPLETE);
 				winPanel = new JPanel();  
 				winPanel.setBackground(Color.WHITE); 
 				winLabel = new JLabel("You win! Congrats", SwingConstants.CENTER);

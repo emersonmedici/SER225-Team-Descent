@@ -17,17 +17,22 @@ import Scripts.MiniGame2Script;
 import Scripts.MiniGameScript;
 import Scripts.SimpleTextScript;
 import ScriptActions.*;
+import EnhancedMapTiles.DangerEntity;
+import EnhancedMapTiles.VentEntity;
+
 import Scripts.TestMap.*;
+
 import Tilesets.SimpleTileSheet;
 import Utils.Point;
 import java.util.ArrayList;
+
 
 // Represents a test map to be used in a level
 public class Level1Map extends Map {
 
     //private PlayLevelScreen screen;
 
-    // public Level1Map(PlayLevelScreen screen) {
+    // public Level1Map(PlayLevelScreen screen) {67
     //     super("Level1Map.txt", new SimpleTileSheet());
     //     this.playerStartPosition = getMapTile(82, 97).getLocation();
     //     this.screen = screen;
@@ -37,6 +42,9 @@ public class Level1Map extends Map {
         super("Level1Map.txt", new SimpleTileSheet());
         this.playerStartPosition = getMapTile(82, 97).getLocation();
         this.showHealthUI = true;
+        this.ambientTrack = "level1_ambience.wav";
+        this.chaseTrack = "chase.wav";
+       // this.screen = null;
        // this.screen = null;
     }
 
@@ -113,6 +121,9 @@ public class Level1Map extends Map {
         enemy.setIsUpdateOffScreen(true);
         enhancedMapTiles.add(enemy);
 
+        VentEntity ventEnemy = new VentEntity(getMapTile(94, 87).getLocation());
+        ventEnemy.setIsUpdateOffScreen(true);
+        enhancedMapTiles.add(ventEnemy);
         return enhancedMapTiles;
     }
 
