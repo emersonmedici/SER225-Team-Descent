@@ -112,9 +112,11 @@ public class Level1Map extends Map {
         enhancedMapTiles.add(mg2);
 
         Mg mg4 = new Mg(getMapTile(103, 65).getLocation(), "w");
+       // mg4.setInteractScript(new MiniGame2Script());
         enhancedMapTiles.add(mg4);
 
         Mg mg5 = new Mg(getMapTile(44, 77).getLocation(), "w");
+       // mg5.setInteractScript(new MiniGame2Script());
         enhancedMapTiles.add(mg5);
 
         DangerEntity enemy = new DangerEntity(getMapTile(93, 38).getLocation());

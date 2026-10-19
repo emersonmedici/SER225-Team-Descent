@@ -37,7 +37,7 @@ public class Mg extends EnhancedMapTile {
         super(
             location.x,
             location.y,
-            new SpriteSheet(ImageLoader.load("Panel.png"), 16, 16),
+            new SpriteSheet(ImageLoader.load("Panel1.png"), 12, 9),
             TileType.NOT_PASSABLE 
     );
     }
