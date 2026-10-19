@@ -5,10 +5,7 @@ import Engine.ImageLoader;
 import GameObject.Frame;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
-//import Maps.ProlougeMap;
 import Level.EnhancedMapTile;
-//import Level.Player;
-//import Level.PlayerState;
 import Level.TileType;
 import Utils.Point;
 
