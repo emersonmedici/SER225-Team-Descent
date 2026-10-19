@@ -10,7 +10,8 @@ public class MiniGame {
 	private JLabel loseLabel, winLabel, keyLabel, blueLabel, yellowLabel, greenLabel, magentaLabel, orangeLabel;
 	private JPanel losePanel, winPanel, submitPanel, mainPanel, keyPanel, clickCountPanel, clickCountPanel2, clickCountPanel3, clickCountPanel4, clickCountPanel5, clickCountPanel6;
 	private JButton button1, button2, button3, button4, button5, button6;
-    
+    private static boolean isCorrect;
+
     public MiniGame(String frameTitle, int frameWidth, int frameHeight) {
     	frame = new JFrame(frameTitle);
 		frame.setSize(frameWidth, frameHeight);
@@ -43,7 +44,7 @@ public class MiniGame {
 		m.gridy = 2;
 		m.anchor = GridBagConstraints.CENTER;
 		
-        // Create button
+        // Create buttons
 		button1 = new JButton ("1");
 		button1.setBackground(Color.BLUE);
 		button1.setOpaque(true);
@@ -70,7 +71,6 @@ public class MiniGame {
 		button5.setBorderPainted(false);
 		
 		button6 = new JButton ("Submit!");
-		
 		
         button1.setAlignmentX(Component.CENTER_ALIGNMENT);
         button1.setPreferredSize(new Dimension(80, 80));
@@ -188,7 +188,6 @@ public class MiniGame {
 
 	private void checkCorrect(){ 
 		int correct = 0;
-		boolean isCorrect = false;
 		
 		GridBagConstraints k = new GridBagConstraints();
 		k.gridx = 0;
@@ -212,9 +211,9 @@ public class MiniGame {
 			} 
 			
 			if (correct == 5) {
-				isCorrect = true;
+				setIsCorrect(true);
 			} else {
-				isCorrect = false;
+				setIsCorrect(false);
 			}
 			
 			if (isCorrect == true) {
@@ -240,11 +239,19 @@ public class MiniGame {
 			}
 			
 			if (correct == 5) {
-				isCorrect = true;
+				setIsCorrect(true);
 			} else {
-				isCorrect = false;
+				setIsCorrect(false);
 			}
 
+	}
+
+	public static void setIsCorrect (boolean value) {
+		isCorrect = value;
+	}
+
+	public static boolean getIsCorrect() {
+		return isCorrect;
 	}
 
     private void changeBackgroundColor(JButton button) {

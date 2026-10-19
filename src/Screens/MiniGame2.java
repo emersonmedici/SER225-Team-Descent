@@ -15,6 +15,7 @@ public class MiniGame2 {
 	private int clickCounter = 1;
 	private int[] placeHolder = new int[3];
 	private JButton[] buttonChoices;
+	private static boolean winGame;
 
     public MiniGame2(String frameTitle, int frameWidth, int frameHeight) {
 	    frame = new JFrame(frameTitle);
@@ -134,8 +135,6 @@ public class MiniGame2 {
 		bottomPanel.add(button8);
 		bottomPanel.add(button9);
 		frame.add(sPanel, k);
-		//frame.repaint();
-		//frame.revalidate();
 		frame.add(topPanel, l);
 		frame.add(midPanel, m);
 		frame.add(bottomPanel, s);
@@ -178,7 +177,7 @@ public class MiniGame2 {
 				winLabel = new JLabel("You win! Congrats", SwingConstants.CENTER);
 				winLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
 				winPanel.add(winLabel);
-				
+				setWinGame(true);
 				frame.getContentPane().removeAll();
 				frame.add(winPanel);
 				frame.revalidate();
@@ -190,6 +189,7 @@ public class MiniGame2 {
 				stageController(buttonChoices);
 			} else {
 				frame.add(losePanel, n);
+				setWinGame(false);
 				frame.revalidate();
 				frame.repaint();
 				sCounter = 1;
@@ -294,8 +294,15 @@ public class MiniGame2 {
 		}
 	}
 
+	public static void setWinGame (boolean value) {
+		winGame = value;
+	}
+
+	public static boolean getWinGame () {
+		return winGame;
+	}
+
 	public static void main(String[] args) {
-         	new MiniGame2("Minigame 2", 500, 500);
+        new MiniGame2("Minigame 2", 500, 500);
     }
 }
-	

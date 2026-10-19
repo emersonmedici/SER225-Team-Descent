@@ -4,14 +4,14 @@ import Engine.GraphicsHandler;
 import Engine.Key;
 import Engine.KeyLocker;
 import Engine.Keyboard;
-import EnhancedMapTiles.CarriableObject;
-import EnhancedMapTiles.MudObject;
+import EnhancedMapTiles.*;
 import GameObject.GameObject;
 import GameObject.Rectangle;
 import GameObject.SpriteSheet;
 import Lighting.Light;
 import Lighting.PointLight;
 import Lighting.SpotLight;
+import Screens.*;
 import Utils.Direction;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,6 +116,32 @@ public abstract class Player extends GameObject {
     }
 
     public void update() {
+        ArrayList<EnhancedMapTile> allEnhancedMapTiles = new ArrayList<>(map.enhancedMapTiles);
+        ArrayList<EnhancedMapTile> sortedBlockedTiles = new ArrayList<>();
+        ArrayList<EnhancedMapTile> sortedBlockedTiles2 = new ArrayList<>();
+
+        for (int i = 0; i<allEnhancedMapTiles.size(); i++) {
+            if (allEnhancedMapTiles.get(i) instanceof BlockedWallTile) {
+                sortedBlockedTiles.add(allEnhancedMapTiles.get(i));
+            }
+
+            if (allEnhancedMapTiles.get(i) instanceof BlockedWallTile2) {
+                sortedBlockedTiles2.add(allEnhancedMapTiles.get(i));
+            }
+        }
+
+        for (int j = 0; j<sortedBlockedTiles.size(); j++) {
+            if (MiniGame.getIsCorrect() == true) {
+                map.enhancedMapTiles.remove(sortedBlockedTiles.get(j));
+            }
+        }
+        
+        for (int j = 0; j<sortedBlockedTiles2.size(); j++) {
+            if (MiniGame2.getWinGame() == true) {
+                map.enhancedMapTiles.remove(sortedBlockedTiles2.get(j));
+            }  
+        }
+       
         handleInventoryKeys();
         if (!isLocked) {
             moveAmountX = 0;
@@ -179,7 +205,6 @@ public abstract class Player extends GameObject {
         }
     }
 
-   // private Player player;
     // player WALKING state logic
     protected void playerWalking() {
         if (!keyLocker.isKeyLocked(INTERACT_KEY) && Keyboard.isKeyDown(INTERACT_KEY)) {
@@ -189,22 +214,17 @@ public abstract class Player extends GameObject {
 
         ArrayList<EnhancedMapTile> allEnhancedMapTiles = new ArrayList<>(map.enhancedMapTiles);
         ArrayList<EnhancedMapTile> sortedMudTiles = new ArrayList<>();
-        int k = 0;
         boolean touching = false;
 
         for (int i = 0; i<allEnhancedMapTiles.size(); i++) {
             if (allEnhancedMapTiles.get(i) instanceof MudObject) {
                 sortedMudTiles.add(allEnhancedMapTiles.get(i));
-            } else {
-                k++;
             }
         }
 
         for (int j = 0; j<sortedMudTiles.size(); j++) {
             if (touching(sortedMudTiles.get(j)) == true){
                 touching = true;
-            } else {
-                k++;
             }
         }
         
