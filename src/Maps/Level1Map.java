@@ -97,6 +97,7 @@ public class Level1Map extends Map {
 
 
     @Override
+    //exit trigger
     public ArrayList<Trigger> loadTriggers() {
         ArrayList<Trigger> triggers = new ArrayList<>();
         Point triggerPoint = getMapTile(82, 97).getLocation();

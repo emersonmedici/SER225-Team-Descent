@@ -20,6 +20,7 @@ public class PlayLevelScreen extends Screen implements GameListener {
     protected PlayLevelScreenState playLevelScreenState;
     protected WinScreen winScreen;
     protected DarkScreen1 darkScreen1;
+    protected InventoryScreen inventoryScreen;
     protected FlagManager flagManager;
 
     public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
@@ -67,6 +68,8 @@ public class PlayLevelScreen extends Screen implements GameListener {
 
         winScreen = new WinScreen(this);
         darkScreen1 = new DarkScreen1(this);
+        inventoryScreen = new InventoryScreen(this);
+        inventoryScreen.initialize();
     }
 
     public void update() {
@@ -76,6 +79,7 @@ public class PlayLevelScreen extends Screen implements GameListener {
             case RUNNING:
                 player.update();
                 map.update(player);
+                inventoryScreen.update();
                 break;
             // if level has been completed, bring up level cleared screen
             case LEVEL_COMPLETED:
@@ -93,123 +97,52 @@ public class PlayLevelScreen extends Screen implements GameListener {
         playLevelScreenState = PlayLevelScreenState.LEVEL_COMPLETED;
     }
 
-    @Override 
+    @Override
     public void onRestart() {
-        onCutscene1Completed();
+        // Restart still returns to Level 1 with a fresh cat and empty inventory.
+        System.out.println("Level completed!");
+        loadMap(new Level1Map(), PlayLevelScreenState.RUNNING, false);
     }
-
 
     @Override
     public void onPrologueCompleted() {
-        // when this method is called within the game, it signals the game has been "won"
         System.out.println("Level completed!");
-        map = new Cutscene1Map();
-        map.setFlagManager(flagManager);
-
-        // setup player
-        int playerHealth = 3;
-        player = new Cat(map.getPlayerStartPosition().x, map.getPlayerStartPosition().y, playerHealth);
-        player.setMap(map);
-        playLevelScreenState = PlayLevelScreenState.RUNNING;
-        player.setFacingDirection(Direction.LEFT);
-
-        map.setPlayer(player);
-
-        // let pieces of map know which button to listen for as the "interact" button
-        map.getTextbox().setInteractKey(player.getInteractKey());
-
-        // add this screen as a "game listener" so other areas of the game that don't normally have direct access to it (such as scripts) can "signal" to have it do something
-        // this is used in the "onWin" method -- a script signals to this class that the game has been won by calling its "onWin" method
-        map.addListener(this);
-
-        // preloads all scripts ahead of time rather than loading them dynamically
-        // both are supported, however preloading is recommended
-        map.preloadScripts();
+        loadMap(new Cutscene1Map(), PlayLevelScreenState.RUNNING, true);
     }
 
     @Override
     public void onElevatorDrop() {
-        // when this method is called within the game, it signals the game has been "won"
         System.out.println("Level completed!");
-        map = new NothingMap();
-        map.setFlagManager(flagManager);
-
-        //setup player
-        int playerHealth = 3;
-        player = new Cat(map.getPlayerStartPosition().x, map.getPlayerStartPosition().y, playerHealth);
-        player.setMap(map);
-        playLevelScreenState = PlayLevelScreenState.DARK;
-        player.setFacingDirection(Direction.LEFT);
-
-        map.setPlayer(player);
-
-        // let pieces of map know which button to listen for as the "interact" button
-        map.getTextbox().setInteractKey(player.getInteractKey());
-
-        // add this screen as a "game listener" so other areas of the game that don't normally have direct access to it (such as scripts) can "signal" to have it do something
-        // this is used in the "onWin" method -- a script signals to this class that the game has been won by calling its "onWin" method
-        map.addListener(this);
-
-        // preloads all scripts ahead of time rather than loading them dynamically
-        // both are supported, however preloading is recommended
-        map.preloadScripts();
-
+        loadMap(new NothingMap(), PlayLevelScreenState.DARK, true);
+        darkScreen1.initialize();
     }
 
     @Override
     public void onCutscene1Completed() {
-        // when this method is called within the game, it signals the game has been "won"
         System.out.println("Level completed!");
-        map = new Level1Map();
-        map.setFlagManager(flagManager);
-
-        // setup player
-        int playerHealth = 3;
-        player = new Cat(map.getPlayerStartPosition().x, map.getPlayerStartPosition().y, playerHealth);
-        player.setMap(map);
-        playLevelScreenState = PlayLevelScreenState.RUNNING;
-        player.setFacingDirection(Direction.LEFT);
-
-        map.setPlayer(player);
-
-        // let pieces of map know which button to listen for as the "interact" button
-        map.getTextbox().setInteractKey(player.getInteractKey());
-
-        // add this screen as a "game listener" so other areas of the game that don't normally have direct access to it (such as scripts) can "signal" to have it do something
-        // this is used in the "onWin" method -- a script signals to this class that the game has been won by calling its "onWin" method
-        map.addListener(this);
-
-        // preloads all scripts ahead of time rather than loading them dynamically
-        // both are supported, however preloading is recommended
-        map.preloadScripts();
+        loadMap(new Level1Map(), PlayLevelScreenState.RUNNING, true);
     }
 
     @Override
     public void onLevel1Completed() {
-        // when this method is called within the game, it signals the game has been "won"
         System.out.println("Level completed!");
-        //will put level 2 map here
-        map = new ProlougeMap();
-        map.setFlagManager(flagManager);
+        // Keep the current placeholder destination until Level 2 is ready.
+        loadMap(new ProlougeMap(), PlayLevelScreenState.RUNNING, true);
+    }
 
-        // setup player
-        int playerHealth = 3;
-        player = new Cat(map.getPlayerStartPosition().x, map.getPlayerStartPosition().y, playerHealth);
-        player.setMap(map);
-        playLevelScreenState = PlayLevelScreenState.RUNNING;
-        player.setFacingDirection(Direction.LEFT);
+    private void loadMap(Map nextMap, PlayLevelScreenState state, boolean keepPlayer) {
+        nextMap.setFlagManager(flagManager);
+        if (!keepPlayer) {
+            player = new Cat(nextMap.getPlayerStartPosition().x,
+                    nextMap.getPlayerStartPosition().y, 3);
+        }
+        player.moveToMap(nextMap);
+        map = nextMap;
+        playLevelScreenState = state;
 
-        map.setPlayer(player);
-
-        // let pieces of map know which button to listen for as the "interact" button
+        // Preserve the existing textbox, listener, and script setup on every map.
         map.getTextbox().setInteractKey(player.getInteractKey());
-
-        // add this screen as a "game listener" so other areas of the game that don't normally have direct access to it (such as scripts) can "signal" to have it do something
-        // this is used in the "onWin" method -- a script signals to this class that the game has been won by calling its "onWin" method
         map.addListener(this);
-
-        // preloads all scripts ahead of time rather than loading them dynamically
-        // both are supported, however preloading is recommended
         map.preloadScripts();
     }
 
@@ -218,6 +151,10 @@ public class PlayLevelScreen extends Screen implements GameListener {
         switch (playLevelScreenState) {
             case RUNNING:
                 map.draw(player, graphicsHandler);
+                // draws the inventory screen only when there is no textboxes (avoids blocking out cutscenes and stuff)
+                if (!map.getTextbox().isActive()) {
+                    inventoryScreen.draw(graphicsHandler);
+                }
                 break;
             case LEVEL_COMPLETED:
                 winScreen.draw(graphicsHandler);
