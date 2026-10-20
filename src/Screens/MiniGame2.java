@@ -73,31 +73,31 @@ public class MiniGame2 {
 		s.gridy = 3;
 		s.anchor = GridBagConstraints.CENTER;
 
-		icon = new ImageIcon("/Users/jesikadragoj/serproject/SER225-Team-Descent/Resources/Tile1.png");
+		icon = new ImageIcon("Resources/Tile1.png");
 		button = new JButton (icon);
 
-		icon2 = new ImageIcon("/Users/jesikadragoj/serproject/SER225-Team-Descent/Resources/Triangle.png");
+		icon2 = new ImageIcon("Resources/Triangle.png");
 		button2 = new JButton (icon2);
 
-		icon3 = new ImageIcon("/Users/jesikadragoj/serproject/SER225-Team-Descent/Resources/Circle.png");
+		icon3 = new ImageIcon("Resources/Circle.png");
 		button3 = new JButton (icon3);
 
-		icon4 = new ImageIcon("/Users/jesikadragoj/serproject/SER225-Team-Descent/Resources/Arrow.png");
+		icon4 = new ImageIcon("Resources/Arrow.png");
 		button4 = new JButton (icon4);
 
-		icon5 = new ImageIcon("/Users/jesikadragoj/serproject/SER225-Team-Descent/Resources/Swirl.png"); 
+		icon5 = new ImageIcon("Resources/Swirl.png"); 
 		button5 = new JButton (icon5);	
 		
-		icon6 = new ImageIcon("/Users/jesikadragoj/serproject/SER225-Team-Descent/Resources/Umbrella.png"); 
+		icon6 = new ImageIcon("Resources/Umbrella.png"); 
 		button6 = new JButton (icon6);
 
-		icon7 = new ImageIcon("/Users/jesikadragoj/serproject/SER225-Team-Descent/Resources/Mountains.png");
+		icon7 = new ImageIcon("Resources/Mountains.png");
 		button7 = new JButton (icon7);
 
-		icon8 = new ImageIcon("/Users/jesikadragoj/serproject/SER225-Team-Descent/Resources/Idk.png"); 
+		icon8 = new ImageIcon("Resources/Idk.png"); 
 		button8 = new JButton (icon8);
 
-		icon9 = new ImageIcon("/Users/jesikadragoj/serproject/SER225-Team-Descent/Resources/Hourglass.png");
+		icon9 = new ImageIcon("Resources/Hourglass.png");
 		button9 = new JButton (icon9);
 
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
