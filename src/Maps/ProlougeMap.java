@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class ProlougeMap extends Map {
     public ProlougeMap() {
         super("ProlougeMap.txt", new CommonTileset());
-        this.playerStartPosition = getMapTile(15, 35).getLocation();
+        this.playerStartPosition = getMapTile(15, 33).getLocation();
     }
 
     @Override
@@ -38,10 +38,7 @@ public class ProlougeMap extends Map {
     public ArrayList<NPC> loadNPCs() {
         ArrayList<NPC> npcs = new ArrayList<>();
 
-        Dave dave = new Dave(
-                4,
-                getMapTile(7, 35).getLocation().subtractX(20)
-        );
+        Dave dave = new Dave(4, getMapTile(15, 35).getLocation().subtractX(200));
         dave.setInteractScript(new DaveScript());
         npcs.add(dave);
 
@@ -70,7 +67,8 @@ public class ProlougeMap extends Map {
         //need to fix the coordinates
         Point triggerPoint = getMapTile(12, 8).getLocation();
         triggers.add(new Trigger(triggerPoint.x, triggerPoint.y, 150, 25, new FacilityDoorScript()));
-        
+        //triggerPoint = getMapTile(15, 33).getLocation(); 550, 1660,
+        triggers.add(new Trigger(550, 1660, 75, 75, new DaveScript(), "hasTalkedToDave"));
         return triggers;
     }
 
