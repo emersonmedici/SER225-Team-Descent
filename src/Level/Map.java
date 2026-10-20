@@ -769,28 +769,20 @@ public abstract class Map {
         setupMap();
     }
 
-    public void draw(GraphicsHandler graphicsHandler) {
-        camera.draw(graphicsHandler);
-    }
+public void draw(GraphicsHandler graphicsHandler) {
+    camera.draw(graphicsHandler);
+    drawLighting(graphicsHandler, lights);
+}
 
-    public void draw(Player player, GraphicsHandler graphicsHandler) {
-        
+public void draw(Player player, GraphicsHandler graphicsHandler) {
     camera.draw(player, graphicsHandler);
 
-    // darkness goes over the world but under the textbox
-    if (ambientDarkness > 0) {
-        // the map's own lights plus whatever the player is carrying (flashlight)
-        ArrayList<Light> frameLights = new ArrayList<>(lights);
-        frameLights.addAll(player.getLights());
+    // the map's own lights plus whatever the player is carrying (flashlight)
+    ArrayList<Light> frameLights = new ArrayList<>(lights);
+    frameLights.addAll(player.getLights());
+    drawLighting(graphicsHandler, frameLights);
 
-        int camX = Math.round(camera.getX());
-        int camY = Math.round(camera.getY());
-        lightingRenderer.render(graphicsHandler, frameLights, ambientDarkness, ambientColor,
-                camX, camY, ScreenManager.getScreenWidth(), ScreenManager.getScreenHeight(),
-                camX, camY);
-    }
-
-        // hearts go over the darkness so they're always readable, but under the textbox
+    // hearts go over the darkness so they're always readable, but under the textbox
     if (showHealthUI) {
         healthUI.draw(graphicsHandler, player);
     }
@@ -798,6 +790,18 @@ public abstract class Map {
     if (textbox.isActive()) {
         textbox.draw(graphicsHandler);
     }
+}
+
+// darkness goes over the world but under the textbox
+protected void drawLighting(GraphicsHandler graphicsHandler, ArrayList<Light> frameLights) {
+    if (ambientDarkness <= 0) {
+        return;
+    }
+    int camX = Math.round(camera.getX());
+    int camY = Math.round(camera.getY());
+    lightingRenderer.render(graphicsHandler, frameLights, ambientDarkness, ambientColor,
+            camX, camY, ScreenManager.getScreenWidth(), ScreenManager.getScreenHeight(),
+            camX, camY);
 }
 
     public FlagManager getFlagManager() { return flagManager; }
