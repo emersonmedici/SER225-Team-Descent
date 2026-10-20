@@ -179,11 +179,12 @@ public class MiniGame {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
 				if (button == button6) {
 					checkCorrect();
 				} else {
 					changeBackgroundColor(button);
+					frame.revalidate();
+					frame.repaint();
 				}
             }
         });
@@ -265,11 +266,11 @@ public class MiniGame {
 		int randomNum = (int) (Math.random() * (max - min + 1) + min);
 		Color newColor = Color.WHITE;
 
-		for (int i = 0; i<colorChoices.length; i++) {
+		//for (int i = 0; i<colorChoices.length; i++) {
 			newColor = colorChoices[randomNum] ;
-		    button.setBackground(newColor);
-		}
-        
+		   // button.setBackground(newColor);
+		//}
+        	button.setBackground(newColor);
     }
 
     public static void main(String[] args) {
