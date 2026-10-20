@@ -22,7 +22,7 @@ import EnhancedMapTiles.VentEntity;
 
 import Scripts.TestMap.*;
 
-import Tilesets.SimpleTileSheet;
+import Tilesets.Level1Tileset;
 import Utils.Point;
 import java.util.ArrayList;
 
@@ -33,13 +33,13 @@ public class Level1Map extends Map {
     //private PlayLevelScreen screen;
 
     // public Level1Map(PlayLevelScreen screen) {67
-    //     super("Level1Map.txt", new SimpleTileSheet());
+    //     super("Level1Map.txt", new Level1Tileset());
     //     this.playerStartPosition = getMapTile(82, 97).getLocation();
     //     this.screen = screen;
     // }
 
     public Level1Map() {
-        super("Level1Map.txt", new SimpleTileSheet());
+        super("Level1Map.txt", new Level1Tileset());
         this.playerStartPosition = getMapTile(82, 97).getLocation();
         this.showHealthUI = true;
         this.ambientTrack = "level1_ambience.wav";
