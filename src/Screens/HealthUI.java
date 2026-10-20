@@ -1,10 +1,11 @@
 package Screens;
 
 import Engine.GraphicsHandler;
+import Engine.ScreenManager;
 import Level.Player;
 import java.awt.Color;
 
-// Draws the player's health as a row of pixel hearts in the top-left corner of the screen
+// Draws the player's health as a row of pixel hearts in the top-right corner of the screen
 public class HealthUI {
     // 1 = draw a pixel, 0 = leave blank
     private static final int[][] HEART_SHAPE = {
@@ -19,7 +20,7 @@ public class HealthUI {
     };
     private static final int PIXEL_SIZE = 4;     // each "pixel" of the heart is 4x4 screen pixels
     private static final int HEART_SPACING = 8;  // gap between hearts
-    private static final int START_X = 16;
+    private static final int MARGIN_X = 16;      // gap between the last heart and the right edge
     private static final int START_Y = 16;
 
     private final Color fullColor = new Color(220, 30, 40);
@@ -27,10 +28,16 @@ public class HealthUI {
 
     public void draw(GraphicsHandler graphicsHandler, Player player) {
         int heartWidth = HEART_SHAPE[0].length * PIXEL_SIZE;
-        for (int i = 0; i < player.getMaxHealth(); i++) {
+        int maxHealth = player.getMaxHealth();
+
+        // width of the whole row (hearts plus the gaps between them), so it can sit against the right edge
+        int rowWidth = maxHealth * heartWidth + (maxHealth - 1) * HEART_SPACING;
+        int startX = ScreenManager.getScreenWidth() - MARGIN_X - rowWidth;
+
+        for (int i = 0; i < maxHealth; i++) {
             // hearts below current health are full, the rest are empty
             Color color = i < player.getHealth() ? fullColor : emptyColor;
-            int heartX = START_X + i * (heartWidth + HEART_SPACING);
+            int heartX = startX + i * (heartWidth + HEART_SPACING);
             drawHeart(graphicsHandler, heartX, START_Y, color);
         }
     }
