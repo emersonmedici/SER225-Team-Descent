@@ -1,8 +1,12 @@
 package Maps;
 
+import EnhancedMapTiles.BlockedWallTile;
+import EnhancedMapTiles.BlockedWallTile2;
 import EnhancedMapTiles.DangerEntity;
 import EnhancedMapTiles.Keycard1;
+import EnhancedMapTiles.Mg;
 import EnhancedMapTiles.PushableRock;
+import EnhancedMapTiles.WallTile;
 import Level.*;
 import NPCs.Bug;
 import NPCs.Dave;
@@ -12,6 +16,7 @@ import EnhancedMapTiles.DangerEntity;
 import Scripts.MiniGame2Script;
 import Scripts.MiniGameScript;
 import Scripts.SimpleTextScript;
+import ScriptActions.*;
 import EnhancedMapTiles.DangerEntity;
 import EnhancedMapTiles.VentEntity;
 
@@ -48,13 +53,71 @@ public class Level1Map extends Map {
         ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
 
         // keycard is at the beginning of level for now, move to where puzzle is afterwards
-        enhancedMapTiles.add(new Keycard1(getMapTile(84, 95).getLocation()));
+        enhancedMapTiles.add(new Keycard1(getMapTile(44, 68).getLocation()));
 
         PushableRock pushableRock = new PushableRock(getMapTile(2, 7).getLocation());
         enhancedMapTiles.add(pushableRock);
-       
-        // PushableRock pushableRock = new PushableRock(getMapTile(2, 7).getLocation());
-        // enhancedMapTiles.add(pushableRock);
+
+        BlockedWallTile wall = new BlockedWallTile(getMapTile(78, 96).getLocation());
+        enhancedMapTiles.add(wall);
+        
+        BlockedWallTile wall2 = new BlockedWallTile(getMapTile(78, 97).getLocation());
+        enhancedMapTiles.add(wall2);
+
+        BlockedWallTile wall3 = new BlockedWallTile(getMapTile(78, 98).getLocation());
+        enhancedMapTiles.add(wall3);
+
+        BlockedWallTile2 wall4 = new BlockedWallTile2(getMapTile(43, 72).getLocation());
+        enhancedMapTiles.add(wall4); 
+
+        BlockedWallTile2 wall5 = new BlockedWallTile2(getMapTile(44, 72).getLocation());
+        enhancedMapTiles.add(wall5); 
+
+        BlockedWallTile2 wall6 = new BlockedWallTile2(getMapTile(45, 72).getLocation());
+        enhancedMapTiles.add(wall6); 
+
+        WallTile wall7 = new WallTile(getMapTile(107, 57).getLocation());
+        enhancedMapTiles.add(wall7); 
+
+        WallTile wall8 = new WallTile(getMapTile(108, 57).getLocation());
+        enhancedMapTiles.add(wall8); 
+
+        WallTile wall9 = new WallTile(getMapTile(109, 57).getLocation());
+        enhancedMapTiles.add(wall9); 
+
+        WallTile wall10 = new WallTile(getMapTile(101, 67).getLocation());
+        enhancedMapTiles.add(wall10); 
+
+        WallTile wall11 = new WallTile(getMapTile(102, 67).getLocation());
+        enhancedMapTiles.add(wall11); 
+
+        WallTile wall12 = new WallTile(getMapTile(103, 67).getLocation());
+        enhancedMapTiles.add(wall12); 
+
+        WallTile wall13 = new WallTile(getMapTile(81, 93).getLocation());
+        enhancedMapTiles.add(wall13); 
+
+        WallTile wall14 = new WallTile(getMapTile(82, 93).getLocation());
+        enhancedMapTiles.add(wall14); 
+
+        WallTile wall15 = new WallTile(getMapTile(83, 93).getLocation());
+        enhancedMapTiles.add(wall15); 
+
+        Mg mg = new Mg(getMapTile(103, 64).getLocation());
+        mg.setInteractScript(new MiniGameScript());
+        enhancedMapTiles.add(mg);
+
+        Mg mg2 = new Mg(getMapTile(44, 76).getLocation(), 5);
+        mg2.setInteractScript(new MiniGame2Script());
+        enhancedMapTiles.add(mg2);
+
+        Mg mg4 = new Mg(getMapTile(103, 65).getLocation(), "w");
+       // mg4.setInteractScript(new MiniGame2Script());
+        enhancedMapTiles.add(mg4);
+
+        Mg mg5 = new Mg(getMapTile(44, 77).getLocation(), "w");
+       // mg5.setInteractScript(new MiniGame2Script());
+        enhancedMapTiles.add(mg5);
 
         DangerEntity enemy = new DangerEntity(getMapTile(93, 38).getLocation());
         enemy.setIsUpdateOffScreen(true);
@@ -83,20 +146,6 @@ public class Level1Map extends Map {
         // bug.setInteractScript(new BugScript());
         // npcs.add(bug);
 
-        Dave dave2 = new Dave(
-                4,
-                getMapTile(86, 98).getLocation().subtractX(20)
-        );
-        dave2.setInteractScript(new MiniGameScript());
-        npcs.add(dave2);
-
-        Dave dave3 = new Dave(
-                4,
-                getMapTile(88, 98).getLocation().subtractX(20)
-        );
-        dave3.setInteractScript(new MiniGame2Script());
-        npcs.add(dave3);
-
         //DangerEntity enemy = new DangerEntity(1, getMapTile(82, 94).getLocation());
         //enemy.setInteractScript(new DangerEntityScript());
         //npcs.add(enemy);
@@ -104,6 +153,31 @@ public class Level1Map extends Map {
         return npcs;
     }
 
+    // public PlayLevelScreen getScreen() {
+    //     return this.screen;
+    // }
+
+    // @Override
+    // public ArrayList<Trigger> loadTriggers() {
+    //     ArrayList<Trigger> triggers = new ArrayList<>();
+    //     triggers.add(new Trigger(790, 1030, 100, 10, new LostBallScript(), "hasLostBall"));
+    //     triggers.add(new Trigger(790, 960, 10, 80, new LostBallScript(), "hasLostBall"));
+    //     triggers.add(new Trigger(890, 960, 10, 80, new LostBallScript(), "hasLostBall"));
+    //     return triggers;
+    // }
+
+    // @Override
+    // public void loadScripts() {
+    //     getMapTile(21, 19).setInteractScript(new SimpleTextScript("Cat's house"));
+
+    //     getMapTile(7, 26).setInteractScript(new SimpleTextScript("Walrus's house"));
+
+    //     getMapTile(20, 4).setInteractScript(new SimpleTextScript("Dino's house"));
+
+    //     getMapTile(2, 6).setInteractScript(new TreeScript());
+ 
+    //     getMapTile(78, 95).setInteractScript(new BlockedTileScript());
+    // }
 
 
 
@@ -114,9 +188,12 @@ public class Level1Map extends Map {
         triggers.add(new Trigger(triggerPoint.x, triggerPoint.y, 100, 100, new Level1Script1(), "hasLanded"));
         triggerPoint = getMapTile(88, 34).getLocation();
         triggers.add(new Trigger(triggerPoint.x, triggerPoint.y, 530, 150, new Level1Script2(), "newFlagTest"));
+        
+        /*Point triggerPoint2 = getMapTile(78, 95).getLocation();
+        triggers.add(new Trigger(triggerPoint2.x, triggerPoint2.y, 100, 100, new BlockedTileScript(), "touchedWall"));*/
         return triggers;
-    }
 
+    }
 
 }
 
