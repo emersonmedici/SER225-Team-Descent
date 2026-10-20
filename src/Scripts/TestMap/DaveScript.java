@@ -73,7 +73,7 @@ public class DaveScript extends Script {
 
         scriptActions.add(new TextboxScriptAction() {{
             addText("Dave: Ow! My leg!!--");
-            addText("Dave: It's still bleeding, please help me!!", new String[] {"I'sll find help!", "..."});
+            addText("Dave: It's still bleeding, please help me!!", new String[] {"I'll find help!", "..."});
         }});
 
         scriptActions.add(new ConditionalScriptAction() {{
