@@ -14,9 +14,9 @@ public class DaveScript extends Script {
         ArrayList<ScriptAction> scriptActions = new ArrayList<>();
         scriptActions.add(new LockPlayerScriptAction());
 
-        scriptActions.add(new NPCLockScriptAction());
+        //scriptActions.add(new NPCLockScriptAction());
 
-        scriptActions.add(new NPCFacePlayerScriptAction());
+        //scriptActions.add(new NPCFacePlayerScriptAction());
 
         /* 
         scriptActions.add(new ConditionalScriptAction() {{
@@ -72,8 +72,8 @@ public class DaveScript extends Script {
 //////
 
         scriptActions.add(new TextboxScriptAction() {{
-            addText("Ow! My leg!!--");
-            addText("Help me!!", new String[] {"I'll find help!", "..."});
+            addText("Dave: Ow! My leg!!--");
+            addText("Dave: It's still bleeding, please help me!!", new String[] {"I'sll find help!", "..."});
         }});
 
         scriptActions.add(new ConditionalScriptAction() {{
@@ -105,8 +105,10 @@ public class DaveScript extends Script {
             }});
         }});
 
-        scriptActions.add(new NPCUnlockScriptAction());
+        //scriptActions.add(new NPCUnlockScriptAction());
         scriptActions.add(new UnlockPlayerScriptAction());
+
+        scriptActions.add(new ChangeFlagScriptAction("hasTalkedToDave", true));
 
         return scriptActions;
     }

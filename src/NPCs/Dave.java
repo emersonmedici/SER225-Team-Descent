@@ -14,21 +14,22 @@ import Utils.Direction;
 import Utils.Point;
 
 public class Dave extends NPC {
-    //private int totalAmountMoved = 0;
-    // private Direction direction = Direction.RIGHT;
-    //private float speed = 1;
+    private int totalAmountMoved = 0;
+    private Direction direction = Direction.LEFT;
+    private float speed = 1.5f;
     
     public Dave(int id, Point location) {
-        super(id, location.x, location.y, new SpriteSheet(ImageLoader.load("Bug.png"), 24, 15), "WALK_RIGHT");
+        //super(id, location.x, location.y, new SpriteSheet(ImageLoader.load("Bug.png"), 24, 15), "WALK_RIGHT");
+        super(id, location.x, location.y, new SpriteSheet(ImageLoader.load("car2.png"), 64, 64), "WALK_LEFT");
     }
 
-    /*
+    
     // this code makes the bug npc walk back and forth (left to right)
-    @Override
+    /*@Override
     public void performAction(Player player) {
         // if bug has not yet moved 90 pixels in one direction, move bug forward
-        if (totalAmountMoved < 90) {
-            float amountMoved = moveXHandleCollision(speed * direction.getVelocity());
+        if (totalAmountMoved < 120) {
+            float amountMoved = moveXHandleCollision(speed * direction.getVelocityX());
             totalAmountMoved += Math.abs(amountMoved);
         }
 
@@ -50,46 +51,46 @@ public class Dave extends NPC {
         else {
             currentAnimationName = "WALK_LEFT";
         }
-    }
-    */
+    }*/
+    
 
 
     @Override
     public HashMap<String, Frame[]> loadAnimations(SpriteSheet spriteSheet) {
         return new HashMap<String, Frame[]>() {{
             put("STAND_LEFT", new Frame[] {
-                new FrameBuilder(spriteSheet.getSprite(0, 0))
+                new FrameBuilder(spriteSheet.getSprite(0, 6))
                     .withScale(2)
-                    .withBounds(3, 5, 18, 7)
+                    .withBounds(12, 20, 30, 20)
                     .build()
             });
             put("STAND_RIGHT", new Frame[] {
-                new FrameBuilder(spriteSheet.getSprite(0, 0))
+                new FrameBuilder(spriteSheet.getSprite(0, 6))
                     .withScale(2)
-                    .withBounds(3, 5, 18, 7)
+                    .withBounds(12, 20, 30, 20)
                     .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                     .build()
            });
            put("WALK_LEFT", new Frame[] {
-                new FrameBuilder(spriteSheet.getSprite(0, 0), 8)
+                new FrameBuilder(spriteSheet.getSprite(0, 6), 8)
                         .withScale(2)
-                        .withBounds(3, 5, 18, 7)
+                        .withBounds(12, 20, 30,20)
                         .build(),
-                new FrameBuilder(spriteSheet.getSprite(0, 1), 8)
+                new FrameBuilder(spriteSheet.getSprite(0, 6), 8)
                         .withScale(2)
-                        .withBounds(3, 5, 18, 7)
+                        .withBounds(12, 20, 30, 20)
                         .build()
             });
             put("WALK_RIGHT", new Frame[] {
-                new FrameBuilder(spriteSheet.getSprite(0, 0), 8)
+                new FrameBuilder(spriteSheet.getSprite(0, 6), 8)
                         .withScale(2)
                         .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                        .withBounds(3, 5, 18, 7)
+                        .withBounds(12, 20, 30, 20)
                         .build(),
-                new FrameBuilder(spriteSheet.getSprite(0, 1), 8)
+                new FrameBuilder(spriteSheet.getSprite(0, 6), 8)
                         .withScale(2)
                         .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                        .withBounds(3, 5, 18, 7)
+                        .withBounds(12, 20, 30, 20)
                         .build()
             });
         }};
