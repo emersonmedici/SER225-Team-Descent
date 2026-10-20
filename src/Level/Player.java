@@ -11,14 +11,12 @@ import GameObject.SpriteSheet;
 import Lighting.Light;
 import Lighting.PointLight;
 import Lighting.SpotLight;
+import Screens.*;
 import Sound.SoundEffect;
 import Sound.SoundManager;
-import Screens.*;
 import Utils.Direction;
 import Utils.Point;
-
 import java.util.ArrayList;
-import java.util.List;
 
 public abstract class Player extends GameObject {
     // values that affect player movement
@@ -76,6 +74,42 @@ public abstract class Player extends GameObject {
     public CarriableObject getCarriedObject() { return carriedObject; }
     public int getInventorySize() { return inventory.length; }
     public CarriableObject getInventoryItem(int slot) { return inventory[slot]; }
+
+    // moves players and its items from the previous map to the next map, and sets the player's position to the next map's player start position
+    public void moveToMap(Map nextMap) {
+        Map previousMap = map;
+        setMap(nextMap);
+        // move player to the next map
+        setLocation(nextMap.getPlayerStartPosition().x, nextMap.getPlayerStartPosition().y);
+        nextMap.setPlayer(this);
+
+        unlock();
+        stand(Direction.LEFT);
+        moveAmountX = 0;
+        moveAmountY = 0;
+        lastAmountMovedX = 0;
+        lastAmountMovedY = 0;
+        currentWalkingXDirection = Direction.NONE;
+        currentWalkingYDirection = Direction.NONE;
+        lastWalkingXDirection = Direction.NONE;
+        lastWalkingYDirection = Direction.NONE;
+        lastMovementDirection = Direction.NONE;
+        keyLocker.lockKey(INTERACT_KEY);
+
+        // loops through the player inventory to check for items to move over
+        for (CarriableObject item : inventory) {
+            if (item == null) {
+                continue;
+            }
+            if (previousMap != null) {
+                previousMap.getEnhancedMapTiles().remove(item);
+            }
+            nextMap.addEnhancedMapTile(item);
+            item.update(this);
+            item.setEquipped(item == carriedObject);
+        }
+        updateFlashlight();
+    }
 
     //selecting an empty slot (or -1 for empty hands) stores the current item.
     public void selectInventorySlot(int slot) {
