@@ -15,7 +15,7 @@ public class MenuScreen extends Screen {
     protected int currentMenuItemHovered = 0; // current menu item being "hovered" over
     protected int menuItemSelected = -1;
     protected SpriteFont playGame;
-    //protected SpriteFont credits;
+    protected SpriteFont title;
     protected Map background;
     protected int keyPressTimer;
     protected int pointerLocationX, pointerLocationY;
@@ -30,6 +30,9 @@ public class MenuScreen extends Screen {
         playGame = new SpriteFont("PLAY GAME", 200, 123, "Arial", 30, new Color(150, 0, 0));
         playGame.setOutlineColor(Color.black);
         playGame.setOutlineThickness(3);
+        title = new SpriteFont("DECENSION", 100, 60, "Arial", 50, new Color(150, 0, 0));
+        title.setOutlineColor(Color.black);
+        title.setOutlineThickness(3);
         //credits = new SpriteFont("CREDITS", 200, 223, "Arial", 30, new Color(49, 207, 240));
         //credits.setOutlineColor(Color.black);
         //credits.setOutlineThickness(3);
@@ -94,7 +97,7 @@ public class MenuScreen extends Screen {
     public void draw(GraphicsHandler graphicsHandler) {
         background.draw(graphicsHandler);
         playGame.draw(graphicsHandler);
-        //credits.draw(graphicsHandler);
+        title.draw(graphicsHandler);
         graphicsHandler.drawFilledRectangleWithBorder(pointerLocationX, pointerLocationY, 20, 20, new Color(100, 100, 100), Color.black, 2);
     }
 }
