@@ -4,14 +4,18 @@ import Engine.GraphicsHandler;
 import Engine.Key;
 import Engine.KeyLocker;
 import Engine.Keyboard;
-import EnhancedMapTiles.CarriableObject;
+import EnhancedMapTiles.*;
 import GameObject.GameObject;
 import GameObject.Rectangle;
 import GameObject.SpriteSheet;
 import Lighting.Light;
 import Lighting.PointLight;
 import Lighting.SpotLight;
+import Screens.*;
+import Sound.SoundEffect;
+import Sound.SoundManager;
 import Utils.Direction;
+import Utils.Point;
 import java.util.ArrayList;
 
 public abstract class Player extends GameObject {
@@ -52,6 +56,9 @@ public abstract class Player extends GameObject {
     protected float flashlightOffset = 12;
 
     protected boolean isLocked = false;
+
+    // one footstep every 44 pixels walked: about 3 steps a second walking, 7 running, 1.5 in mud
+    protected StepCounter footsteps = new StepCounter(44);
 
     // values for player pick up, drop, and inventory
 
@@ -133,6 +140,7 @@ public abstract class Player extends GameObject {
 
     // Player health
     protected int health;
+    protected int maxHealth;
 
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName, int health) {
         super(spriteSheet, x, y, startingAnimationName);
@@ -141,6 +149,7 @@ public abstract class Player extends GameObject {
         previousPlayerState = playerState;
         this.affectedByTriggers = true;
         this.health = health;
+        this.maxHealth = health;
 
         flashlight.setSteps(24);
         flashlightGlow.setIntensity(0.6f);
@@ -148,6 +157,32 @@ public abstract class Player extends GameObject {
     }
 
     public void update() {
+        ArrayList<EnhancedMapTile> allEnhancedMapTiles = new ArrayList<>(map.enhancedMapTiles);
+        ArrayList<EnhancedMapTile> sortedBlockedTiles = new ArrayList<>();
+        ArrayList<EnhancedMapTile> sortedBlockedTiles2 = new ArrayList<>();
+
+        for (int i = 0; i<allEnhancedMapTiles.size(); i++) {
+            if (allEnhancedMapTiles.get(i) instanceof BlockedWallTile) {
+                sortedBlockedTiles.add(allEnhancedMapTiles.get(i));
+            }
+
+            if (allEnhancedMapTiles.get(i) instanceof BlockedWallTile2) {
+                sortedBlockedTiles2.add(allEnhancedMapTiles.get(i));
+            }
+        }
+
+        for (int j = 0; j<sortedBlockedTiles.size(); j++) {
+            if (MiniGame.getIsCorrect() == true) {
+                map.enhancedMapTiles.remove(sortedBlockedTiles.get(j));
+            }
+        }
+        
+        for (int j = 0; j<sortedBlockedTiles2.size(); j++) {
+            if (MiniGame2.getWinGame() == true) {
+                map.enhancedMapTiles.remove(sortedBlockedTiles2.get(j));
+            }  
+        }
+       
         handleInventoryKeys();
         if (!isLocked) {
             moveAmountX = 0;
@@ -164,8 +199,13 @@ public abstract class Player extends GameObject {
             lastAmountMovedY = super.moveYHandleCollision(moveAmountY);
             lastAmountMovedX = super.moveXHandleCollision(moveAmountX);
 
+            updateFootsteps();
+
             handleFlashlightToggle();
         }
+
+        // the player is the "ears" for sounds that come from somewhere in the world, like the monster's footsteps
+        SoundManager.setListener(getX() + getWidth() / 2f, getY() + getHeight() / 2f, map.getTileset().getScaledSpriteWidth());
 
         handlePlayerAnimation();
 
@@ -211,7 +251,6 @@ public abstract class Player extends GameObject {
         }
     }
 
-    private Player player;
     // player WALKING state logic
     protected void playerWalking() {
         if (!keyLocker.isKeyLocked(INTERACT_KEY) && Keyboard.isKeyDown(INTERACT_KEY)) {
@@ -219,19 +258,29 @@ public abstract class Player extends GameObject {
             interactOrDrop();
         }
 
-        if (Keyboard.isKeyDown(Key.SHIFT) == true) {
-            walkSpeed = 5f;
-        } else {
-            walkSpeed = 2.3f;
-        } 
-        
-        /*boolean mudStatus = Maps.ProlougeMap.mudTile;
+        ArrayList<EnhancedMapTile> allEnhancedMapTiles = new ArrayList<>(map.enhancedMapTiles);
+        ArrayList<EnhancedMapTile> sortedMudTiles = new ArrayList<>();
+        boolean touching = false;
 
-        if (mudStatus == true){
+        for (int i = 0; i<allEnhancedMapTiles.size(); i++) {
+            if (allEnhancedMapTiles.get(i) instanceof MudObject) {
+                sortedMudTiles.add(allEnhancedMapTiles.get(i));
+            }
+        }
+
+        for (int j = 0; j<sortedMudTiles.size(); j++) {
+            if (touching(sortedMudTiles.get(j)) == true){
+                touching = true;
+            }
+        }
+        
+        if (Keyboard.isKeyDown(Key.SHIFT) == true && touching == false) {
+            walkSpeed = 5f;
+        } else if (Keyboard.isKeyDown(Key.SHIFT) == false && touching == true) {
             walkSpeed = 1.0f;
         } else {
             walkSpeed = 2.3f;
-        }*/
+        }
 
         // if walk left key is pressed, move player to the left
         if (Keyboard.isKeyDown(MOVE_LEFT_KEY)) {
@@ -286,6 +335,38 @@ public abstract class Player extends GameObject {
 
         if (Keyboard.isKeyUp(FLASHLIGHT_KEY)) {
             keyLocker.unlockKey(FLASHLIGHT_KEY);
+        }
+    }
+
+    // plays a footstep for whatever the player is standing on, once per stride
+    // uses how far the player ACTUALLY moved, so walking into a wall is silent
+    protected void updateFootsteps() {
+        float distanceMoved = (float) Math.sqrt(lastAmountMovedX * lastAmountMovedX + lastAmountMovedY * lastAmountMovedY);
+        if (distanceMoved == 0) {
+            footsteps.reset();
+            return;
+        }
+
+        if (footsteps.addDistance(distanceMoved)) {
+            // running (Shift sets walkSpeed to 5) is louder than walking -- noise is a risk the player chooses to take
+            boolean isRunning = walkSpeed > 3f;
+            SoundManager.play(getFootstepSound(), isRunning ? 1f : 0.6f);
+        }
+    }
+
+    // the footstep sound for the tile under the player's feet (the bottom middle of their collision box)
+    protected SoundEffect getFootstepSound() {
+        Rectangle bounds = getBounds();
+        MapTile tile = map.getTileByPosition(bounds.getX1() + bounds.getWidth() / 2f, bounds.getY2());
+        Surface surface = tile != null ? tile.getSurface() : Surface.DIRT;
+
+        switch (surface) {
+            case GRASS:
+                return SoundEffect.PLAYER_STEP_GRASS;
+            case METAL:
+                return SoundEffect.PLAYER_STEP_METAL;
+            default:
+                return SoundEffect.PLAYER_STEP_DIRT;
         }
     }
 
@@ -459,6 +540,7 @@ public abstract class Player extends GameObject {
         carriedObject.dropAt(dropX, dropY);
         inventory[selectedInventorySlot] = null;
         carriedObject = null;
+        SoundManager.play(SoundEffect.DROP);
         return true;
     }
 
@@ -479,6 +561,7 @@ public abstract class Player extends GameObject {
         object.setEquipped(false);
         // filling a previously selected empty slot must not equip it
         if (selectedInventorySlot == freeSlot) selectedInventorySlot = -1;
+        SoundManager.play(SoundEffect.PICKUP);
         return true;
     }
 
@@ -492,6 +575,31 @@ public abstract class Player extends GameObject {
 
     public int getHealth() {
         return this.health;
+    }
+
+    public int getMaxHealth() 
+    {
+        return this.maxHealth;
+    }
+
+    public boolean isPlayerInVent() {
+        float playerCenterX =
+                getX() + getWidth() / 2.0f;
+
+        float playerCenterY =
+                getY() + getHeight() / 2.0f;
+
+        Point playerPos = map.getTileIndexByPosition(playerCenterX, playerCenterY);
+
+        MapTile tile = map.getMapTile((int)playerPos.x, (int)playerPos.y);
+
+        if(tile.tileType == TileType.VENT) {
+            return true;
+        }
+        else {
+            return false;
+        }
+        
     }
 
     // Uncomment this to have game draw player's bounds to make it easier to visualize

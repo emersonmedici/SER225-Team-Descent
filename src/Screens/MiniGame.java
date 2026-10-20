@@ -5,19 +5,22 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import Sound.SoundEffect;
+import Sound.SoundManager;
+
 public class MiniGame {	
 	private JFrame frame;
 	private JLabel loseLabel, winLabel, keyLabel, blueLabel, yellowLabel, greenLabel, magentaLabel, orangeLabel;
 	private JPanel losePanel, winPanel, submitPanel, mainPanel, keyPanel, clickCountPanel, clickCountPanel2, clickCountPanel3, clickCountPanel4, clickCountPanel5, clickCountPanel6;
 	private JButton button1, button2, button3, button4, button5, button6;
-    
-    public MiniGame(String frameTitle, int frameWidth, int frameHeight) {
+    private static boolean isCorrect;
 
+    public MiniGame(String frameTitle, int frameWidth, int frameHeight) {
     	frame = new JFrame(frameTitle);
 		frame.setSize(frameWidth, frameHeight);
-        
         frame.setLayout(new GridBagLayout());
-		
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
 		mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
         mainPanel.setOpaque(true);
@@ -44,7 +47,7 @@ public class MiniGame {
 		m.gridy = 2;
 		m.anchor = GridBagConstraints.CENTER;
 		
-        // Create button
+        // Create buttons
 		button1 = new JButton ("1");
 		button1.setBackground(Color.BLUE);
 		button1.setOpaque(true);
@@ -71,7 +74,6 @@ public class MiniGame {
 		button5.setBorderPainted(false);
 		
 		button6 = new JButton ("Submit!");
-		
 		
         button1.setAlignmentX(Component.CENTER_ALIGNMENT);
         button1.setPreferredSize(new Dimension(80, 80));
@@ -146,17 +148,11 @@ public class MiniGame {
         clickCountPanel5.setMaximumSize(new Dimension(60, 40));
         clickCountPanel5.add(orangeLabel);
 
-
 		keyPanel.add(clickCountPanel6);
-		//keyPanel.add(Box.createRigidArea(new Dimension(5, 0))); 
 		keyPanel.add(clickCountPanel);
-		//keyPanel.add(Box.createRigidArea(new Dimension(5, 0))); 
 		keyPanel.add(clickCountPanel2);
-		//keyPanel.add(Box.createRigidArea(new Dimension(5, 0))); 
 		keyPanel.add(clickCountPanel3);
-		//keyPanel.add(Box.createRigidArea(new Dimension(5, 0))); 
 		keyPanel.add(clickCountPanel4);
-		//keyPanel.add(Box.createRigidArea(new Dimension(5, 0))); 
 		keyPanel.add(clickCountPanel5);
 	
 		mainPanel.add(button1);
@@ -165,7 +161,6 @@ public class MiniGame {
 		mainPanel.add(button4);
 		mainPanel.add(button5);
 		submitPanel.add(button6);
-     //   mainPanel.add(Box.createRigidArea(new Dimension(0, 20))); 
    	
 		frame.add(mainPanel, l);
 		frame.add(keyPanel, k);
@@ -196,7 +191,6 @@ public class MiniGame {
 
 	private void checkCorrect(){ 
 		int correct = 0;
-		boolean isCorrect = false;
 		
 		GridBagConstraints k = new GridBagConstraints();
 		k.gridx = 0;
@@ -219,14 +213,14 @@ public class MiniGame {
 				correct++;
 			} 
 			
-			
 			if (correct == 5) {
-				isCorrect = true;
+				setIsCorrect(true);
 			} else {
-				isCorrect = false;
+				setIsCorrect(false);
 			}
 			
 			if (isCorrect == true) {
+				SoundManager.play(SoundEffect.PUZZLE_COMPLETE);
 				winPanel = new JPanel();  
 				winPanel.setBackground(Color.WHITE); 
 				winLabel = new JLabel("You win! Congrats", SwingConstants.CENTER);
@@ -249,13 +243,20 @@ public class MiniGame {
 			}
 			
 			if (correct == 5) {
-				isCorrect = true;
+				setIsCorrect(true);
 			} else {
-				isCorrect = false;
+				setIsCorrect(false);
 			}
 
 	}
 
+	public static void setIsCorrect (boolean value) {
+		isCorrect = value;
+	}
+
+	public static boolean getIsCorrect() {
+		return isCorrect;
+	}
 
     private void changeBackgroundColor(JButton button) {
 		Color[] colorChoices = {Color.MAGENTA, Color.GREEN, Color.ORANGE, Color.YELLOW, Color.BLUE};

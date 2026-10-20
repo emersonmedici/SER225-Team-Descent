@@ -10,6 +10,8 @@ import Maps.Level1Map;
 import Maps.NothingMap;
 import Maps.ProlougeMap;
 import Players.Cat;
+import Music.MusicDirector;
+import Sound.SoundManager;
 import Utils.Direction;
 
 // This class is for when the RPG game is actually being played
@@ -23,8 +25,15 @@ public class PlayLevelScreen extends Screen implements GameListener {
     protected InventoryScreen inventoryScreen;
     protected FlagManager flagManager;
 
+    // created once here, NOT in initialize() -- resetLevel() calls initialize() again,
+    // and a second director would leave the first one's music playing forever
+    protected MusicDirector musicDirector = new MusicDirector();
+
     public PlayLevelScreen(ScreenCoordinator screenCoordinator) {
         this.screenCoordinator = screenCoordinator;
+        // load every sound effect now, while the screen is changing anyway, so the first footstep doesn't stutter
+        // (sounds stay loaded for the whole game, so coming back from the menu doesn't load them twice)
+        SoundManager.preloadAll();
     }
 
     public void initialize() {
@@ -73,6 +82,10 @@ public class PlayLevelScreen extends Screen implements GameListener {
     }
 
     public void update() {
+        // the music follows whichever map is loaded, so every map transition picks up its new track automatically
+        // this goes BEFORE the switch: the win screen can call goBackToMenu() inside the switch, and running
+        // the director after that would start the music right back up over the menu
+        musicDirector.update(map, player);
         // based on screen state, perform specific actions
         switch (playLevelScreenState) {
             // if level is "running" update player and map to keep game logic for the platformer level going
@@ -174,6 +187,8 @@ public class PlayLevelScreen extends Screen implements GameListener {
     }
 
     public void goBackToMenu() {
+        // this screen is about to be thrown away, so its music has to be shut off now or it keeps playing over the menu
+        musicDirector.stop();
         screenCoordinator.setGameState(GameState.MENU);
     }
 

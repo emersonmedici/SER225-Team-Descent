@@ -1,9 +1,14 @@
 package Level;
 
+import Engine.GraphicsHandler;
+import Level.Player;
+import java.awt.Color;
+
 import Lighting.Light;
 import Lighting.LightingRenderer;
 import Lighting.PointLight;
 import Lighting.SpotLight;
+import Screens.HealthUI;
 
 import java.awt.Color;
 
@@ -20,8 +25,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
-
-
 
 /*
     This class is for defining a map that is used for a specific level
@@ -89,8 +92,16 @@ public abstract class Map {
     protected ArrayList<GameListener> listeners = new ArrayList<>();
 
     //Creates nodes for pathfinding
-    protected NodeBase[][] nodes;
+    protected NodeBase[][] largeEntityNodes;
+    protected NodeBase[][] ventEntityNodes;
+
     // lighting: ambientDarkness 0 = lighting off (title screen, maps without lights)
+    // only maps that set this to true show the health hearts
+    protected boolean showHealthUI = false;
+    protected HealthUI healthUI = new HealthUI();
+
+    public boolean isShowHealthUI() { return showHealthUI; }
+    public void setShowHealthUI(boolean showHealthUI) { this.showHealthUI = showHealthUI; }
     protected ArrayList<Light> lights = new ArrayList<>();
     protected float ambientDarkness = 0f;
     protected Color ambientColor = new Color(10, 10, 26);
@@ -101,6 +112,13 @@ public abstract class Map {
     public void setAmbientDarkness(float ambientDarkness) { this.ambientDarkness = ambientDarkness; }
     public Color getAmbientColor() { return ambientColor; }
     public void setAmbientColor(Color ambientColor) { this.ambientColor = ambientColor; }
+
+    // music: file names inside Resources/Music/, set by each map's constructor -- null means silence
+    protected String ambientTrack = null;
+    protected String chaseTrack = null;
+
+    public String getAmbientTrack() { return ambientTrack; }
+    public String getChaseTrack() { return chaseTrack; }
     
 
     public Map(String mapFileName, Tileset tileset) {
@@ -279,10 +297,9 @@ public abstract class Map {
         this.mapTiles = new MapTile[this.height * this.width];
         fileInput.nextLine();
 
-        nodes = new NodeBase[this.width][this.height];
-        System.out.println(
-            "Node dimensions: " + nodes.length + " x " + nodes[0].length
-        );
+        largeEntityNodes = new NodeBase[this.width][this.height];
+        ventEntityNodes = new NodeBase[this.width][this.height];
+
         // read in each tile index from the map file, use the defined tileset to get the associated MapTile to that tileset, and place it in the array
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -294,13 +311,24 @@ public abstract class Map {
                 int yLocation = i * tileset.getScaledSpriteHeight();
                 MapTile tile = tileset.getTile(tileIndex).build(xLocation, yLocation, rotation);
                 TileType type = tile.getTileType();
-                boolean walkable;
+                boolean largeEntityWalk;
                 if(type == TileType.NOT_PASSABLE || type == TileType.VENT) {
-                    walkable = false;
+                    largeEntityWalk = false;
                 } else {
-                    walkable = true;
+                    largeEntityWalk = true;
                 }
-                nodes[j][i] = new NodeBase(j, i, walkable);
+                largeEntityNodes[j][i] = new NodeBase(j, i, largeEntityWalk);
+
+                boolean ventEntityWalk;
+                if(type == TileType.NOT_PASSABLE || type == TileType.PASSABLE) {
+                    ventEntityWalk = false;
+                }
+                else{
+                    ventEntityWalk = true;
+                }
+                ventEntityNodes[j][i] = new NodeBase(j, i, ventEntityWalk);
+
+                
                 
                 tile.setMap(this);
                 setMapTile(j, i, tile);
@@ -453,6 +481,23 @@ public abstract class Map {
         return npcs;
     }
     public ArrayList<Trigger> getTriggers() { return triggers; }
+
+    // every enhanced map tile and npc on this map that can trigger the chase music
+    // this checks ALL of them, not just the ones near the camera, so a monster can be heard before it's on screen
+    public ArrayList<Threat> getThreats() {
+        ArrayList<Threat> threats = new ArrayList<>();
+        for (EnhancedMapTile enhancedMapTile : enhancedMapTiles) {
+            if (enhancedMapTile instanceof Threat) {
+                threats.add((Threat) enhancedMapTile);
+            }
+        }
+        for (NPC npc : npcs) {
+            if (npc instanceof Threat) {
+                threats.add((Threat) npc);
+            }
+        }
+        return threats;
+    }
 
     public ArrayList<MapTile> getAnimatedMapTiles() {
         return animatedMapTiles;
@@ -729,6 +774,7 @@ public abstract class Map {
     }
 
     public void draw(Player player, GraphicsHandler graphicsHandler) {
+        
     camera.draw(player, graphicsHandler);
 
     // darkness goes over the world but under the textbox
@@ -742,6 +788,11 @@ public abstract class Map {
         lightingRenderer.render(graphicsHandler, frameLights, ambientDarkness, ambientColor,
                 camX, camY, ScreenManager.getScreenWidth(), ScreenManager.getScreenHeight(),
                 camX, camY);
+    }
+
+        // hearts go over the darkness so they're always readable, but under the textbox
+    if (showHealthUI) {
+        healthUI.draw(graphicsHandler, player);
     }
 
     if (textbox.isActive()) {
@@ -776,7 +827,11 @@ public abstract class Map {
         return listeners;
     }
 
-    public NodeBase[][] getNodes() {
-        return nodes;
+    public NodeBase[][] getLargeEntityNodes() {
+        return largeEntityNodes;
+    }
+
+    public NodeBase[][] getVentEntityNodes() {
+        return ventEntityNodes;
     }
 }
