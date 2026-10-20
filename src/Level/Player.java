@@ -1,18 +1,24 @@
 package Level;
 
+import Engine.GraphicsHandler;
 import Engine.Key;
 import Engine.KeyLocker;
 import Engine.Keyboard;
-import EnhancedMapTiles.CarriableObject;
+import EnhancedMapTiles.*;
 import GameObject.GameObject;
 import GameObject.Rectangle;
 import GameObject.SpriteSheet;
 import Lighting.Light;
 import Lighting.PointLight;
 import Lighting.SpotLight;
+import Sound.SoundEffect;
+import Sound.SoundManager;
+import Screens.*;
 import Utils.Direction;
+import Utils.Point;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Player extends GameObject {
     // values that affect player movement
@@ -53,12 +59,54 @@ public abstract class Player extends GameObject {
 
     protected boolean isLocked = false;
 
-    // values for player pick up and drop
+    // one footstep every 44 pixels walked: about 3 steps a second walking, 7 running, 1.5 in mud
+    protected StepCounter footsteps = new StepCounter(44);
 
-    protected CarriableObject carriedObject = null;
+    // values for player pick up, drop, and inventory
+
+    protected CarriableObject carriedObject = null; //item currently being carried by the player, if any
+    private final CarriableObject[] inventory = new CarriableObject[9]; // 9 inventory slots, numbered 1-9, with 0 being empty hands
+    private int selectedInventorySlot = -1;
+    private static final Key[] INVENTORY_KEYS = {
+        Key.ONE, Key.TWO, Key.THREE, Key.FOUR, Key.FIVE,
+        Key.SIX, Key.SEVEN, Key.EIGHT, Key.NINE
+    }; // number keys 1-9 on keyboard to select inventory slots. the 0 key for holding nothing.
+
+    public int getSelectedInventorySlot() { return selectedInventorySlot; }
+    public CarriableObject getCarriedObject() { return carriedObject; }
+    public int getInventorySize() { return inventory.length; }
+    public CarriableObject getInventoryItem(int slot) { return inventory[slot]; }
+
+    //selecting an empty slot (or -1 for empty hands) stores the current item.
+    public void selectInventorySlot(int slot) {
+        if (isLocked || slot < -1 || slot >= inventory.length) return;
+        if (carriedObject != null) carriedObject.setEquipped(false);
+        selectedInventorySlot = slot;
+        carriedObject = slot == -1 ? null : inventory[slot];
+        if (carriedObject != null) carriedObject.setEquipped(true);
+    }
+
+    //looks through all the inventory keys and selects what was pressed
+    private void handleInventoryKeys() {
+        for (int i = 0; i < INVENTORY_KEYS.length; i++) {
+            Key key = INVENTORY_KEYS[i];
+            if (Keyboard.isKeyUp(key)) keyLocker.unlockKey(key);
+            else if (!keyLocker.isKeyLocked(key)) {
+                keyLocker.lockKey(key);
+                selectInventorySlot(i);
+            }
+        }
+        //when key is let go, unlocks it
+        if (Keyboard.isKeyUp(Key.ZERO)) keyLocker.unlockKey(Key.ZERO);
+        else if (!keyLocker.isKeyLocked(Key.ZERO)) {
+            keyLocker.lockKey(Key.ZERO);
+            selectInventorySlot(-1);
+        }
+    }
 
     // Player health
     protected int health;
+    protected int maxHealth;
 
     public Player(SpriteSheet spriteSheet, float x, float y, String startingAnimationName, int health) {
         super(spriteSheet, x, y, startingAnimationName);
@@ -67,6 +115,7 @@ public abstract class Player extends GameObject {
         previousPlayerState = playerState;
         this.affectedByTriggers = true;
         this.health = health;
+        this.maxHealth = health;
 
         flashlight.setSteps(24);
         flashlightGlow.setIntensity(0.6f);
@@ -74,6 +123,33 @@ public abstract class Player extends GameObject {
     }
 
     public void update() {
+        ArrayList<EnhancedMapTile> allEnhancedMapTiles = new ArrayList<>(map.enhancedMapTiles);
+        ArrayList<EnhancedMapTile> sortedBlockedTiles = new ArrayList<>();
+        ArrayList<EnhancedMapTile> sortedBlockedTiles2 = new ArrayList<>();
+
+        for (int i = 0; i<allEnhancedMapTiles.size(); i++) {
+            if (allEnhancedMapTiles.get(i) instanceof BlockedWallTile) {
+                sortedBlockedTiles.add(allEnhancedMapTiles.get(i));
+            }
+
+            if (allEnhancedMapTiles.get(i) instanceof BlockedWallTile2) {
+                sortedBlockedTiles2.add(allEnhancedMapTiles.get(i));
+            }
+        }
+
+        for (int j = 0; j<sortedBlockedTiles.size(); j++) {
+            if (MiniGame.getIsCorrect() == true) {
+                map.enhancedMapTiles.remove(sortedBlockedTiles.get(j));
+            }
+        }
+        
+        for (int j = 0; j<sortedBlockedTiles2.size(); j++) {
+            if (MiniGame2.getWinGame() == true) {
+                map.enhancedMapTiles.remove(sortedBlockedTiles2.get(j));
+            }  
+        }
+       
+        handleInventoryKeys();
         if (!isLocked) {
             moveAmountX = 0;
             moveAmountY = 0;
@@ -89,8 +165,13 @@ public abstract class Player extends GameObject {
             lastAmountMovedY = super.moveYHandleCollision(moveAmountY);
             lastAmountMovedX = super.moveXHandleCollision(moveAmountX);
 
+            updateFootsteps();
+
             handleFlashlightToggle();
         }
+
+        // the player is the "ears" for sounds that come from somewhere in the world, like the monster's footsteps
+        SoundManager.setListener(getX() + getWidth() / 2f, getY() + getHeight() / 2f, map.getTileset().getScaledSpriteWidth());
 
         handlePlayerAnimation();
 
@@ -101,6 +182,14 @@ public abstract class Player extends GameObject {
 
         // update player's animation
         super.update();
+        // Selected items also follow when they were outside the camera's update range.
+        if (carriedObject != null) carriedObject.update(this);
+    }
+
+    @Override
+    public void draw(GraphicsHandler graphicsHandler) {
+        super.draw(graphicsHandler);
+        if (carriedObject != null) carriedObject.draw(graphicsHandler);
     }
 
     // based on player's current state, call appropriate player state handling method
@@ -119,7 +208,7 @@ public abstract class Player extends GameObject {
     protected void playerStanding() {
         if (!keyLocker.isKeyLocked(INTERACT_KEY) && Keyboard.isKeyDown(INTERACT_KEY)) {
             keyLocker.lockKey(INTERACT_KEY);
-            map.entityInteract(this);
+            interactOrDrop();
         }
 
         // if a walk key is pressed, player enters WALKING state
@@ -132,11 +221,29 @@ public abstract class Player extends GameObject {
     protected void playerWalking() {
         if (!keyLocker.isKeyLocked(INTERACT_KEY) && Keyboard.isKeyDown(INTERACT_KEY)) {
             keyLocker.lockKey(INTERACT_KEY);
-            map.entityInteract(this);
+            interactOrDrop();
         }
 
-        if (Keyboard.isKeyDown(Key.SHIFT) == true) {
+        ArrayList<EnhancedMapTile> allEnhancedMapTiles = new ArrayList<>(map.enhancedMapTiles);
+        ArrayList<EnhancedMapTile> sortedMudTiles = new ArrayList<>();
+        boolean touching = false;
+
+        for (int i = 0; i<allEnhancedMapTiles.size(); i++) {
+            if (allEnhancedMapTiles.get(i) instanceof MudObject) {
+                sortedMudTiles.add(allEnhancedMapTiles.get(i));
+            }
+        }
+
+        for (int j = 0; j<sortedMudTiles.size(); j++) {
+            if (touching(sortedMudTiles.get(j)) == true){
+                touching = true;
+            }
+        }
+        
+        if (Keyboard.isKeyDown(Key.SHIFT) == true && touching == false) {
             walkSpeed = 5f;
+        } else if (Keyboard.isKeyDown(Key.SHIFT) == false && touching == true) {
+            walkSpeed = 1.0f;
         } else {
             walkSpeed = 2.3f;
         }
@@ -194,6 +301,38 @@ public abstract class Player extends GameObject {
 
         if (Keyboard.isKeyUp(FLASHLIGHT_KEY)) {
             keyLocker.unlockKey(FLASHLIGHT_KEY);
+        }
+    }
+
+    // plays a footstep for whatever the player is standing on, once per stride
+    // uses how far the player ACTUALLY moved, so walking into a wall is silent
+    protected void updateFootsteps() {
+        float distanceMoved = (float) Math.sqrt(lastAmountMovedX * lastAmountMovedX + lastAmountMovedY * lastAmountMovedY);
+        if (distanceMoved == 0) {
+            footsteps.reset();
+            return;
+        }
+
+        if (footsteps.addDistance(distanceMoved)) {
+            // running (Shift sets walkSpeed to 5) is louder than walking -- noise is a risk the player chooses to take
+            boolean isRunning = walkSpeed > 3f;
+            SoundManager.play(getFootstepSound(), isRunning ? 1f : 0.6f);
+        }
+    }
+
+    // the footstep sound for the tile under the player's feet (the bottom middle of their collision box)
+    protected SoundEffect getFootstepSound() {
+        Rectangle bounds = getBounds();
+        MapTile tile = map.getTileByPosition(bounds.getX1() + bounds.getWidth() / 2f, bounds.getY2());
+        Surface surface = tile != null ? tile.getSurface() : Surface.DIRT;
+
+        switch (surface) {
+            case GRASS:
+                return SoundEffect.PLAYER_STEP_GRASS;
+            case METAL:
+                return SoundEffect.PLAYER_STEP_METAL;
+            default:
+                return SoundEffect.PLAYER_STEP_DIRT;
         }
     }
 
@@ -332,19 +471,65 @@ public abstract class Player extends GameObject {
         }
     }
     
-    //pickup objects interaction
+    // held item gets priority over nearby interaction scripts, so u would use ur item first
+    private void interactOrDrop() {
+        if (carriedObject != null) {
+            dropCarriedObject();
+        } else {
+            map.entityInteract(this);
+        }
+    }
+
+    // drop object when player is carrying one
+    public boolean dropCarriedObject() {
+        if (carriedObject == null || isLocked) {
+            return false;
+        }
+
+        Rectangle playerBounds = getBounds();
+        Rectangle itemBounds = carriedObject.getBounds();
+        // gets x and y of the drop location based on which way the player is facing, and centers the item on the player's y if dropping left or right
+        float boundsX = facingDirection == Direction.LEFT
+                ? playerBounds.getX1() - itemBounds.getWidth()
+                : playerBounds.getX2() + 1;
+        float boundsY = playerBounds.getY1()
+                + (playerBounds.getHeight() - itemBounds.getHeight()) / 2f;
+
+        // place item at location with offset to the player
+        float dropX = boundsX - (itemBounds.getX1() - carriedObject.getX());
+        float dropY = boundsY - (itemBounds.getY1() - carriedObject.getY());
+
+        if (!carriedObject.canDropAt(dropX, dropY)) {
+            return false;
+        }
+
+        carriedObject.dropAt(dropX, dropY);
+        inventory[selectedInventorySlot] = null;
+        carriedObject = null;
+        SoundManager.play(SoundEffect.DROP);
+        return true;
+    }
+
+    // pickup objects interaction
     public boolean pickUpObject(CarriableObject object) {
-    if (carriedObject != null || object == null) {
-        return false;
-    }
+        if (object == null || object.isCarried() || isLocked) return false;
+        int freeSlot = -1;
+        for (int i = 0; i < inventory.length; i++) {
+            if (inventory[i] == null) {
+                freeSlot = i;
+                break;
+            }
+        }
 
-    if (!object.pickUp(this)) {
-        return false;
+        // finds a slot that is empty to put the item into, doesnt pick up if it is full
+        if (freeSlot == -1 || !object.pickUp(this)) return false;
+        inventory[freeSlot] = object;
+        object.setEquipped(false);
+        // filling a previously selected empty slot must not equip it
+        if (selectedInventorySlot == freeSlot) selectedInventorySlot = -1;
+        SoundManager.play(SoundEffect.PICKUP);
+        return true;
     }
-
-    carriedObject = object;
-    return true;
-}
 
     public void decreaseHealth(int amount) {
         this.health -= amount;
@@ -356,6 +541,31 @@ public abstract class Player extends GameObject {
 
     public int getHealth() {
         return this.health;
+    }
+
+    public int getMaxHealth() 
+    {
+        return this.maxHealth;
+    }
+
+    public boolean isPlayerInVent() {
+        float playerCenterX =
+                getX() + getWidth() / 2.0f;
+
+        float playerCenterY =
+                getY() + getHeight() / 2.0f;
+
+        Point playerPos = map.getTileIndexByPosition(playerCenterX, playerCenterY);
+
+        MapTile tile = map.getMapTile((int)playerPos.x, (int)playerPos.y);
+
+        if(tile.tileType == TileType.VENT) {
+            return true;
+        }
+        else {
+            return false;
+        }
+        
     }
 
     // Uncomment this to have game draw player's bounds to make it easier to visualize

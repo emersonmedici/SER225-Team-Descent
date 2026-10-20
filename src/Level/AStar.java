@@ -7,9 +7,11 @@ import java.util.List;
 public class AStar {
 
     private NodeBase[][] nodes; // grid 
+    private boolean needDiagonal;
 
-    public AStar(NodeBase[][] nodes) {
+    public AStar(NodeBase[][] nodes, boolean needDiagonal) {
         this.nodes = nodes;
+        this.needDiagonal = needDiagonal;
     }
 
     public List<NodeBase> findPath(NodeBase startNode, NodeBase goalNode) {
@@ -50,7 +52,7 @@ public class AStar {
             openList.remove(currentNode);
             closedList.add(currentNode);
 
-            for (NodeBase neighbor : getNeighbors(currentNode)) {
+            for (NodeBase neighbor : getNeighbors(currentNode, needDiagonal)) {
 
                 if (!neighbor.getWalkable() || closedList.contains(neighbor)) {
                     continue;
@@ -103,55 +105,64 @@ public class AStar {
     }
 
 
-    private ArrayList<NodeBase> getNeighbors(NodeBase node) {
+        private ArrayList<NodeBase> getNeighbors(NodeBase node, boolean needDiagonal) {
 
-    ArrayList<NodeBase> neighbors = new ArrayList<>();
+        ArrayList<NodeBase> neighbors = new ArrayList<>();
 
-    int x = node.getX();
-    int y = node.getY();
+        int x = node.getX();
+        int y = node.getY();
 
-    // Up
-    if (y - 1 >= 0) {
-        neighbors.add(nodes[x][y - 1]);
+        // Up
+        if (y - 1 >= 0) {
+            neighbors.add(nodes[x][y - 1]);
+        }
+
+        // Down
+        if (y + 1 < nodes[0].length) {
+            neighbors.add(nodes[x][y + 1]);
+        }
+
+        // Left
+        if (x - 1 >= 0) {
+            neighbors.add(nodes[x - 1][y]);
+        }
+
+        // Right
+        if (x + 1 < nodes.length) {
+            neighbors.add(nodes[x + 1][y]);
+        }
+
+        if (needDiagonal == true) {
+            // Only allow a diagonal move if both tiles beside it are walkable,
+            // so the entity can't squeeze between two walls at a corner
+            boolean upWalkable    = y - 1 >= 0 && nodes[x][y - 1].getWalkable();
+            boolean downWalkable  = y + 1 < nodes[0].length && nodes[x][y + 1].getWalkable();
+            boolean leftWalkable  = x - 1 >= 0 && nodes[x - 1][y].getWalkable();
+            boolean rightWalkable = x + 1 < nodes.length && nodes[x + 1][y].getWalkable();
+
+            // Up-left
+            if (upWalkable && leftWalkable) {
+                neighbors.add(nodes[x - 1][y - 1]);
+            }
+
+            // Up-right
+            if (upWalkable && rightWalkable) {
+                neighbors.add(nodes[x + 1][y - 1]);
+            }
+
+            // Down-left
+            if (downWalkable && leftWalkable) {
+                neighbors.add(nodes[x - 1][y + 1]);
+            }
+
+            // Down-right
+            if (downWalkable && rightWalkable) {
+                neighbors.add(nodes[x + 1][y + 1]);
+            }
+        }
+
+        return neighbors;
     }
-
-    // Down
-    if (y + 1 < nodes[0].length) {
-        neighbors.add(nodes[x][y + 1]);
-    }
-
-    // Left
-    if (x - 1 >= 0) {
-        neighbors.add(nodes[x - 1][y]);
-    }
-
-    // Right
-    if (x + 1 < nodes.length) {
-        neighbors.add(nodes[x + 1][y]);
-    }
-
-    // Up-left
-    if (y - 1 >= 0 && x - 1 >= 0) {
-        neighbors.add(nodes[x - 1][y - 1]);
-    }
-
-    // Up-right
-    if (y - 1 >= 0 && x + 1 < nodes.length) {
-        neighbors.add(nodes[x + 1][y - 1]);
-    }
-
-    // Down-left
-    if (y + 1 < nodes[0].length && x - 1 >= 0) {
-        neighbors.add(nodes[x - 1][y + 1]);
-    }
-
-    // Down-right
-    if (y + 1 < nodes[0].length && x + 1 < nodes.length) {
-        neighbors.add(nodes[x + 1][y + 1]);
-    }
-
-    return neighbors;
-}
 
 
     private int getDistance(NodeBase nodeA, NodeBase nodeB) {

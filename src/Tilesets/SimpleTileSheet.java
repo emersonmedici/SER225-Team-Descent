@@ -5,6 +5,7 @@ import Builders.MapTileBuilder;
 import Engine.ImageLoader;
 import GameObject.Frame;
 import GameObject.ImageEffect;
+import Level.Surface;
 import Level.TileType;
 import Level.Tileset;
 
@@ -36,7 +37,9 @@ public class SimpleTileSheet extends Tileset {
                 .withScale(tileScale)
                 .build();
 
-        MapTileBuilder floorTile = new MapTileBuilder(floorFrame);
+        // facility floor plating
+        MapTileBuilder floorTile = new MapTileBuilder(floorFrame)
+                .withSurface(Surface.METAL);
 
         mapTiles.add(floorTile);
 
@@ -126,6 +129,7 @@ public class SimpleTileSheet extends Tileset {
                 .build();
 
         MapTileBuilder ventFloorTile = new MapTileBuilder(ventFloorFrame)
+                .withSurface(Surface.METAL)
                 .withTileType(TileType.VENT);
 
         mapTiles.add(ventFloorTile);

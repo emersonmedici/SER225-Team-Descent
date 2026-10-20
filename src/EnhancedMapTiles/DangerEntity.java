@@ -16,6 +16,10 @@ import Level.TileType;
 import Level.Map;
 import Level.NodeBase;
 import Level.AStar;
+import Level.StepCounter;
+import Level.Threat;
+import Sound.SoundEffect;
+import Sound.SoundManager;
 
 import Utils.Direction;
 import Utils.Point;
@@ -25,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class DangerEntity extends EnhancedMapTile {
+public class DangerEntity extends EnhancedMapTile implements Threat {
 
         private float timeToAttack = 2;
         private float timer = timeToAttack * 60;
@@ -39,18 +43,22 @@ public class DangerEntity extends EnhancedMapTile {
 
         private NodeBase[][] nodes;
         private List<NodeBase> path;
-        private NodeBase nextNode;
         private int indexInPath = 1;
+
+        // long stride = slow, heavy footsteps (about 2 a second) -- it doesn't need to hurry
+        private StepCounter footsteps = new StepCounter(64);
 
 
     public DangerEntity(Point location) {
-        super(location.x, location.y, new SpriteSheet(ImageLoader.load("Dinosaur.png"), 14, 17), TileType.PASSABLE);
+        super(location.x, location.y, new SpriteSheet(ImageLoader.load("DangerEntity.png"), 32, 32), TileType.PASSABLE);
+        
     }
 
     public void start(Player player) {
-        nodes = map.getNodes();
+        nodes = map.getLargeEntityNodes();
 
-        AStar aStar = new AStar(nodes);
+        boolean useDiagonal = true;
+        AStar aStar = new AStar(nodes, useDiagonal);
 
         Point playerStart = map.getTileIndexByPosition(player.getLocation().x, player.getLocation().y);
         lastPlayerPos = playerStart;
@@ -60,7 +68,6 @@ public class DangerEntity extends EnhancedMapTile {
         
         if (path.size() > 1) {
             indexInPath = 1;
-            nextNode = path.get(indexInPath);
         }
 
     }
@@ -89,17 +96,6 @@ public class DangerEntity extends EnhancedMapTile {
                 }
             }
 
-            // Get the current grid position of the entity and player
-            // Point entityPos = map.getTileIndexByPosition(
-            //     getLocation().x,
-            //     getLocation().y
-            // );
-
-            // Point playerPos = map.getTileIndexByPosition(
-            //     player.getLocation().x,
-            //     player.getLocation().y
-            // );
-
             float playerCenterX =
                 player.getX() + player.getWidth() / 2.0f;
 
@@ -122,73 +118,60 @@ public class DangerEntity extends EnhancedMapTile {
                 entityCenterY
             );
 
-            // System.out.println(
-            //     "Entity Node X: " + entityPos.x +
-            //     " | Entity Node Y: " + entityPos.y + 
-            //     " | Player Node X: " + playerPos.x +
-            //     " | Player Node Y: " + playerPos.y
-            // );
 
             // Recalculate the path when the player enters a new tile
             if (lastPlayerPos == null ||
                 playerPos.x != lastPlayerPos.x ||
                 playerPos.y != lastPlayerPos.y) {
 
-                updatePath(entityPos, playerPos);
+                updatePath(getPathStartNode(entityPos), playerPos);
 
                 lastPlayerPos = playerPos;
             }
 
             // Make sure there is a valid path
-            if (path != null && path.size() > 1 && indexInPath < path.size()) {
+            if (path != null && indexInPath < path.size()) {
 
-                // Get the direction toward the next node
-                direction = getMoveDirection(
-                    nodes[(int)entityPos.x][(int)entityPos.y],
-                    path.get(indexInPath)
-                );
+                NodeBase nextNode = path.get(indexInPath);
 
-                // Move toward the next node
-                if (direction == Direction.UP) {
-                    moveY(-speed);
-                }
-                else if (direction == Direction.DOWN) {
-                    moveY(speed);
-                }
-                else if (direction == Direction.LEFT) {
-                    moveX(-speed);
-                }
-                else if (direction == Direction.RIGHT) {
-                    moveX(speed);
-                }
-                else if (direction == Direction.UPLEFT) {
-                    moveX(-speed);
-                    moveY(-speed);
-                }
-                else if (direction == Direction.UPRIGHT) {
-                    moveX(speed);
-                    moveY(-speed);
-                }
-                else if (direction == Direction.DOWNLEFT) {
-                    moveX(-speed);
-                    moveY(speed);
-                }
-                else if (direction == Direction.DOWNRIGHT) {
-                    moveX(speed);
-                    moveY(speed);
-                }
+                int tileWidth = map.getTileset().getScaledSpriteWidth();
+                int tileHeight = map.getTileset().getScaledSpriteHeight();
 
-                // Check if the entity reached the next node
-                if (entityPos.x == path.get(indexInPath).getX()
-                        && entityPos.y == path.get(indexInPath).getY()) {
+                // Pixel position that centers the entity on the next tile
+                float targetX = nextNode.getX() * tileWidth + (tileWidth - getWidth()) / 2.0f;
+                float targetY = nextNode.getY() * tileHeight + (tileHeight - getHeight()) / 2.0f;
 
+                float dx = targetX - getX();
+                float dy = targetY - getY();
+                float distance = (float) Math.sqrt(dx * dx + dy * dy);
+
+                if (distance <= speed) {
+                    // Close enough: snap exactly onto the tile, then aim for the next one
+                    moveX(dx);
+                    moveY(dy);
                     indexInPath++;
 
-                    // If we reached the end of the path,
-                    // get a new path to the player's current position
                     if (indexInPath >= path.size()) {
-                        updatePath(entityPos, playerPos);
+                        updatePath(getPathStartNode(entityPos), playerPos);
                     }
+                }
+                else {
+                    // Move straight toward the target at a constant speed
+                    moveX(dx / distance * speed);
+                    moveY(dy / distance * speed);
+                }
+
+                // footsteps come from where the monster is, so you can hear how close it is and which side it's on
+                if (footsteps.addDistance(Math.min(distance, speed))) {
+                    Point center = getThreatCenter();
+                    SoundManager.playAt(SoundEffect.MONSTER_STEP, center.x, center.y);
+                }
+
+                if (dx < 0) {
+                    setAnimation("WALK_LEFT");
+                }
+                else if (dx > 0) {
+                    setAnimation("WALK_RIGHT");
                 }
             }
         }
@@ -229,33 +212,19 @@ public class DangerEntity extends EnhancedMapTile {
     }
 
 
-    private void updatePath(Point entityPos, Point playerPos) {
+    private void updatePath(NodeBase startNode, Point playerPos) {
 
-        AStar aStar = new AStar(nodes);
+        boolean useDiagonal = true;   // keep false in VentEntity
+        AStar aStar = new AStar(nodes, useDiagonal);
 
         List<NodeBase> newPath = aStar.findPath(
-            nodes[(int)entityPos.x][(int)entityPos.y],
+            startNode,
             nodes[(int)playerPos.x][(int)playerPos.y]
         );
-        // System.out.println("PATH:");
 
-        // for (NodeBase node : newPath) {
-        //     System.out.println(
-        //         "(" + node.getX() + ", " + node.getY() + ")"
-        //     );
-        // }
-        
-
-   //     System.out.println("New path size: " + newPath.size());
-
-        if (newPath.size() > 1) {
+        if (!newPath.isEmpty()) {
             path = newPath;
-            indexInPath = 1;
-
-         //   System.out.println("New path found!");
-        }
-        else {
-         //   System.out.println("NO PATH FOUND!");
+            indexInPath = 0;
         }
     }
 
@@ -267,12 +236,81 @@ public class DangerEntity extends EnhancedMapTile {
         return true;
     }
 
+    // Threat: this entity chases the player as soon as it has started, unless something has hidden it
+    @Override
+    public boolean isHunting() {
+        return hasStarted && !isHidden();
+    }
+
+    @Override
+    public Point getThreatCenter() {
+        return new Point(getX() + getWidth() / 2.0f, getY() + getHeight() / 2.0f);
+    }
+
+    // The node to start a new path from: the tile the entity is currently
+    // walking toward, or the tile it's standing on if it isn't moving
+    private NodeBase getPathStartNode(Point entityPos) {
+        if (path != null && indexInPath < path.size()) {
+            return path.get(indexInPath);
+        }
+        return nodes[(int)entityPos.x][(int)entityPos.y];
+    }
+
+    @Override
+    public HashMap<String, Frame[]> loadAnimations(SpriteSheet spriteSheet) {
+        return new HashMap<String, Frame[]>() {{
+            put("STAND_LEFT", new Frame[] {
+                    new FrameBuilder(spriteSheet.getSprite(0, 0))
+                            .withScale(3)
+                            .withBounds(4, 5, 5, 10)
+                            .build()
+            });
+            put("STAND_RIGHT", new Frame[] {
+                   new FrameBuilder(spriteSheet.getSprite(0, 0))
+                           .withScale(3)
+                           .withBounds(4, 5, 5, 10)
+                           .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                           .build()
+           });
+
+            put("WALK_LEFT", new Frame[]{
+                    new FrameBuilder(spriteSheet.getSprite(1, 0), 14)
+                            .withScale(3)
+                            .withBounds(4, 5, 5, 10)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
+                            .withScale(3)
+                            .withBounds(4, 5, 5, 10)
+                            .build()
+            });
+
+            put("WALK_RIGHT", new Frame[]{
+                    new FrameBuilder(spriteSheet.getSprite(1, 0), 14)
+                            .withScale(3)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .withBounds(4, 5, 5, 10)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
+                            .withScale(3)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .withBounds(4, 5, 5, 10)
+                            .build()
+            });
+        }};
+
+        
+    }
+
+    private void setAnimation(String animationName) {
+        bottomLayer.setCurrentAnimationName(animationName);
+    }
+
     
     @Override
     protected GameObject loadBottomLayer(SpriteSheet spriteSheet) {
-        Frame frame = new FrameBuilder(spriteSheet.getSubImage(0, 0))
-                .withScale(3)
-                .build();
-        return new GameObject(x, y, frame);
+      //  Frame frame = new FrameBuilder(spriteSheet.getSubImage(0, 0))
+          //      .withScale(3)
+               // .build();
+        return new GameObject(x, y, loadAnimations(spriteSheet), "WALK_LEFT");
     }
 }

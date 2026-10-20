@@ -21,6 +21,9 @@ public class MapTile extends MapEntity {
     private int tileIndex;
     private int rotation;
 
+    // what this tile is made of -- decides the footstep sound when something walks on it
+    protected Surface surface = Surface.DIRT;
+
     public MapTile(float x, float y, GameObject bottomLayer, GameObject topLayer, TileType tileType, int tileIndex) {
         super(x, y);
         this.bottomLayer = bottomLayer;
@@ -43,6 +46,13 @@ public class MapTile extends MapEntity {
         this.tileType = tileType;
     }
 
+    public MapTile(float x, float y, SpriteSheet spriteSheet, String startingAnimation, TileType tileType) {
+        super(x, y, spriteSheet, startingAnimation);
+        this.bottomLayer = loadBottomLayer(spriteSheet);
+        this.topLayer = loadTopLayer(spriteSheet);
+        this.tileType = tileType;
+    }
+
     protected GameObject loadBottomLayer(SpriteSheet spriteSheet) {
         return null;
     }
@@ -54,6 +64,9 @@ public class MapTile extends MapEntity {
     public TileType getTileType() {
         return tileType;
     }
+
+    public Surface getSurface() { return surface; }
+    public void setSurface(Surface surface) { this.surface = surface; }
 
     public int getTileIndex() {
         return tileIndex;
