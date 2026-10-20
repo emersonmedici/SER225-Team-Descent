@@ -5,17 +5,15 @@ import Engine.Screen;
 import Game.GameState;
 import Game.ScreenCoordinator;
 import Level.*;
-import Maps.ProlougeMap;
-import Maps.ProlougeCutsceneMap;
 import Maps.Cutscene1Map;
 import Maps.Level1Map;
 import Maps.NothingMap;
+import Maps.ProlougeCutsceneMap;
 import Maps.ProlougeMap;
-import Players.Cat;
 import Music.MusicDirector;
+import Players.Cat;
 import Sound.SoundManager;
 import Utils.Direction;
-import Utils.Point;
 
 // This class is for when the RPG game is actually being played
 public class PlayLevelScreen extends Screen implements GameListener {
@@ -26,6 +24,7 @@ public class PlayLevelScreen extends Screen implements GameListener {
     protected WinScreen winScreen;
     protected DarkScreen1 darkScreen1;
     protected DarkScreen2 darkScreen2;
+    protected InventoryScreen inventoryScreen;
     protected FlagManager flagManager;
 
     // created once here, NOT in initialize() -- resetLevel() calls initialize() again,
@@ -85,6 +84,8 @@ public class PlayLevelScreen extends Screen implements GameListener {
         //adding this so it starts black
         playLevelScreenState = PlayLevelScreenState.DARK2;
 
+        inventoryScreen = new InventoryScreen(this);
+        inventoryScreen.initialize();
     }
 
     public void update() {
@@ -98,6 +99,7 @@ public class PlayLevelScreen extends Screen implements GameListener {
             case RUNNING:
                 player.update();
                 map.update(player);
+                inventoryScreen.update();
                 break;
             // if level has been completed, bring up level cleared screen
             case LEVEL_COMPLETED:
@@ -118,11 +120,12 @@ public class PlayLevelScreen extends Screen implements GameListener {
         playLevelScreenState = PlayLevelScreenState.LEVEL_COMPLETED;
     }
 
-    @Override 
+    @Override
     public void onRestart() {
-        onCutscene1Completed();
+        // Restart still returns to Level 1 with a fresh cat and empty inventory.
+        System.out.println("Level completed!");
+        loadMap(new Level1Map(), PlayLevelScreenState.RUNNING, false);
     }
-
     //scene to start the prologue
     @Override
     public void onPrologueCutscene() {
@@ -186,7 +189,6 @@ public class PlayLevelScreen extends Screen implements GameListener {
     //scene change from prologue to lobby
     @Override
     public void onPrologueCompleted() {
-        // when this method is called within the game, it signals the game has been "won"
         System.out.println("Level completed!");
         map = new Cutscene1Map();
         map.setFlagManager(flagManager);
@@ -215,7 +217,6 @@ public class PlayLevelScreen extends Screen implements GameListener {
     //from lobby cut to black
     @Override
     public void onElevatorDrop() {
-        // when this method is called within the game, it signals the game has been "won"
         System.out.println("Level completed!");
         map = new NothingMap();
         map.setFlagManager(flagManager);
@@ -245,7 +246,6 @@ public class PlayLevelScreen extends Screen implements GameListener {
     //from black to level 1
     @Override
     public void onCutscene1Completed() {
-        // when this method is called within the game, it signals the game has been "won"
         System.out.println("Level completed!");
         map = new Level1Map();
         map.setFlagManager(flagManager);
@@ -274,30 +274,24 @@ public class PlayLevelScreen extends Screen implements GameListener {
     //from level 1 to the next thing (currently just puts you back in the prologue map)
     @Override
     public void onLevel1Completed() {
-        // when this method is called within the game, it signals the game has been "won"
         System.out.println("Level completed!");
-        //will put level 2 map here
-        map = new ProlougeMap();
-        map.setFlagManager(flagManager);
+        // Keep the current placeholder destination until Level 2 is ready.
+        loadMap(new ProlougeMap(), PlayLevelScreenState.RUNNING, true);
+    }
 
-        // setup player
-        int playerHealth = 3;
-        player = new Cat(map.getPlayerStartPosition().x, map.getPlayerStartPosition().y, playerHealth);
-        player.setMap(map);
-        playLevelScreenState = PlayLevelScreenState.RUNNING;
-        player.setFacingDirection(Direction.LEFT);
+    private void loadMap(Map nextMap, PlayLevelScreenState state, boolean keepPlayer) {
+        nextMap.setFlagManager(flagManager);
+        if (!keepPlayer) {
+            player = new Cat(nextMap.getPlayerStartPosition().x,
+                    nextMap.getPlayerStartPosition().y, 3);
+        }
+        player.moveToMap(nextMap);
+        map = nextMap;
+        playLevelScreenState = state;
 
-        map.setPlayer(player);
-
-        // let pieces of map know which button to listen for as the "interact" button
+        // Preserve the existing textbox, listener, and script setup on every map.
         map.getTextbox().setInteractKey(player.getInteractKey());
-
-        // add this screen as a "game listener" so other areas of the game that don't normally have direct access to it (such as scripts) can "signal" to have it do something
-        // this is used in the "onWin" method -- a script signals to this class that the game has been won by calling its "onWin" method
         map.addListener(this);
-
-        // preloads all scripts ahead of time rather than loading them dynamically
-        // both are supported, however preloading is recommended
         map.preloadScripts();
     }
 
@@ -306,6 +300,10 @@ public class PlayLevelScreen extends Screen implements GameListener {
         switch (playLevelScreenState) {
             case RUNNING:
                 map.draw(player, graphicsHandler);
+                // draws the inventory screen only when there is no textboxes (avoids blocking out cutscenes and stuff)
+                if (!map.getTextbox().isActive()) {
+                    inventoryScreen.draw(graphicsHandler);
+                }
                 break;
             case LEVEL_COMPLETED:
                 winScreen.draw(graphicsHandler);
