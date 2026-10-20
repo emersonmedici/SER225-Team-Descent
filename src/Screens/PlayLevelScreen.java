@@ -8,9 +8,10 @@ import Level.*;
 import Maps.Cutscene1Map;
 import Maps.Level1Map;
 import Maps.NothingMap;
+import Maps.ProlougeCutsceneMap;
 import Maps.ProlougeMap;
-import Players.Cat;
 import Music.MusicDirector;
+import Players.Cat;
 import Sound.SoundManager;
 import Utils.Direction;
 
@@ -22,6 +23,7 @@ public class PlayLevelScreen extends Screen implements GameListener {
     protected PlayLevelScreenState playLevelScreenState;
     protected WinScreen winScreen;
     protected DarkScreen1 darkScreen1;
+    protected DarkScreen2 darkScreen2;
     protected InventoryScreen inventoryScreen;
     protected FlagManager flagManager;
 
@@ -77,6 +79,11 @@ public class PlayLevelScreen extends Screen implements GameListener {
 
         winScreen = new WinScreen(this);
         darkScreen1 = new DarkScreen1(this);
+        darkScreen2 = new DarkScreen2(this);
+
+        //adding this so it starts black
+        playLevelScreenState = PlayLevelScreenState.DARK2;
+
         inventoryScreen = new InventoryScreen(this);
         inventoryScreen.initialize();
     }
@@ -101,6 +108,9 @@ public class PlayLevelScreen extends Screen implements GameListener {
             case DARK:
                 darkScreen1.update();
                 break;
+            case DARK2:
+                darkScreen2.update();
+                break;
         }
     }
 
@@ -116,26 +126,152 @@ public class PlayLevelScreen extends Screen implements GameListener {
         System.out.println("Level completed!");
         loadMap(new Level1Map(), PlayLevelScreenState.RUNNING, false);
     }
+    //scene to start the prologue
+    @Override
+    public void onPrologueCutscene() {
+        // when this method is called within the game, it signals the game has been "won"
+        System.out.println("Level completed!");
+        map = new ProlougeCutsceneMap();
+        map.setFlagManager(flagManager);
 
+        // setup player
+        int playerHealth = 3;
+        player = new Cat(map.getPlayerStartPosition().x, map.getPlayerStartPosition().y, playerHealth);
+        player.setMap(map);
+        playLevelScreenState = PlayLevelScreenState.RUNNING;
+        player.setFacingDirection(Direction.LEFT);
+
+        map.setPlayer(player);
+
+        // let pieces of map know which button to listen for as the "interact" button
+        map.getTextbox().setInteractKey(player.getInteractKey());
+
+        // add this screen as a "game listener" so other areas of the game that don't normally have direct access to it (such as scripts) can "signal" to have it do something
+        // this is used in the "onWin" method -- a script signals to this class that the game has been won by calling its "onWin" method
+        map.addListener(this);
+
+        // preloads all scripts ahead of time rather than loading them dynamically
+        // both are supported, however preloading is recommended
+        map.preloadScripts();
+    }
+
+    //scene to start the prologue
+    @Override
+    public void onPrologueGameplayStarted() {
+
+        // when this method is called within the game, it signals the game has been "won"
+        System.out.println("Level completed!");
+        map = new ProlougeMap();
+        map.setFlagManager(flagManager);
+
+        // setup player
+        int playerHealth = 3;
+        player = new Cat(550, 1660, playerHealth);
+        player.setMap(map);
+        playLevelScreenState = PlayLevelScreenState.RUNNING;
+        player.setFacingDirection(Direction.LEFT);
+
+        map.setPlayer(player);
+
+        // let pieces of map know which button to listen for as the "interact" button
+        map.getTextbox().setInteractKey(player.getInteractKey());
+
+        // add this screen as a "game listener" so other areas of the game that don't normally have direct access to it (such as scripts) can "signal" to have it do something
+        // this is used in the "onWin" method -- a script signals to this class that the game has been won by calling its "onWin" method
+        map.addListener(this);
+
+        // preloads all scripts ahead of time rather than loading them dynamically
+        // both are supported, however preloading is recommended
+        map.preloadScripts();
+    }
+
+
+    //scene change from prologue to lobby
     @Override
     public void onPrologueCompleted() {
         System.out.println("Level completed!");
-        loadMap(new Cutscene1Map(), PlayLevelScreenState.RUNNING, true);
+        map = new Cutscene1Map();
+        map.setFlagManager(flagManager);
+
+        // setup player
+        int playerHealth = 3;
+        player = new Cat(map.getPlayerStartPosition().x, map.getPlayerStartPosition().y, playerHealth);
+        player.setMap(map);
+        playLevelScreenState = PlayLevelScreenState.RUNNING;
+        player.setFacingDirection(Direction.LEFT);
+
+        map.setPlayer(player);
+
+        // let pieces of map know which button to listen for as the "interact" button
+        map.getTextbox().setInteractKey(player.getInteractKey());
+
+        // add this screen as a "game listener" so other areas of the game that don't normally have direct access to it (such as scripts) can "signal" to have it do something
+        // this is used in the "onWin" method -- a script signals to this class that the game has been won by calling its "onWin" method
+        map.addListener(this);
+
+        // preloads all scripts ahead of time rather than loading them dynamically
+        // both are supported, however preloading is recommended
+        map.preloadScripts();
     }
 
+    //from lobby cut to black
     @Override
     public void onElevatorDrop() {
         System.out.println("Level completed!");
-        loadMap(new NothingMap(), PlayLevelScreenState.DARK, true);
-        darkScreen1.initialize();
+        map = new NothingMap();
+        map.setFlagManager(flagManager);
+
+        //setup player
+        int playerHealth = 3;
+        player = new Cat(map.getPlayerStartPosition().x, map.getPlayerStartPosition().y, playerHealth);
+        player.setMap(map);
+        playLevelScreenState = PlayLevelScreenState.DARK;
+        player.setFacingDirection(Direction.LEFT);
+
+        map.setPlayer(player);
+
+        // let pieces of map know which button to listen for as the "interact" button
+        map.getTextbox().setInteractKey(player.getInteractKey());
+
+        // add this screen as a "game listener" so other areas of the game that don't normally have direct access to it (such as scripts) can "signal" to have it do something
+        // this is used in the "onWin" method -- a script signals to this class that the game has been won by calling its "onWin" method
+        map.addListener(this);
+
+        // preloads all scripts ahead of time rather than loading them dynamically
+        // both are supported, however preloading is recommended
+        map.preloadScripts();
+
     }
 
+    //from black to level 1
     @Override
     public void onCutscene1Completed() {
         System.out.println("Level completed!");
-        loadMap(new Level1Map(), PlayLevelScreenState.RUNNING, true);
+        map = new Level1Map();
+        map.setFlagManager(flagManager);
+
+        // setup player
+        int playerHealth = 3;
+        player = new Cat(map.getPlayerStartPosition().x, map.getPlayerStartPosition().y, playerHealth);
+        player.setMap(map);
+        playLevelScreenState = PlayLevelScreenState.RUNNING;
+        player.setFacingDirection(Direction.LEFT);
+
+        map.setPlayer(player);
+
+        // let pieces of map know which button to listen for as the "interact" button
+        map.getTextbox().setInteractKey(player.getInteractKey());
+
+        // add this screen as a "game listener" so other areas of the game that don't normally have direct access to it (such as scripts) can "signal" to have it do something
+        // this is used in the "onWin" method -- a script signals to this class that the game has been won by calling its "onWin" method
+        map.addListener(this);
+
+        // preloads all scripts ahead of time rather than loading them dynamically
+        // both are supported, however preloading is recommended
+        map.preloadScripts();
     }
 
+    //from level 1 to the next thing (currently just puts you back in the prologue map)
     @Override
     public void onLevel1Completed() {
         System.out.println("Level completed!");
@@ -175,6 +311,9 @@ public class PlayLevelScreen extends Screen implements GameListener {
             case DARK:
                 darkScreen1.draw(graphicsHandler);
                 break;
+            case DARK2:
+                darkScreen2.draw(graphicsHandler);
+                break;
         }
     }
 
@@ -194,6 +333,6 @@ public class PlayLevelScreen extends Screen implements GameListener {
 
     // This enum represents the different states this screen can be in
     private enum PlayLevelScreenState {
-        RUNNING, LEVEL_COMPLETED, DARK
+        RUNNING, LEVEL_COMPLETED, DARK, DARK2
     }
 }

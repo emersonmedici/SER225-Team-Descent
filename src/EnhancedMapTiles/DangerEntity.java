@@ -50,12 +50,11 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
 
 
     public DangerEntity(Point location) {
-        super(location.x, location.y, new SpriteSheet(ImageLoader.load("Dinosaur.png"), 14, 17), TileType.PASSABLE);
+        super(location.x, location.y, new SpriteSheet(ImageLoader.load("DangerEntity.png"), 32, 32), TileType.PASSABLE);
         
     }
 
     public void start(Player player) {
-        System.out.println(this.currentAnimationName);
         nodes = map.getLargeEntityNodes();
 
         boolean useDiagonal = true;
