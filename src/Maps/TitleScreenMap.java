@@ -6,6 +6,7 @@ import GameObject.ImageEffect;
 import GameObject.Sprite;
 import Level.Map;
 import Tilesets.CommonTileset;
+import Tilesets.Level1Tileset;
 import Tilesets.SimpleTileSheet;
 import Utils.Colors;
 import Utils.Point;
@@ -16,7 +17,7 @@ public class TitleScreenMap extends Map {
     private Sprite cat;
 
     public TitleScreenMap() {
-        super("title_screen_map.txt", new SimpleTileSheet());
+        super("title_screen_map.txt", new Level1Tileset());
         Point catLocation = getMapTile(8, 5).getLocation().subtractX(6).subtractY(7);
         cat = new Sprite(ImageLoader.loadSubImage("Player.png", Colors.MAGENTA, 0, 0, 24, 24));
         cat.setScale(3);
