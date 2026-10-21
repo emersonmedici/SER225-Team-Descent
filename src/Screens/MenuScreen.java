@@ -30,7 +30,7 @@ public class MenuScreen extends Screen {
         playGame = new SpriteFont("PLAY GAME", 200, 123, "Arial", 30, new Color(150, 0, 0));
         playGame.setOutlineColor(Color.black);
         playGame.setOutlineThickness(3);
-        title = new SpriteFont("DECENSION", 100, 60, "Arial", 50, new Color(150, 0, 0));
+        title = new SpriteFont("DESCENSION", 100, 60, "Arial", 50, new Color(150, 0, 0));
         title.setOutlineColor(Color.black);
         title.setOutlineThickness(3);
         //credits = new SpriteFont("CREDITS", 200, 223, "Arial", 30, new Color(49, 207, 240));
