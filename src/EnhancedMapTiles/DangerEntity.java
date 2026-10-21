@@ -50,7 +50,7 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
 
 
     public DangerEntity(Point location) {
-        super(location.x, location.y, new SpriteSheet(ImageLoader.load("DangerEntity.png"), 32, 32), TileType.PASSABLE);
+        super(location.x, location.y, new SpriteSheet(ImageLoader.load("DangerEntity.png"), 46, 32), TileType.PASSABLE);
         
     }
 
@@ -262,6 +262,7 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
             put("STAND_LEFT", new Frame[] {
                     new FrameBuilder(spriteSheet.getSprite(0, 0))
                             .withScale(3)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .withBounds(4, 5, 5, 10)
                             .build()
             });
@@ -269,11 +270,23 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
                    new FrameBuilder(spriteSheet.getSprite(0, 0))
                            .withScale(3)
                            .withBounds(4, 5, 5, 10)
-                           .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                            .build()
            });
 
             put("WALK_LEFT", new Frame[]{
+                    new FrameBuilder(spriteSheet.getSprite(1, 0), 14)
+                            .withScale(3)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .withBounds(4, 5, 5, 10)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
+                            .withScale(3)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .withBounds(4, 5, 5, 10)
+                            .build()
+            });
+
+            put("WALK_RIGHT", new Frame[]{
                     new FrameBuilder(spriteSheet.getSprite(1, 0), 14)
                             .withScale(3)
                             .withBounds(4, 5, 5, 10)
@@ -284,8 +297,39 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
                             .build()
             });
 
-            put("WALK_RIGHT", new Frame[]{
+            put("ATTACK_LEFT", new Frame[]{
                     new FrameBuilder(spriteSheet.getSprite(1, 0), 14)
+                            .withScale(3)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .withBounds(4, 5, 5, 10)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
+                            .withScale(3)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .withBounds(4, 5, 5, 10)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
+                            .withScale(3)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .withBounds(4, 5, 5, 10)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
+                            .withScale(3)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .withBounds(4, 5, 5, 10)
+                            .build()
+            });
+
+            put("ATTACK_RIGHT", new Frame[]{
+                    new FrameBuilder(spriteSheet.getSprite(1, 0), 14)
+                            .withScale(3)
+                            .withBounds(4, 5, 5, 10)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
+                            .withScale(3)
+                            .withBounds(4, 5, 5, 10)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
                             .withBounds(4, 5, 5, 10)
