@@ -6,6 +6,7 @@ import Engine.ImageLoader;
 import GameObject.Frame;
 import GameObject.GameObject;
 import GameObject.ImageEffect;
+import GameObject.Rectangle;
 import GameObject.SpriteSheet;
 import Level.EnhancedMapTile;
 import Level.GameListener;
@@ -48,6 +49,12 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
         // long stride = slow, heavy footsteps (about 2 a second) -- it doesn't need to hurry
         private StepCounter footsteps = new StepCounter(64);
 
+        private static final int HIT_FRAME = 3;   // frame of ATTACK_LEFT/RIGHT where the weapon lands
+        private boolean isAttacking = false;
+        private boolean hasHitThisSwing = false;
+        private int lastAttackFrameIndex = 0;
+        private static final float SWORD_REACH = 48;   // weapon reaches 16 sprite pixels past the body, x3 scale
+
 
     public DangerEntity(Point location) {
         super(location.x, location.y, new SpriteSheet(ImageLoader.load("DangerEntity.png"), 46, 32), TileType.PASSABLE);
@@ -83,10 +90,29 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
 
             timer--;
 
-            // Attack the player if touching them
-            if (player.touching(this) == true && canAttack() == true) {
-                player.decreaseHealth(1);
-                System.out.println("ATTACK");
+            // Follow the swing that's already playing
+            if (isAttacking) {
+                int frame = bottomLayer.getCurrentFrameIndex();
+
+                // Deal damage once, on the frame where the weapon lands
+                if (frame == HIT_FRAME && hasHitThisSwing == false) {
+                    hasHitThisSwing = true;
+                    if (isPlayerInReach(player) == true) {
+                        player.decreaseHealth(1);
+                        System.out.println("ATTACK");
+                    }
+                }
+
+                // Frame index went backwards = the animation looped, so the swing is over
+                if (frame < lastAttackFrameIndex) {
+                    isAttacking = false;
+                }
+                lastAttackFrameIndex = frame;
+            }
+
+            // Start a new swing when the player is close and the cooldown is over
+            if (isAttacking == false && isPlayerInReach(player) == true && canAttack() == true) {
+                startAttack(player);
             }
 
             if(player.getHealth() <= 0) {
@@ -129,8 +155,19 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
                 lastPlayerPos = playerPos;
             }
 
+            // Close enough to swing: stand still facing the player instead of walking into them
+            boolean inReach = isPlayerInReach(player);
+            if (inReach == true && isAttacking == false) {
+                if (getBodyCenterX() > getCenterX(player)) {
+                    setAnimation("STAND_LEFT");
+                }
+                else {
+                    setAnimation("STAND_RIGHT");
+                }
+            }
+
             // Make sure there is a valid path
-            if (path != null && indexInPath < path.size()) {
+            if (path != null && indexInPath < path.size() && inReach == false && isAttacking == false) {
 
                 NodeBase nextNode = path.get(indexInPath);
 
@@ -166,7 +203,6 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
                     Point center = getThreatCenter();
                     SoundManager.playAt(SoundEffect.MONSTER_STEP, center.x, center.y);
                 }
-
                 if (dx < 0) {
                     setAnimation("WALK_LEFT");
                 }
@@ -179,37 +215,6 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
         hasStarted = true;
     }
 
-    private Direction getMoveDirection(NodeBase currentNode, NodeBase nextNode) {
-        int xDifference = nextNode.getX() - currentNode.getX();
-        int yDifference = nextNode.getY() - currentNode.getY();
-
-        if (xDifference > 0 && yDifference < 0) {
-            return Direction.UPRIGHT;
-        }
-        else if (xDifference < 0 && yDifference < 0) {
-            return Direction.UPLEFT;
-        }
-        else if (xDifference > 0 && yDifference > 0) {
-            return Direction.DOWNRIGHT;
-        }
-        else if (xDifference < 0 && yDifference > 0) {
-            return Direction.DOWNLEFT;
-        }
-        else if (xDifference > 0) {
-            return Direction.RIGHT;
-        }
-        else if (xDifference < 0) {
-            return Direction.LEFT;
-        }
-        else if (yDifference > 0) {
-            return Direction.DOWN;
-        }
-        else if (yDifference < 0) {
-            return Direction.UP;
-        }
-
-        return null;
-    }
 
 
     private void updatePath(NodeBase startNode, Point playerPos) {
@@ -219,7 +224,7 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
 
         List<NodeBase> newPath = aStar.findPath(
             startNode,
-            nodes[(int)playerPos.x][(int)playerPos.y]
+            getGoalNode(playerPos)
         );
 
         if (!newPath.isEmpty()) {
@@ -228,12 +233,70 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
         }
     }
 
+    // The tile to walk to: beside the player (left or right) so the sword can reach them,
+    // preferring the side the entity is already on
+    private NodeBase getGoalNode(Point playerPos) {
+        int playerTileX = (int)playerPos.x;
+        int playerTileY = (int)playerPos.y;
+
+        int tileWidth = map.getTileset().getScaledSpriteWidth();
+        float playerTileCenterX = playerTileX * tileWidth + tileWidth / 2.0f;
+        int nearSide = (getBodyCenterX() < playerTileCenterX) ? -1 : 1;
+
+        int[] sides = { nearSide, -nearSide };
+        for (int side : sides) {
+            int x = playerTileX + side;
+            if (x >= 0 && x < nodes.length && nodes[x][playerTileY].getWalkable()) {
+                return nodes[x][playerTileY];
+            }
+        }
+
+        // No room on either side, so go straight for the player
+        return nodes[playerTileX][playerTileY];
+    }
+
+    // True if the player is within sword range: level with the body and no further
+    // away than the weapon sticks out (16 sprite pixels past the body, x3 scale)
+    private boolean isPlayerInReach(Player player) {
+        if (player.touching(this) == true) {
+            return true;
+        }
+
+        Rectangle body = getBounds();
+        Rectangle target = player.getBounds();
+
+        // horizontal gap between the two boxes (0 or less means they overlap)
+        float gapX = Math.max(target.getX1() - body.getX2(), body.getX1() - target.getX2());
+        boolean levelWithBody = target.getY1() <= body.getY2() && target.getY2() >= body.getY1();
+
+        return gapX <= SWORD_REACH && levelWithBody;
+    }
+
+    private float getBodyCenterX() {
+        Rectangle body = getBounds();
+        return body.getX1() + body.getWidth() / 2.0f;
+    }
+
+    private float getCenterX(Player player) {
+        Rectangle target = player.getBounds();
+        return target.getX1() + target.getWidth() / 2.0f;
+    }
+
     private boolean canAttack() {
-        if(timer > 0) {   
-                return false;
+        return timer <= 0;
+    }
+
+    private void startAttack(Player player) {
+        if (getBodyCenterX() > getCenterX(player)) {
+            setAnimation("ATTACK_LEFT");
+        }
+        else {
+            setAnimation("ATTACK_RIGHT");
         }
         timer = timeToAttack * 60;
-        return true;
+        isAttacking = true;
+        hasHitThisSwing = false;
+        lastAttackFrameIndex = 0;
     }
 
     // Threat: this entity chases the player as soon as it has started, unless something has hidden it
@@ -263,13 +326,13 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
                     new FrameBuilder(spriteSheet.getSprite(0, 0))
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(4, 5, 5, 10)
+                            .withBounds(14, 5, 16, 27)
                             .build()
             });
             put("STAND_RIGHT", new Frame[] {
                    new FrameBuilder(spriteSheet.getSprite(0, 0))
                            .withScale(3)
-                           .withBounds(4, 5, 5, 10)
+                           .withBounds(14, 5, 16, 27)
                            .build()
            });
 
@@ -277,67 +340,65 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
                     new FrameBuilder(spriteSheet.getSprite(1, 0), 14)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(4, 5, 5, 10)
+                            .withBounds(14, 5, 16, 27)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(4, 5, 5, 10)
+                            .withBounds(14, 5, 16, 27)
                             .build()
             });
 
             put("WALK_RIGHT", new Frame[]{
                     new FrameBuilder(spriteSheet.getSprite(1, 0), 14)
                             .withScale(3)
-                            .withBounds(4, 5, 5, 10)
+                            .withBounds(14, 5, 16, 27)
                             .build(),
                     new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
                             .withScale(3)
-                            .withBounds(4, 5, 5, 10)
+                            .withBounds(14, 5, 16, 27)
                             .build()
             });
 
             put("ATTACK_LEFT", new Frame[]{
-                    new FrameBuilder(spriteSheet.getSprite(1, 0), 14)
+                    new FrameBuilder(spriteSheet.getSprite(2, 0), 14)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(4, 5, 5, 10)
+                            .withBounds(14, 5, 16, 27)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
+                    new FrameBuilder(spriteSheet.getSprite(2, 1), 14)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(4, 5, 5, 10)
+                            .withBounds(14, 5, 16, 27)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
+                    new FrameBuilder(spriteSheet.getSprite(2, 2), 7)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(4, 5, 5, 10)
+                            .withBounds(14, 5, 16, 27)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
+                    new FrameBuilder(spriteSheet.getSprite(2, 3), 7)
                             .withScale(3)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(4, 5, 5, 10)
+                            .withBounds(4, 5, 45, 26)
                             .build()
             });
 
             put("ATTACK_RIGHT", new Frame[]{
-                    new FrameBuilder(spriteSheet.getSprite(1, 0), 14)
+                    new FrameBuilder(spriteSheet.getSprite(2, 0), 14)
                             .withScale(3)
-                            .withBounds(4, 5, 5, 10)
+                            .withBounds(14, 5, 16, 27)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
+                    new FrameBuilder(spriteSheet.getSprite(2, 1), 14)
                             .withScale(3)
-                            .withBounds(4, 5, 5, 10)
+                            .withBounds(14, 5, 16, 27)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
+                    new FrameBuilder(spriteSheet.getSprite(2, 2), 7)
                             .withScale(3)
-                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(4, 5, 5, 10)
+                            .withBounds(14, 5, 16, 27)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
+                    new FrameBuilder(spriteSheet.getSprite(2, 3), 7)
                             .withScale(3)
-                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(4, 5, 5, 10)
+                            .withBounds(4, 5, 45, 26)
                             .build()
             });
         }};

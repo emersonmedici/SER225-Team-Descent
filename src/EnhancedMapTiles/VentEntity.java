@@ -40,7 +40,6 @@ public class VentEntity extends EnhancedMapTile implements Threat {
         private float respawnDelay = 2;
 
         private float speed = 2.3f;
-        private Direction direction;
 
         private boolean hasStarted = false;
 
@@ -58,7 +57,7 @@ public class VentEntity extends EnhancedMapTile implements Threat {
 
 
     public VentEntity(Point location) {
-        super(location.x, location.y, new SpriteSheet(ImageLoader.load("Dinosaur.png"), 14, 17), TileType.PASSABLE);
+        super(location.x, location.y, new SpriteSheet(ImageLoader.load("VentEntity.png"), 32, 32), TileType.PASSABLE);
     }
 
     public void start(Player player) {
@@ -214,37 +213,7 @@ public class VentEntity extends EnhancedMapTile implements Threat {
         hasStarted = true;
     }
 
-    private Direction getMoveDirection(NodeBase currentNode, NodeBase nextNode) {
-        int xDifference = nextNode.getX() - currentNode.getX();
-        int yDifference = nextNode.getY() - currentNode.getY();
 
-        if (xDifference > 0 && yDifference < 0) {
-            return Direction.UPRIGHT;
-        }
-        else if (xDifference < 0 && yDifference < 0) {
-            return Direction.UPLEFT;
-        }
-        else if (xDifference > 0 && yDifference > 0) {
-            return Direction.DOWNRIGHT;
-        }
-        else if (xDifference < 0 && yDifference > 0) {
-            return Direction.DOWNLEFT;
-        }
-        else if (xDifference > 0) {
-            return Direction.RIGHT;
-        }
-        else if (xDifference < 0) {
-            return Direction.LEFT;
-        }
-        else if (yDifference > 0) {
-            return Direction.DOWN;
-        }
-        else if (yDifference < 0) {
-            return Direction.UP;
-        }
-
-        return null;
-    }
 
 
     private boolean updatePath(NodeBase startNode, Point playerPos) {
@@ -366,41 +335,45 @@ public class VentEntity extends EnhancedMapTile implements Threat {
     @Override
     public HashMap<String, Frame[]> loadAnimations(SpriteSheet spriteSheet) {
         return new HashMap<String, Frame[]>() {{
-            put("STAND_LEFT", new Frame[] {
-                    new FrameBuilder(spriteSheet.getSprite(0, 0))
-                            .withScale(3)
-                            .withBounds(4, 5, 5, 10)
-                            .build()
-            });
-            put("STAND_RIGHT", new Frame[] {
-                   new FrameBuilder(spriteSheet.getSprite(0, 0))
-                           .withScale(3)
-                           .withBounds(4, 5, 5, 10)
-                           .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                           .build()
-           });
-
             put("WALK_LEFT", new Frame[]{
-                    new FrameBuilder(spriteSheet.getSprite(1, 0), 14)
-                            .withScale(3)
-                            .withBounds(4, 5, 5, 10)
+                    new FrameBuilder(spriteSheet.getSprite(0, 0), 14)
+                            .withScale(2.5f)
+                            .withBounds(4, 5, 10, 7)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
-                            .withScale(3)
-                            .withBounds(4, 5, 5, 10)
+                    new FrameBuilder(spriteSheet.getSprite(0, 1), 14)
+                            .withScale(2.5f)
+                            .withBounds(4, 5, 10, 7)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 2), 14)
+                            .withScale(2.5f)
+                            .withBounds(4, 5, 10, 7)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 3), 14)
+                            .withScale(2.5f)
+                            .withBounds(4, 5, 10, 7)
                             .build()
             });
 
             put("WALK_RIGHT", new Frame[]{
-                    new FrameBuilder(spriteSheet.getSprite(1, 0), 14)
-                            .withScale(3)
+                    new FrameBuilder(spriteSheet.getSprite(0, 0), 14)
+                            .withScale(2.5f)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(4, 5, 5, 10)
+                            .withBounds(4, 5, 10, 7)
                             .build(),
-                    new FrameBuilder(spriteSheet.getSprite(1, 1), 14)
-                            .withScale(3)
+                    new FrameBuilder(spriteSheet.getSprite(0, 1), 14)
+                            .withScale(2.5f)
                             .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
-                            .withBounds(4, 5, 5, 10)
+                            .withBounds(4, 5, 10, 7)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 2), 14)
+                            .withScale(2.5f)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .withBounds(4, 5, 10, 7)
+                            .build(),
+                    new FrameBuilder(spriteSheet.getSprite(0, 3), 14)
+                            .withScale(2.5f)
+                            .withImageEffect(ImageEffect.FLIP_HORIZONTAL)
+                            .withBounds(4, 5, 10, 7)
                             .build()
             });
         }};
