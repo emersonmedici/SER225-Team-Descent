@@ -6,6 +6,7 @@ import Maps.TestMap;
 import Maps.TitleScreenMap;
 import Maps.Cutscene1Map;
 import Maps.Level1Map;
+import Maps.Level1NewMap;
 import Maps.NothingMap;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class EditorMaps {
             add("TitleScreen");
             add("ProlougeMap");
             add("Level1Map");
+            add("Level1NewMap");
             add("Cutscene1Map");
             add("NothingMap");
         }};
@@ -32,6 +34,8 @@ public class EditorMaps {
                 return new ProlougeMap();
             case "Level1Map":
                 return new Level1Map();
+            case "Level1NewMap":
+                return new Level1NewMap();
             case "Cutscene1Map":
                 return new Cutscene1Map();
             case "NothingMap":

@@ -6,7 +6,7 @@ import Game.GameState;
 import Game.ScreenCoordinator;
 import Level.*;
 import Maps.Cutscene1Map;
-import Maps.Level1Map;
+import Maps.Level1NewMap;
 import Maps.NothingMap;
 import Maps.ProlougeCutsceneMap;
 import Maps.ProlougeMap;
@@ -54,7 +54,7 @@ public class PlayLevelScreen extends Screen implements GameListener {
 
         // define/setup map
         map = new ProlougeMap();
-        //map = new Level1Map();
+        //map = new Level1NewMap();
         map.setFlagManager(flagManager);
 
         // setup player
@@ -124,7 +124,7 @@ public class PlayLevelScreen extends Screen implements GameListener {
     public void onRestart() {
         // Restart still returns to Level 1 with a fresh cat and empty inventory.
         System.out.println("Level completed!");
-        loadMap(new Level1Map(), PlayLevelScreenState.RUNNING, false);
+        loadMap(new Level1NewMap(), PlayLevelScreenState.RUNNING, false);
     }
     //scene to start the prologue
     @Override
@@ -247,7 +247,7 @@ public class PlayLevelScreen extends Screen implements GameListener {
     @Override
     public void onCutscene1Completed() {
         System.out.println("Level completed!");
-        map = new Level1Map();
+        map = new Level1NewMap();
         map.setFlagManager(flagManager);
 
         // setup player
