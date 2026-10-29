@@ -25,6 +25,8 @@ public class GamePanel extends JPanel {
 	private SpriteFont pauseLabel3;
 	private SpriteFont pauseLabel4;
 	private SpriteFont pauseLabel5;
+	private SpriteFont pauseLabel6;
+	private SpriteFont pauseLabel7;
 
 	private KeyLocker keyLocker = new KeyLocker();
 	private final Key pauseKey = Key.P;
@@ -67,6 +69,14 @@ public class GamePanel extends JPanel {
 		pauseLabel5 = new SpriteFont("interact, pick up / drop items - space", 200, 340, "Arial", 24, Color.white);
 		pauseLabel5.setOutlineColor(Color.black);
 		pauseLabel5.setOutlineThickness(2.0f);
+
+		pauseLabel6 = new SpriteFont("1-9 - select inventory item", 260, 370, "Arial", 24, Color.white);
+		pauseLabel6.setOutlineColor(Color.black);
+		pauseLabel6.setOutlineThickness(2.0f);
+
+		pauseLabel7 = new SpriteFont("0 - deselect inventory item", 260, 400, "Arial", 24, Color.white);
+		pauseLabel7.setOutlineColor(Color.black);
+		pauseLabel7.setOutlineThickness(2.0f);
 
 		fpsDisplayLabel = new SpriteFont("FPS", 4, 3, "Arial", 12, Color.black);
 
@@ -145,6 +155,8 @@ public class GamePanel extends JPanel {
 			pauseLabel3.draw(graphicsHandler);
 			pauseLabel4.draw(graphicsHandler);
 			pauseLabel5.draw(graphicsHandler);
+			pauseLabel6.draw(graphicsHandler);
+			pauseLabel7.draw(graphicsHandler);
 			graphicsHandler.drawFilledRectangle(0, 0, ScreenManager.getScreenWidth(), ScreenManager.getScreenHeight(), new Color(0, 0, 0, 100));
 		}
 
