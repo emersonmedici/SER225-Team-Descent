@@ -20,6 +20,12 @@ public class GamePanel extends JPanel {
 
 	private boolean isGamePaused = false;
 	private SpriteFont pauseLabel;
+
+	private SpriteFont pauseLabel2;
+	private SpriteFont pauseLabel3;
+	private SpriteFont pauseLabel4;
+	private SpriteFont pauseLabel5;
+
 	private KeyLocker keyLocker = new KeyLocker();
 	private final Key pauseKey = Key.P;
 	private Thread gameLoopProcess;
@@ -42,9 +48,25 @@ public class GamePanel extends JPanel {
 
 		screenManager = new ScreenManager();
 
-		pauseLabel = new SpriteFont("PAUSE", 365, 280, "Arial", 24, Color.white);
+		pauseLabel = new SpriteFont("CONTROLS", 280, 180, "Arial", 40, Color.white);
 		pauseLabel.setOutlineColor(Color.black);
 		pauseLabel.setOutlineThickness(2.0f);
+
+		pauseLabel2 = new SpriteFont("move player - WASD", 280, 250, "Arial", 24, Color.white);
+		pauseLabel2.setOutlineColor(Color.black);
+		pauseLabel2.setOutlineThickness(2.0f);
+
+		pauseLabel3 = new SpriteFont("sprint - shift", 320, 280, "Arial", 24, Color.white);
+		pauseLabel3.setOutlineColor(Color.black);
+		pauseLabel3.setOutlineThickness(2.0f);
+
+		pauseLabel4 = new SpriteFont("toggle flashlight - f", 290, 310, "Arial", 24, Color.white);
+		pauseLabel4.setOutlineColor(Color.black);
+		pauseLabel4.setOutlineThickness(2.0f);
+
+		pauseLabel5 = new SpriteFont("interact, pick up / drop items - space", 200, 340, "Arial", 24, Color.white);
+		pauseLabel5.setOutlineColor(Color.black);
+		pauseLabel5.setOutlineThickness(2.0f);
 
 		fpsDisplayLabel = new SpriteFont("FPS", 4, 3, "Arial", 12, Color.black);
 
@@ -119,6 +141,10 @@ public class GamePanel extends JPanel {
 		// if game is paused, draw pause gfx over Screen gfx
 		if (isGamePaused) {
 			pauseLabel.draw(graphicsHandler);
+			pauseLabel2.draw(graphicsHandler);
+			pauseLabel3.draw(graphicsHandler);
+			pauseLabel4.draw(graphicsHandler);
+			pauseLabel5.draw(graphicsHandler);
 			graphicsHandler.drawFilledRectangle(0, 0, ScreenManager.getScreenWidth(), ScreenManager.getScreenHeight(), new Color(0, 0, 0, 100));
 		}
 
