@@ -9,5 +9,6 @@ public interface GameListener {
     void onElevatorDrop();
     void onCutscene1Completed();
     void onLevel1Completed();
+    void onLevel2Completed();
 
 }
