@@ -6,22 +6,12 @@ import EnhancedMapTiles.DangerEntity;
 import EnhancedMapTiles.Keycard1;
 import EnhancedMapTiles.Mg;
 import EnhancedMapTiles.PushableRock;
+import EnhancedMapTiles.VentEntity;
 import EnhancedMapTiles.WallTile;
 import Level.*;
-import NPCs.Bug;
-import NPCs.Dave;
-import NPCs.Dinosaur;
-import NPCs.Walrus;
-import EnhancedMapTiles.DangerEntity;
 import Scripts.MiniGame2Script;
 import Scripts.MiniGameScript;
-import Scripts.SimpleTextScript;
-import ScriptActions.*;
-import EnhancedMapTiles.DangerEntity;
-import EnhancedMapTiles.VentEntity;
-
 import Scripts.TestMap.*;
-
 import Tilesets.Level1Tileset;
 import Utils.Point;
 import java.util.ArrayList;
@@ -53,7 +43,8 @@ public class Level1Map extends Map {
         ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
 
         // keycard is at the beginning of level for now, move to where puzzle is afterwards
-        enhancedMapTiles.add(new Keycard1(getMapTile(44, 68).getLocation()));
+        Keycard1 keycard = new Keycard1(getMapTile(44, 68).getLocation());
+        enhancedMapTiles.add(keycard);
 
         PushableRock pushableRock = new PushableRock(getMapTile(2, 7).getLocation());
         enhancedMapTiles.add(pushableRock);
