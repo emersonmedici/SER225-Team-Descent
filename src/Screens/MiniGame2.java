@@ -208,12 +208,12 @@ public class MiniGame2 {
 			int randomButton = (int) (Math.random() * (8 - 0 + 1) + 0);
 			placeHolder[0] = randomButton;
 				Timer timer = new Timer(1000, e -> { 
-					buttonChoices[randomButton].setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+					buttonChoices[randomButton].setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
 				});
 				timer.start();
 				timer.setRepeats(false);
 
-				Timer timer2 = new Timer(2500, e -> { 
+				Timer timer2 = new Timer(2000, e -> { 
 					buttonChoices[randomButton].setBorder(BorderFactory.createEmptyBorder());
 				});
 				timer2.start();
@@ -224,12 +224,12 @@ public class MiniGame2 {
 			int randomButton = (int) (Math.random() * (8 - 0 + 1) + 0);
 			placeHolder[0] = randomButton;
 				Timer timer = new Timer(1000, e -> { 
-					buttonChoices[randomButton].setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+					buttonChoices[randomButton].setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
 				});
 				timer.start();
 				timer.setRepeats(false);
 
-				Timer timer2 = new Timer(2500, e -> { 
+				Timer timer2 = new Timer(2000, e -> { 
 					buttonChoices[randomButton].setBorder(BorderFactory.createEmptyBorder());
 				});
 				timer2.start();
@@ -237,13 +237,13 @@ public class MiniGame2 {
 
 			int randomButton2 = (int) (Math.random() * (8 - 0 + 1) + 0);
 			placeHolder[1] = randomButton2;
-				Timer timer3 = new Timer(3500, e -> { 
-					buttonChoices[randomButton2].setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+				Timer timer3 = new Timer(2350, e -> { 
+					buttonChoices[randomButton2].setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
 				});
 				timer3.start();
 				timer3.setRepeats(false);
 
-				Timer timer4 = new Timer(5000, e -> { 
+				Timer timer4 = new Timer(3350, e -> { 
 					buttonChoices[randomButton2].setBorder(BorderFactory.createEmptyBorder());
 				});
 				timer4.start();
@@ -255,12 +255,12 @@ public class MiniGame2 {
 			int randomButton = (int) (Math.random() * (8 - 0 + 1) + 0);
 			placeHolder[0] = randomButton;
 				Timer timer = new Timer(1000, e -> { 
-					buttonChoices[randomButton].setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+					buttonChoices[randomButton].setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
 				});
 				timer.start();
 				timer.setRepeats(false);
 
-				Timer timer2 = new Timer(2500, e -> { 
+				Timer timer2 = new Timer(2000, e -> { 
 					buttonChoices[randomButton].setBorder(BorderFactory.createEmptyBorder());
 				});
 				timer2.start();
@@ -269,13 +269,13 @@ public class MiniGame2 {
 
 			int randomButton2 = (int) (Math.random() * (8 - 0 + 1) + 0);
 			placeHolder[1] = randomButton2;
-				Timer timer3 = new Timer(3500, e -> { 
-					buttonChoices[randomButton2].setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+				Timer timer3 = new Timer(2350, e -> { 
+					buttonChoices[randomButton2].setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
 				});
 				timer3.start();
 				timer3.setRepeats(false);
 
-				Timer timer4 = new Timer(5000, e -> { 
+				Timer timer4 = new Timer(3350, e -> { 
 					buttonChoices[randomButton2].setBorder(BorderFactory.createEmptyBorder());
 				});
 				timer4.start();
@@ -284,13 +284,13 @@ public class MiniGame2 {
 
 			int randomButton3 = (int) (Math.random() * (8 - 0 + 1) + 0);
 			placeHolder[2] = randomButton3;
-				Timer timer5 = new Timer(6000, e -> { 
-					buttonChoices[randomButton3].setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+				Timer timer5 = new Timer(3700, e -> { 
+					buttonChoices[randomButton3].setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
 				});
 				timer5.start();
 				timer5.setRepeats(false);
 
-				Timer timer6 = new Timer(7500, e -> { 
+				Timer timer6 = new Timer(4700, e -> { 
 					buttonChoices[randomButton3].setBorder(BorderFactory.createEmptyBorder());
 				});
 				timer6.start();

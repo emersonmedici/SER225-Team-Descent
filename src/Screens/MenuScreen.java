@@ -16,6 +16,7 @@ public class MenuScreen extends Screen {
     protected int menuItemSelected = -1;
     protected SpriteFont playGame;
     protected SpriteFont title;
+    protected SpriteFont pause;
     protected Map background;
     protected int keyPressTimer;
     protected int pointerLocationX, pointerLocationY;
@@ -27,15 +28,15 @@ public class MenuScreen extends Screen {
 
     @Override
     public void initialize() {
-        playGame = new SpriteFont("PLAY GAME", 200, 123, "Arial", 30, new Color(150, 0, 0));
+        playGame = new SpriteFont("PLAY GAME", 170, 123, "Arial", 30, new Color(150, 0, 0));
         playGame.setOutlineColor(Color.black);
         playGame.setOutlineThickness(3);
-        title = new SpriteFont("DESCENSION", 100, 60, "Arial", 50, new Color(150, 0, 0));
+        title = new SpriteFont("DESCENSION", 80, 60, "Arial", 50, new Color(150, 0, 0));
         title.setOutlineColor(Color.black);
         title.setOutlineThickness(3);
-        //credits = new SpriteFont("CREDITS", 200, 223, "Arial", 30, new Color(49, 207, 240));
-        //credits.setOutlineColor(Color.black);
-        //credits.setOutlineThickness(3);
+        pause = new SpriteFont("PRESS P FOR CONTROLS", 520, 540, "Arial", 20, new Color(255, 255, 255));
+        pause.setOutlineColor(Color.black);
+        pause.setOutlineThickness(3);
         background = new TitleScreenMap();
         background.setAdjustCamera(false);
         keyPressTimer = 0;
@@ -71,7 +72,7 @@ public class MenuScreen extends Screen {
         if (currentMenuItemHovered == 0) {
             playGame.setColor(new Color(175, 0, 0));
             //credits.setColor(new Color(49, 207, 240));
-            pointerLocationX = 170;
+            pointerLocationX = 140;
             pointerLocationY = 130;
         } //else if (currentMenuItemHovered == 1) {
             //playGame.setColor(new Color(49, 207, 240));
@@ -98,6 +99,7 @@ public class MenuScreen extends Screen {
         background.draw(graphicsHandler);
         playGame.draw(graphicsHandler);
         title.draw(graphicsHandler);
+        pause.draw(graphicsHandler);
         graphicsHandler.drawFilledRectangleWithBorder(pointerLocationX, pointerLocationY, 20, 20, new Color(100, 100, 100), Color.black, 2);
     }
 }
