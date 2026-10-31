@@ -19,6 +19,7 @@ import Scripts.SimpleTextScript;
 import ScriptActions.*;
 import EnhancedMapTiles.DangerEntity;
 import EnhancedMapTiles.VentEntity;
+import Screens.MiniGame;
 
 import Scripts.TestMap.*;
 
@@ -38,12 +39,19 @@ public class Level1Map extends Map {
     //     this.screen = screen;
     // }
 
+
+
+    private DangerEntity dangerEntity;
+    private boolean spawnedIn;
+
     public Level1Map() {
         super("Level1Map.txt", new Level1Tileset());
         this.playerStartPosition = getMapTile(82, 97).getLocation();
         this.showHealthUI = true;
         this.ambientTrack = "level1_ambience.wav";
         this.chaseTrack = "chase.wav";
+        this.spawnedIn = false;
+
        // this.screen = null;
        // this.screen = null;
     }
@@ -119,9 +127,10 @@ public class Level1Map extends Map {
        // mg5.setInteractScript(new MiniGame2Script());
         enhancedMapTiles.add(mg5);
 
-        DangerEntity enemy = new DangerEntity(getMapTile(93, 38).getLocation());
-        enemy.setIsUpdateOffScreen(true);
-        enhancedMapTiles.add(enemy);
+        dangerEntity = new DangerEntity(getMapTile(82, 97).getLocation()); // 93 38 og
+        dangerEntity.setIsUpdateOffScreen(true);
+        dangerEntity.setIsHidden(true);
+        enhancedMapTiles.add(dangerEntity);
 
         VentEntity ventEnemy = new VentEntity(getMapTile(94, 87).getLocation());
         ventEnemy.setIsUpdateOffScreen(true);
@@ -194,6 +203,19 @@ public class Level1Map extends Map {
         triggers.add(new Trigger(triggerPoint2.x, triggerPoint2.y, 100, 100, new BlockedTileScript(), "touchedWall"));*/
         return triggers;
 
+    }
+
+    @Override 
+    public void update(Player player) {
+        super.update(player);
+        if(MiniGame.getIsCorrect() == true && spawnedIn == false) {
+            dangerEntity.triggerSpawnEvent(player);
+            spawnedIn = true;
+        }
+    }
+
+    public DangerEntity getDangerEntity() {
+        return this.dangerEntity;
     }
 
 }

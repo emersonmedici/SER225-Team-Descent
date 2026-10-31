@@ -27,5 +27,4 @@ public class BlockedWallTile2 extends EnhancedMapTile {
 
         return new GameObject(x, y, frame);
     }
-
 }

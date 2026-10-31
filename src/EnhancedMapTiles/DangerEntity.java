@@ -17,6 +17,7 @@ import Level.TileType;
 import Level.Map;
 import Level.NodeBase;
 import Level.AStar;
+import Level.FarthestPosition;
 import Level.StepCounter;
 import Level.Threat;
 import Sound.SoundEffect;
@@ -28,6 +29,8 @@ import Utils.Point;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Random;
 
 
 public class DangerEntity extends EnhancedMapTile implements Threat {
@@ -38,6 +41,8 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
         private float speed = 2.3f;
         private Direction direction;
 
+        private int spawnDistance = 13;
+
         private boolean hasStarted = false;
 
         private Point lastPlayerPos;
@@ -45,6 +50,8 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
         private NodeBase[][] nodes;
         private List<NodeBase> path;
         private int indexInPath = 1;
+
+        private float spawnTimer = 0;
 
         // long stride = slow, heavy footsteps (about 2 a second) -- it doesn't need to hurry
         private StepCounter footsteps = new StepCounter(64);
@@ -83,7 +90,6 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
     public void update(Player player) {
         if (hasStarted == false) {
             start(player);
-            player.setHealth(3);
         }
         else {
             super.update(player);
@@ -109,6 +115,12 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
                 }
                 lastAttackFrameIndex = frame;
             }
+
+            // if(spawnTimer == 5 * 60) {
+            //     System.out.println("Spawned");
+            //     triggerSpawnEvent(player);
+            // }
+            // spawnTimer++;
 
             // Start a new swing when the player is close and the cooldown is over
             if (isAttacking == false && isPlayerInReach(player) == true && canAttack() == true) {
@@ -234,7 +246,7 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
     }
 
     // The tile to walk to: beside the player (left or right) so the sword can reach them,
-    // preferring the side the entity is already on
+    // preferring the side the entity is already on`
     private NodeBase getGoalNode(Point playerPos) {
         int playerTileX = (int)playerPos.x;
         int playerTileY = (int)playerPos.y;
@@ -317,6 +329,28 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
             return path.get(indexInPath);
         }
         return nodes[(int)entityPos.x][(int)entityPos.y];
+    }
+
+    public void triggerSpawnEvent(Player player) {
+        start(player);
+        setIsHidden(false);
+        Point pos = new Point(player.getX(), player.getY());
+        NodeBase startNode = spawnPosition(pos);
+        setLocation(startNode.getX() * 48, startNode.getY() * 48);
+        path = null;
+        lastPlayerPos = null;
+        isAttacking = false;
+    }
+
+
+    private NodeBase spawnPosition(Point reference) {
+        FarthestPosition farPosScript = new FarthestPosition(nodes);
+        Point playerPos = map.getTileIndexByPosition(reference.x, reference.y);
+        ArrayList<NodeBase> farthestNodes = farPosScript.findFarthest(nodes[(int)playerPos.x][(int)playerPos.y], spawnDistance);
+        Random rand = new Random();
+        int randomIndex = rand.nextInt(farthestNodes.size());
+        NodeBase startNode = farthestNodes.get(randomIndex);
+        return startNode; 
     }
 
     @Override

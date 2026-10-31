@@ -228,6 +228,7 @@ public class MiniGame {
 				winLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
 				winPanel.add(winLabel);
 				
+				
 				frame.getContentPane().removeAll();
 				frame.add(winPanel);
 				frame.revalidate();
