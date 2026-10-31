@@ -14,6 +14,7 @@ public class MiniGame {
 	private JPanel losePanel, winPanel, submitPanel, mainPanel, keyPanel, clickCountPanel, clickCountPanel2, clickCountPanel3, clickCountPanel4, clickCountPanel5, clickCountPanel6;
 	private JButton button1, button2, button3, button4, button5, button6;
     private static boolean isCorrect;
+	private int[] i = {0,0,0,0,0};
 
     public MiniGame(String frameTitle, int frameWidth, int frameHeight) {
     	frame = new JFrame(frameTitle);
@@ -261,17 +262,52 @@ public class MiniGame {
 
     private void changeBackgroundColor(JButton button) {
 		Color[] colorChoices = {Color.MAGENTA, Color.GREEN, Color.ORANGE, Color.YELLOW, Color.BLUE};
-		int min = 0;
-		int max = 4;
-		int randomNum = (int) (Math.random() * (max - min + 1) + min);
-		Color newColor = Color.WHITE;
 
-		//for (int i = 0; i<colorChoices.length; i++) {
-			newColor = colorChoices[randomNum] ;
-		   // button.setBackground(newColor);
-		//}
-        	button.setBackground(newColor);
-    }
+		if (button == button1) {
+			button1.setBackground(colorChoices[i[0]]);
+			i[0]++;
+
+			if (i[0] == 5) {
+				i[0] = 0;
+			}
+		}
+
+		if (button == button2) {
+			button2.setBackground(colorChoices[i[1]]);
+			i[1]++;
+
+			if (i[1] == 5) {
+				i[1] = 0;
+			}			
+		}
+
+		if (button == button3) {
+			button3.setBackground(colorChoices[i[2]]);
+			i[2]++;
+
+			if (i[2] == 5) {
+				i[2] = 0;
+			}
+		}
+
+		if (button == button4) {
+			button4.setBackground(colorChoices[i[3]]);
+			i[3]++;
+			
+			if (i[3] == 5) {
+				i[3] = 0;
+			}
+		}
+
+		if (button == button5) {
+			button5.setBackground(colorChoices[i[4]]);
+			i[4]++;
+			
+			if (i[4] == 5) {
+				i[4] = 0;
+			}
+		}
+    }		
 
     public static void main(String[] args) {
     	new MiniGame("Minigame 1", 500, 500);
