@@ -1,19 +1,20 @@
-package Scripts.TestMap;
+/*package Scripts.TestMap;
 
 import java.util.ArrayList;
 import Level.Script;
 import ScriptActions.*;
+import ScriptActions.ScriptAction;
 
-/*public class BlockedTileScript extends Script{
+public class BlockedTileScript extends Script{
     @Override
     public ArrayList<ScriptAction> loadScriptActions() {
         ArrayList<ScriptAction> actions = new ArrayList<>();
         actions.add(new BlockedTileScriptAction());
         return actions;
     }
-}*/
+}
 
-public class BlockedTileScript extends Script{
+/*public class BlockedTileScript extends Script{
         @Override
         public ArrayList<ScriptAction> loadScriptActions() {
             ArrayList<ScriptAction> scriptActions = new ArrayList<>();
@@ -37,4 +38,4 @@ public class BlockedTileScript extends Script{
             scriptActions.add(new UnlockPlayerScriptAction());
             return scriptActions;
         }  
-}      
+}      */
