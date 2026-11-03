@@ -2,16 +2,14 @@
 
 import Level.EnhancedMapTile;
 import Level.ScriptState;
-
 import java.util.ArrayList;
-
 import EnhancedMapTiles.BlockedWallTile;
 
 public class BlockedTileScriptAction extends ScriptAction{
     @Override 
     public ScriptState execute() {
-       // @Override
-        public ArrayList<ScriptAction> loadScriptActions() {
+        //@Override
+       // public ArrayList<ScriptAction> loadScriptActions() {
             ArrayList<ScriptAction> scriptActions = new ArrayList<>();
             scriptActions.add(new LockPlayerScriptAction());
             
@@ -23,18 +21,10 @@ public class BlockedTileScriptAction extends ScriptAction{
                         addText("Maybe there's a way to unlock this area??...I should probaly look around");                }});
                     addScriptAction(new ChangeFlagScriptAction("hasTalkedToWalrus", true));
                 }});
-
-                addConditionalScriptActionGroup(new ConditionalScriptActionGroup() {{
-                    addRequirement(new FlagRequirement("hasTalkedToWalrus", true));
-                    addScriptAction(new TextboxScriptAction("I sure love doing walrus things!"));
-                }});
-            }});
+           // }});
 
             scriptActions.add(new UnlockPlayerScriptAction());
-            //return scriptActions;
-        }        
-       // return scriptActions;
-        return ScriptState.COMPLETED;
+            return ScriptState.COMPLETED;
+        }  
     }
-}*/
-
+}      */
