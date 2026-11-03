@@ -51,6 +51,7 @@ public class PlayLevelScreen extends Screen implements GameListener {
         flagManager.addFlag("hasEnteredBuilding", false);
         flagManager.addFlag("hasLanded", false);
         flagManager.addFlag("newFlagTest", false);
+        flagManager.addFlag("hasCheckedLock", false);
 
         // define/setup map
         map = new ProlougeMap();
