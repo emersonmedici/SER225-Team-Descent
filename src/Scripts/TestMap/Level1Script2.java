@@ -26,7 +26,7 @@ public class Level1Script2 extends Script {
             @Override
             public ScriptState execute() {
                 for (GameListener listener : listeners) {
-                    listener.onLevel1Completed();
+                    listener.onLevel2Completed();
                 }
                 return ScriptState.COMPLETED;
             }
