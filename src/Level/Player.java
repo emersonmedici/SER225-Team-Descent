@@ -72,15 +72,28 @@ public abstract class Player extends GameObject {
 
     public int getSelectedInventorySlot() { return selectedInventorySlot; }
     public CarriableObject getCarriedObject() { return carriedObject; }
+    public boolean isLocked() { return isLocked; }
+
+    public void suppressInspectionInputsUntilRelease() {
+        // Inputs pressed in the inspection window must not trigger world actions on close.
+        keyLocker.lockKey(INTERACT_KEY);
+        keyLocker.lockKey(FLASHLIGHT_KEY);
+        for (Key key : INVENTORY_KEYS) keyLocker.lockKey(key);
+        keyLocker.lockKey(Key.ZERO);
+    }
     public int getInventorySize() { return inventory.length; }
     public CarriableObject getInventoryItem(int slot) { return inventory[slot]; }
 
     // moves players and its items from the previous map to the next map, and sets the player's position to the next map's player start position
     public void moveToMap(Map nextMap) {
+        moveToMap(nextMap, nextMap.getPlayerStartPosition().x, nextMap.getPlayerStartPosition().y);
+    }
+
+    public void moveToMap(Map nextMap, float spawnX, float spawnY) {
         Map previousMap = map;
         setMap(nextMap);
         // move player to the next map
-        setLocation(nextMap.getPlayerStartPosition().x, nextMap.getPlayerStartPosition().y);
+        setLocation(spawnX, spawnY);
         nextMap.setPlayer(this);
 
         unlock();

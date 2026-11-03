@@ -1,15 +1,15 @@
 package Maps;
 
 import EnhancedMapTiles.CarriableObject;
-import EnhancedMapTiles.PushableRock;
+import EnhancedMapTiles.ExperimentTextScrap1;
 import EnhancedMapTiles.MudObject;
+import EnhancedMapTiles.PushableRock;
 import Level.*;
 import NPCs.Dave;
 import Scripts.PickupObjectScript;
 import Scripts.TestMap.*;
 import Tilesets.CommonTileset;
 import Utils.Point;
-
 import java.util.ArrayList;
 
 public class ProlougeMap extends Map {
@@ -22,13 +22,17 @@ public class ProlougeMap extends Map {
     @Override
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
         ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
+        enhancedMapTiles.add(new ExperimentTextScrap1(getMapTile(14, 33).getLocation()));
 
         CarriableObject item1 = new CarriableObject(getMapTile(13, 33).getLocation());
         CarriableObject item2 = new CarriableObject(getMapTile(13, 34).getLocation());
+        CarriableObject item3 = new CarriableObject(getMapTile(13, 35).getLocation());
         item1.setInteractScript(new PickupObjectScript());
         item2.setInteractScript(new PickupObjectScript());
+        item3.setInteractScript(new PickupObjectScript());
         enhancedMapTiles.add(item1);
         enhancedMapTiles.add(item2);
+        enhancedMapTiles.add(item3);
 
         PushableRock pushableRock = new PushableRock(getMapTile(10, 28).getLocation());
         enhancedMapTiles.add(pushableRock);
@@ -37,6 +41,9 @@ public class ProlougeMap extends Map {
         enhancedMapTiles.add(mudTile);
         MudObject mudTile2 = new MudObject(getMapTile(11, 32).getLocation());
         enhancedMapTiles.add(mudTile2);
+
+        ExperimentTextScrap1 textScrap = new ExperimentTextScrap1(getMapTile(12, 31).getLocation());
+        enhancedMapTiles.add(textScrap);
 
         return enhancedMapTiles;
     }
