@@ -17,7 +17,7 @@ import Level.TileType;
 import Level.Map;
 import Level.NodeBase;
 import Level.AStar;
-import Level.FarthestPosition;
+import Level.BreadthFirstSearch;
 import Level.StepCounter;
 import Level.Threat;
 import Sound.SoundEffect;
@@ -344,7 +344,7 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
 
 
     private NodeBase spawnPosition(Point reference) {
-        FarthestPosition farPosScript = new FarthestPosition(nodes);
+        BreadthFirstSearch farPosScript = new BreadthFirstSearch(nodes);
         Point playerPos = map.getTileIndexByPosition(reference.x, reference.y);
         ArrayList<NodeBase> farthestNodes = farPosScript.findFarthest(nodes[(int)playerPos.x][(int)playerPos.y], spawnDistance);
         Random rand = new Random();

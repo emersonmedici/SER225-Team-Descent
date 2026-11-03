@@ -5,12 +5,12 @@ import java.util.Queue;
 import java.util.LinkedList;
 
 
-public class FarthestPosition {
+public class BreadthFirstSearch {
     NodeBase[][] nodes;
 
     Queue<NodeBase> visitedTiles = new LinkedList<NodeBase>();
 
-    public FarthestPosition(NodeBase[][] nodes) {
+    public BreadthFirstSearch(NodeBase[][] nodes) {
         this.nodes = nodes;
     }
 
@@ -53,6 +53,32 @@ public class FarthestPosition {
         }
 
         return farthestNodes;
+    }
+
+    public NodeBase farthestNode(NodeBase startNode) {
+        resetNodes();
+        visitedTiles.clear();
+
+        startNode.setGCost(0);
+        visitedTiles.add(startNode);
+        NodeBase bestSoFar = startNode;
+        while(visitedTiles.isEmpty() == false) {
+            NodeBase currentNode = visitedTiles.poll();
+            ArrayList<NodeBase> neighbors = getNeighbors(currentNode);
+            for(NodeBase neighbor : neighbors) {
+                if(neighbor.getWalkable() == false || neighbor.getGCost() != Integer.MAX_VALUE) {
+                    continue;
+                }
+                visitedTiles.add(neighbor);
+                neighbor.setGCost(currentNode.getGCost() + 1);
+                neighbor.setParent(currentNode);
+                if(neighbor.getGCost() > bestSoFar.getGCost()) {
+                    bestSoFar = neighbor;
+                }
+            }
+        }
+
+        return bestSoFar;
     }
 
     private void resetNodes() {

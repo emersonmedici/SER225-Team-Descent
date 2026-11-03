@@ -21,7 +21,7 @@ import Level.StepCounter;
 import Level.Threat;
 import Sound.SoundEffect;
 import Sound.SoundManager;
-
+import Level.BreadthFirstSearch;
 import Utils.Direction;
 import Utils.Point;
 
@@ -286,7 +286,8 @@ public class VentEntity extends EnhancedMapTile implements Threat {
     }
 
     private Point findStartPosition(Point playerPos) {
-        NodeBase endpoint = findVentEndpoint((int)playerPos.x, (int)playerPos.y);
+        NodeBase endpoint = farthestVent((int)playerPos.x, (int)playerPos.y);
+        System.out.println(endpoint.getX() + ", " + endpoint.getY());
         if (endpoint == null) {
             return getLocation(); // or keep it hidden
         }
@@ -295,41 +296,47 @@ public class VentEntity extends EnhancedMapTile implements Threat {
         return new Point(endpoint.getX() * tileW, endpoint.getY() * tileH);
     }
 
-    private NodeBase findVentEndpoint(int startX, int startY) {
-        boolean[][] visited = new boolean[nodes.length][nodes[0].length];
-        ArrayDeque<NodeBase> queue = new ArrayDeque<>();
-
-        queue.add(nodes[startX][startY]);
-        visited[startX][startY] = true;
-
-        int[][] directions = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
-
-        while (!queue.isEmpty()) {
-            NodeBase current = queue.poll();
-
-            for (int[] d : directions) {
-                int nx = current.getX() + d[0];
-                int ny = current.getY() + d[1];
-
-                MapTile neighborTile = map.getMapTile(nx, ny);
-                if (neighborTile == null || visited[nx][ny]) {
-                    continue;
-                }
-
-                // Vent tile next to a walkable tile = vent opening
-                if (neighborTile.getTileType() == TileType.PASSABLE) {
-                    return current;
-                }
-
-                // Keep searching only through vent tiles
-                if (neighborTile.getTileType() == TileType.VENT) {
-                    visited[nx][ny] = true;
-                    queue.add(nodes[nx][ny]);
-                }
-            }
-        }
-        return null; // no opening found
+    private NodeBase farthestVent(int startX, int startY) {
+        BreadthFirstSearch findFarPosScript = new BreadthFirstSearch(nodes);
+        NodeBase endpoint = findFarPosScript.farthestNode(nodes[startX][startY]);
+        return endpoint;
     }
+
+    // private NodeBase findVentEndpoint(int startX, int startY) {
+    //     boolean[][] visited = new boolean[nodes.length][nodes[0].length];
+    //     ArrayDeque<NodeBase> queue = new ArrayDeque<>();
+
+    //     queue.add(nodes[startX][startY]);
+    //     visited[startX][startY] = true;
+
+    //     int[][] directions = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
+
+    //     while (!queue.isEmpty()) {
+    //         NodeBase current = queue.poll();
+
+    //         for (int[] d : directions) {
+    //             int nx = current.getX() + d[0];
+    //             int ny = current.getY() + d[1];
+
+    //             MapTile neighborTile = map.getMapTile(nx, ny);
+    //             if (neighborTile == null || visited[nx][ny]) {
+    //                 continue;
+    //             }
+
+    //             // Vent tile next to a walkable tile = vent opening
+    //             if (neighborTile.getTileType() == TileType.PASSABLE) {
+    //                 return current;
+    //             }
+
+    //             // Keep searching only through vent tiles
+    //             if (neighborTile.getTileType() == TileType.VENT) {
+    //                 visited[nx][ny] = true;
+    //                 queue.add(nodes[nx][ny]);
+    //             }
+    //         }
+    //     }
+    //     return null; // no opening found
+    // }
 
 
     @Override
