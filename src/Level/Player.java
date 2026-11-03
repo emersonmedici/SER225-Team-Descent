@@ -1,5 +1,6 @@
 package Level;
 
+import Engine.Config;
 import Engine.GraphicsHandler;
 import Engine.Key;
 import Engine.KeyLocker;
@@ -56,6 +57,15 @@ public abstract class Player extends GameObject {
     protected float flashlightOffset = 12;
 
     protected boolean isLocked = false;
+
+    // stamina is counted in frames -- update() runs Config.TARGET_FPS (60) times a second
+    // a full bar is 5 seconds of sprinting, and it refills at the same speed
+    protected static final int MAX_STAMINA = 5 * Config.TARGET_FPS;
+    // after running out, Shift won't work again until the bar refills to 30%
+    protected static final int STAMINA_RECOVER_AMOUNT = (int) (MAX_STAMINA * 0.3f);
+    protected int stamina = MAX_STAMINA;
+    protected boolean isSprinting = false;
+    protected boolean isExhausted = false;
 
     // one footstep every 44 pixels walked: about 3 steps a second walking, 7 running, 1.5 in mud
     protected StepCounter footsteps = new StepCounter(44);
@@ -184,6 +194,8 @@ public abstract class Player extends GameObject {
         }
        
         handleInventoryKeys();
+        // playerWalking turns this back on if the player is sprinting this frame
+        isSprinting = false;
         if (!isLocked) {
             moveAmountX = 0;
             moveAmountY = 0;
@@ -203,6 +215,9 @@ public abstract class Player extends GameObject {
 
             handleFlashlightToggle();
         }
+
+        // outside the !isLocked check so stamina still refills during textboxes and cutscenes
+        updateStamina();
 
         // the player is the "ears" for sounds that come from somewhere in the world, like the monster's footsteps
         SoundManager.setListener(getX() + getWidth() / 2f, getY() + getHeight() / 2f, map.getTileset().getScaledSpriteWidth());
@@ -274,9 +289,13 @@ public abstract class Player extends GameObject {
             }
         }
         
-        if (Keyboard.isKeyDown(Key.SHIFT) == true && touching == false) {
+        // Shift only counts if the player isn't out of breath
+        boolean sprintHeld = Keyboard.isKeyDown(Key.SHIFT) && !isExhausted;
+
+        if (sprintHeld == true && touching == false) {
             walkSpeed = 5f;
-        } else if (Keyboard.isKeyDown(Key.SHIFT) == false && touching == true) {
+            isSprinting = true;
+        } else if (sprintHeld == false && touching == true) {
             walkSpeed = 1.0f;
         } else {
             walkSpeed = 2.3f;
@@ -335,6 +354,24 @@ public abstract class Player extends GameObject {
 
         if (Keyboard.isKeyUp(FLASHLIGHT_KEY)) {
             keyLocker.unlockKey(FLASHLIGHT_KEY);
+        }
+    }
+
+    // spends 1 stamina per frame while sprinting, and refills 1 per frame otherwise
+    // uses how far the player ACTUALLY moved, so holding Shift against a wall doesn't drain it
+    protected void updateStamina() {
+        boolean moved = lastAmountMovedX != 0 || lastAmountMovedY != 0;
+
+        if (isSprinting && moved) {
+            stamina = Math.max(0, stamina - 1);
+            if (stamina == 0) {
+                isExhausted = true;
+            }
+        } else {
+            stamina = Math.min(MAX_STAMINA, stamina + 1);
+            if (isExhausted && stamina >= STAMINA_RECOVER_AMOUNT) {
+                isExhausted = false;
+            }
         }
     }
 
@@ -581,6 +618,10 @@ public abstract class Player extends GameObject {
     {
         return this.maxHealth;
     }
+
+    public int getStamina() { return stamina; }
+    public int getMaxStamina() { return MAX_STAMINA; }
+    public boolean isExhausted() { return isExhausted; }
 
     public boolean isPlayerInVent() {
         float playerCenterX =
