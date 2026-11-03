@@ -7,6 +7,7 @@ import Game.ScreenCoordinator;
 import Level.*;
 import Maps.Cutscene1Map;
 import Maps.Level1Map;
+import Maps.Level1NewMap;
 import Maps.NothingMap;
 import Maps.ProlougeCutsceneMap;
 import Maps.ProlougeMap;
@@ -54,7 +55,7 @@ public class PlayLevelScreen extends Screen implements GameListener {
 
         // define/setup map
         map = new ProlougeMap();
-        //map = new Level1Map();
+        //map = new Level1NewMap();
         map.setFlagManager(flagManager);
 
         // setup player
@@ -124,7 +125,7 @@ public class PlayLevelScreen extends Screen implements GameListener {
     public void onRestart() {
         // Restart still returns to Level 1 with a fresh cat and empty inventory.
         System.out.println("Level completed!");
-        loadMap(new Level1Map(), PlayLevelScreenState.RUNNING, false);
+        loadMap(new Level1NewMap(), PlayLevelScreenState.RUNNING, false);
     }
     //scene to start the prologue
     @Override
@@ -247,7 +248,7 @@ public class PlayLevelScreen extends Screen implements GameListener {
     @Override
     public void onCutscene1Completed() {
         System.out.println("Level completed!");
-        map = new Level1Map();
+        map = new Level1NewMap();
         map.setFlagManager(flagManager);
 
         // setup player
@@ -271,11 +272,20 @@ public class PlayLevelScreen extends Screen implements GameListener {
         map.preloadScripts();
     }
 
-    //from level 1 to the next thing (currently just puts you back in the prologue map)
+    //from level 1 (the elevator in Level1NewMap) to level 2, the map with the killer
     @Override
     public void onLevel1Completed() {
         System.out.println("Level completed!");
-        // Keep the current placeholder destination until Level 2 is ready.
+        // both levels open their BlockedWallTile2 doors with the simon says puzzle -- reset it so level 2's door starts locked
+        MiniGame2.setWinGame(false);
+        loadMap(new Level1Map(), PlayLevelScreenState.RUNNING, true);
+    }
+
+    //from level 2 to the next thing (currently just puts you back in the prologue map)
+    @Override
+    public void onLevel2Completed() {
+        System.out.println("Level completed!");
+        // Keep the current placeholder destination until Level 3 is ready.
         loadMap(new ProlougeMap(), PlayLevelScreenState.RUNNING, true);
     }
 
