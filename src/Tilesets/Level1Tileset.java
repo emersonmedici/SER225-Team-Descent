@@ -181,6 +181,27 @@ public class Level1Tileset extends Tileset {
 
         mapTiles.add(bloodyElevatorTile);
 
+        // 12: Wood floor
+        // there's no wood footstep sound yet, so wood uses the dirt steps
+        Frame woodFloorFrame = new FrameBuilder(getSubImage(0, 11))
+                .withScale(tileScale)
+                .build();
+
+        MapTileBuilder woodFloorTile = new MapTileBuilder(woodFloorFrame)
+                .withSurface(Surface.DIRT);
+
+        mapTiles.add(woodFloorTile);
+
+        // 13: Bloody wood floor
+        Frame bloodyWoodFloorFrame = new FrameBuilder(getSubImage(0, 12))
+                .withScale(tileScale)
+                .build();
+
+        MapTileBuilder bloodyWoodFloorTile = new MapTileBuilder(bloodyWoodFloorFrame)
+                .withSurface(Surface.DIRT);
+
+        mapTiles.add(bloodyWoodFloorTile);
+
         return mapTiles;
     }
 }
