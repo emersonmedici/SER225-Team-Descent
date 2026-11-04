@@ -16,9 +16,9 @@ public class Cutscene1Script1 extends Script {
         scriptActions.add(new LockPlayerScriptAction());
 
         scriptActions.add(new TextboxScriptAction() {{
-            addText("There's nothing here!");
-            addText("Is this place abandoned?");
-            addText("I have to go in further, there's got to be something \nthat can help Dave...");
+            addText("Tyson: There's nothing here!");
+            addText("Tyson: Is this place abandoned?");
+            addText("Tyson: I have to go in further, there's got to be \nsomething that can help Dave...");
         }});
 
         scriptActions.add(new ChangeFlagScriptAction("hasEnteredBuilding", true));

@@ -18,7 +18,7 @@ public class NothingMapScript extends Script {
         scriptActions.add(new LockPlayerScriptAction());
 
         scriptActions.add(new TextboxScriptAction() {{
-            addText("WOAH!");
+            addText("Tyson: WOAH!");
             
         }});
 

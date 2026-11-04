@@ -16,8 +16,8 @@ public class LockedDialogueScript extends Script {
         scriptActions.add(new LockPlayerScriptAction());
 
         scriptActions.add(new TextboxScriptAction() {{
-            addText("This thing is locked tight, no way I'm getting through \nthere.");
-            addText("Maybe there's some way to unlock it...");
+            addText("Tyson: This thing is locked tight, no way I'm getting \nthrough there.");
+            addText("Tyson: Maybe there's some way to unlock it...");
             //addText("Maybe Walrus has seen it.");
         }});
 

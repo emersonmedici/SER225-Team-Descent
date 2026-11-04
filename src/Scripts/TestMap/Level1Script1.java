@@ -16,9 +16,9 @@ public class Level1Script1 extends Script {
         scriptActions.add(new LockPlayerScriptAction());
 
         scriptActions.add(new TextboxScriptAction() {{
-            addText("Oof! What the heck?");
-            addText("Crap! The elevator dropped, how am I going to get \nback up?");
-            addText("I need to find a way out of here...");
+            addText("Tyson: Oof! What the heck?");
+            addText("Tyson: Crap! The elevator dropped, how am I going to \nget back up?");
+            addText("Tyson: I need to find a way out of here...");
         }});
 
         scriptActions.add(new ChangeFlagScriptAction("hasLanded", true));
