@@ -42,7 +42,6 @@ public class Level1Map extends Map {
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
         ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
 
-        // keycard is at the beginning of level for now, move to where puzzle is afterwards
         Keycard1 keycard = new Keycard1(getMapTile(44, 68).getLocation());
         enhancedMapTiles.add(keycard);
 
@@ -103,11 +102,11 @@ public class Level1Map extends Map {
         enhancedMapTiles.add(mg2);
 
         Mg mg4 = new Mg(getMapTile(103, 65).getLocation(), "w");
-       // mg4.setInteractScript(new MiniGame2Script());
+        mg4.setInteractScript(new MiniGameScript());
         enhancedMapTiles.add(mg4);
 
         Mg mg5 = new Mg(getMapTile(44, 77).getLocation(), "w");
-       // mg5.setInteractScript(new MiniGame2Script());
+        mg5.setInteractScript(new MiniGame2Script());
         enhancedMapTiles.add(mg5);
 
         DangerEntity enemy = new DangerEntity(getMapTile(93, 38).getLocation());
