@@ -1,17 +1,16 @@
 package Screens;
 
 import javax.swing.*;
+import Engine.GameWindow;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import Sound.SoundEffect;
 import Sound.SoundManager;
 
 public class MiniGame2 {	
-	private JFrame frame;
     private JLabel loseLabel, winLabel, sLabel;
-	private JPanel losePanel, winPanel, sPanel, topPanel, midPanel, bottomPanel;
+	private JPanel losePanel, winPanel, sPanel, topPanel, midPanel, bottomPanel, mainPanel;
 	private JButton button, button2, button3, button4, button5, button6, button7, button8, button9;    
     private ImageIcon icon, icon2, icon3, icon4, icon5, icon6, icon7, icon8, icon9;
 	private int sCounter = 1;
@@ -21,11 +20,6 @@ public class MiniGame2 {
 	private static boolean winGame;
 
     public MiniGame2(String frameTitle, int frameWidth, int frameHeight) {
-	    frame = new JFrame(frameTitle);
-		frame.setSize(frameWidth, frameHeight);
-        frame.setLayout(new GridBagLayout());
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
 		topPanel = new JPanel();
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
         topPanel.setOpaque(true);
@@ -39,6 +33,11 @@ public class MiniGame2 {
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
         bottomPanel.setOpaque(true);
         bottomPanel.setBackground(Color.WHITE);
+
+		mainPanel = new JPanel();    
+        mainPanel.setLayout(new GridBagLayout());
+        mainPanel.setOpaque(true);
+        mainPanel.setBackground(Color.WHITE);
 
 		sPanel = new JPanel();  
 		sPanel.setBackground(Color.WHITE); 
@@ -137,10 +136,10 @@ public class MiniGame2 {
 		bottomPanel.add(button7);
 		bottomPanel.add(button8);
 		bottomPanel.add(button9);
-		frame.add(sPanel, k);
-		frame.add(topPanel, l);
-		frame.add(midPanel, m);
-		frame.add(bottomPanel, s);
+		mainPanel.add(sPanel, k);
+		mainPanel.add(topPanel, l);
+		mainPanel.add(midPanel, m);
+		mainPanel.add(bottomPanel, s);
 
 		buttonChoices = new JButton[] {button, button2, button3, button4, button5, button6, button7, button8, button9};
     	addButtonListener(button);
@@ -153,7 +152,7 @@ public class MiniGame2 {
         addButtonListener(button8);
         addButtonListener(button9);
 
-        frame.setVisible(true);
+        mainPanel.setVisible(true);
 		stageController(buttonChoices);
     }
 	
@@ -182,20 +181,33 @@ public class MiniGame2 {
 				winLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
 				winPanel.add(winLabel);
 				setWinGame(true);
-				frame.getContentPane().removeAll();
-				frame.add(winPanel);
-				frame.revalidate();
-				frame.repaint();
+
+				Timer timer = new Timer(100, e -> { 
+					mainPanel.removeAll();
+					mainPanel.add(winPanel);
+					mainPanel.revalidate();
+					mainPanel.repaint();
+				});
+				timer.start();
+				timer.setRepeats(false);
+
+				Timer timer2 = new Timer(1000, e -> { 
+					GameWindow miniWindow = GameWindow.getGameWindow();
+					miniWindow.minigameCloser(mainPanel);
+				});
+				timer2.start();
+				timer2.setRepeats(false);
+
 			} else if (clickCounter == sCounter && playerButton == buttonChoices[placeHolder[clickCounter-1]]) {
 				sCounter++;
 				sLabel.setText("Stage: " + sCounter);
 				clickCounter = 1;
 				stageController(buttonChoices);
 			} else {
-				frame.add(losePanel, n);
+				mainPanel.add(losePanel, n);
 				setWinGame(false);
-				frame.revalidate();
-				frame.repaint();
+				mainPanel.revalidate();
+				mainPanel.repaint();
 				sCounter = 1;
 				clickCounter = 1;
 				sLabel.setText("Stage: " + sCounter);
@@ -306,6 +318,9 @@ public class MiniGame2 {
 		return winGame;
 	}
 
+	public JPanel getPanel() {
+		return mainPanel;
+	}
 	public static void main(String[] args) {
         new MiniGame2("Minigame 2", 500, 500);
     }

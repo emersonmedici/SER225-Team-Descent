@@ -2,29 +2,24 @@ package Screens;
 
 import javax.swing.*;
 import java.awt.*;
+import Engine.GameWindow;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import Sound.SoundEffect;
 import Sound.SoundManager;
 
 public class MiniGame {	
-	private JFrame frame;
 	private JLabel loseLabel, winLabel, keyLabel, blueLabel, yellowLabel, greenLabel, magentaLabel, orangeLabel;
-	private JPanel losePanel, winPanel, submitPanel, mainPanel, keyPanel, clickCountPanel, clickCountPanel2, clickCountPanel3, clickCountPanel4, clickCountPanel5, clickCountPanel6;
+	private JPanel buttonPanel, losePanel, winPanel, submitPanel, mainPanel, keyPanel, clickCountPanel, clickCountPanel2, clickCountPanel3, clickCountPanel4, clickCountPanel5, clickCountPanel6;
 	private JButton button1, button2, button3, button4, button5, button6;
     private static boolean isCorrect;
 	private int[] i = {0,0,0,0,0};
 
     public MiniGame(String frameTitle, int frameWidth, int frameHeight) {
-    	frame = new JFrame(frameTitle);
-		frame.setSize(frameWidth, frameHeight);
-        frame.setLayout(new GridBagLayout());
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
 		mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
-        mainPanel.setOpaque(true);
+		mainPanel.setLayout(new GridBagLayout());
+		buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
 		keyPanel = new JPanel();
         keyPanel.setLayout(new BoxLayout(keyPanel, BoxLayout.X_AXIS));
@@ -156,24 +151,23 @@ public class MiniGame {
 		keyPanel.add(clickCountPanel4);
 		keyPanel.add(clickCountPanel5);
 	
-		mainPanel.add(button1);
-		mainPanel.add(button2);
-		mainPanel.add(button3);
-		mainPanel.add(button4);
-		mainPanel.add(button5);
+		buttonPanel.add(button1);
+		buttonPanel.add(button2);
+		buttonPanel.add(button3);
+		buttonPanel.add(button4);
+		buttonPanel.add(button5);
 		submitPanel.add(button6);
-   	
-		frame.add(mainPanel, l);
-		frame.add(keyPanel, k);
-		frame.add(submitPanel, m);
-        addButtonListener(button1);
+
+		mainPanel.add(keyPanel, k);
+		mainPanel.add(buttonPanel, l);
+		mainPanel.add(submitPanel, m);
+
+		addButtonListener(button1);
         addButtonListener(button2);
         addButtonListener(button3);
         addButtonListener(button4);
         addButtonListener(button5); 
         addButtonListener(button6); 
-        
-        frame.setVisible(true);
     }
 
     private void addButtonListener(JButton button) {
@@ -184,8 +178,8 @@ public class MiniGame {
 					checkCorrect();
 				} else {
 					changeBackgroundColor(button);
-					frame.revalidate();
-					frame.repaint();
+					mainPanel.revalidate();
+					mainPanel.repaint();
 				}
             }
         });
@@ -224,24 +218,35 @@ public class MiniGame {
 			if (isCorrect == true) {
 				SoundManager.play(SoundEffect.PUZZLE_COMPLETE);
 				winPanel = new JPanel();  
-				winPanel.setBackground(Color.WHITE); 
 				winLabel = new JLabel("You win! Congrats", SwingConstants.CENTER);
 				winLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
 				winPanel.add(winLabel);
-				
-				frame.getContentPane().removeAll();
-				frame.add(winPanel);
-				frame.revalidate();
-				frame.repaint();
+
+				Timer timer = new Timer(100, e -> { 
+					mainPanel.removeAll();
+					mainPanel.add(winPanel);
+
+					mainPanel.revalidate();
+					mainPanel.repaint();
+				});
+				timer.start();
+				timer.setRepeats(false);
+
+				Timer timer2 = new Timer(1000, e -> { 
+					GameWindow miniWindow = GameWindow.getGameWindow();
+					miniWindow.minigameCloser(mainPanel);
+				});
+				timer2.start();
+				timer2.setRepeats(false);
 			} else {
 				losePanel = new JPanel(); 
 				losePanel.setLayout(new BoxLayout(losePanel, BoxLayout.X_AXIS));
 				loseLabel = new JLabel("You lost, try again!", SwingConstants.CENTER);
 				loseLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 				losePanel.add(loseLabel);
-				frame.add(losePanel, k);
-				frame.revalidate();
-				frame.repaint();
+				mainPanel.add(losePanel, k);
+				mainPanel.revalidate();
+				mainPanel.repaint();
 			}
 			
 			if (correct == 5) {
@@ -249,7 +254,6 @@ public class MiniGame {
 			} else {
 				setIsCorrect(false);
 			}
-
 	}
 
 	public static void setIsCorrect (boolean value) {
@@ -309,7 +313,19 @@ public class MiniGame {
 		}
     }		
 
+	public JPanel getPanel() {
+		return mainPanel;
+	}
     public static void main(String[] args) {
-    	new MiniGame("Minigame 1", 500, 500);
-    }
+    	MiniGame miniGame = new MiniGame("Minigame 1", 500, 500);
+		JFrame frame = new JFrame("Minigame 1");
+		frame.setSize(500, 500);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		frame.setLayout(new GridBagLayout());
+	    frame.add(miniGame.getPanel());
+
+   		frame.setLocationRelativeTo(null);
+    	frame.setVisible(true);
+	}
 }
