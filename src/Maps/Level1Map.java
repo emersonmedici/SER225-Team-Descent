@@ -1,25 +1,23 @@
 package Maps;
 
+import EnhancedMapTiles.ArtTiles.*;
 import EnhancedMapTiles.BlockedWallTile;
 import EnhancedMapTiles.BlockedWallTile2;
 import EnhancedMapTiles.DangerEntity;
+import EnhancedMapTiles.JournalEntry4;
+import EnhancedMapTiles.JournalEntry5;
+import EnhancedMapTiles.JournalEntry6;
+import EnhancedMapTiles.JournalEntry7;
 import EnhancedMapTiles.Keycard1;
 import EnhancedMapTiles.Mg;
 import EnhancedMapTiles.PushableRock;
 import EnhancedMapTiles.VentEntity;
 import EnhancedMapTiles.WallTileX;
-import EnhancedMapTiles.WallTileY;
-import EnhancedMapTiles.ArtTiles.*;
 import Level.*;
-import Scripts.MiniGame2Script;
-import Scripts.MiniGameScript;
-import Scripts.SimpleTextScript;
-import ScriptActions.*;
-import EnhancedMapTiles.DangerEntity;
-import EnhancedMapTiles.VentEntity;
 import Screens.MiniGame;
 import Screens.MiniGame2;
-
+import Scripts.MiniGame2Script;
+import Scripts.MiniGameScript;
 import Scripts.TestMap.*;
 import Tilesets.Level1Tileset;
 import Utils.Point;
@@ -75,6 +73,12 @@ public class Level1Map extends Map {
     @Override
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
         ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
+
+        // Journal entries
+        enhancedMapTiles.add(new JournalEntry4(getMapTile(104, 62).getLocation())); // Room 6, near puzzle.
+        enhancedMapTiles.add(new JournalEntry5(getMapTile(44, 74).getLocation())); // Room 10, near puzzle.
+        enhancedMapTiles.add(new JournalEntry6(getMapTile(93, 38).getLocation())); // End room, below exit trigger.
+        enhancedMapTiles.add(new JournalEntry7(getMapTile(85, 97).getLocation())); // Starting room 1.
 
         Keycard1 keycard = new Keycard1(getMapTile(44, 68).getLocation());
         enhancedMapTiles.add(keycard);

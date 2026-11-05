@@ -1,6 +1,9 @@
 package Maps;
 
 import EnhancedMapTiles.BlockedWallTile2;
+import EnhancedMapTiles.JournalEntry1;
+import EnhancedMapTiles.JournalEntry2;
+import EnhancedMapTiles.JournalEntry3;
 import EnhancedMapTiles.Mg;
 import Level.*;
 import Scripts.MiniGame2Script;
@@ -9,7 +12,6 @@ import Scripts.TestMap.ElevatorScript;
 import Scripts.TestMap.LockedDialogueScript;
 import Tilesets.Level1Tileset;
 import Utils.Point;
-
 import java.util.ArrayList;
 
 // Represents the new level 1 map (rebuild of Level1Map)
@@ -27,6 +29,11 @@ public class Level1NewMap extends Map {
     @Override
     public ArrayList<EnhancedMapTile> loadEnhancedMapTiles() {
         ArrayList<EnhancedMapTile> enhancedMapTiles = new ArrayList<>();
+
+        // Journal entries
+        enhancedMapTiles.add(new JournalEntry1(getMapTile(19, 90).getLocation())); // Hallway to bedroom.
+        enhancedMapTiles.add(new JournalEntry2(getMapTile(45, 92).getLocation())); // Secret storage closet.
+        enhancedMapTiles.add(new JournalEntry3(getMapTile(27, 73).getLocation())); // Secret elevator room.
 
         // locked door at the bottom of the hallway up to the level 2 room, one tile above the center room
         // Player removes every BlockedWallTile2 once the simon says puzzle is won
