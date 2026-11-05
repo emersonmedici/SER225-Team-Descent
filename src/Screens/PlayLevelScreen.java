@@ -57,6 +57,7 @@ public class PlayLevelScreen extends Screen implements GameListener {
         flagManager.addFlag("hasEnteredBuilding", false);
         flagManager.addFlag("hasLanded", false);
         flagManager.addFlag("newFlagTest", false);
+        flagManager.addFlag("hasCheckedLock", false);
 
         // define/setup map
         map = new ProlougeMap();
@@ -178,6 +179,12 @@ public class PlayLevelScreen extends Screen implements GameListener {
         loadMap(new Cutscene1Map(), PlayLevelScreenState.RUNNING, true);
     }
 
+    @Override
+    public void onLobbyTraversedTest() {
+        System.out.println("Level completed!");
+        loadMap(new Level1NewMap(), PlayLevelScreenState.RUNNING, true);
+    }
+
     //from lobby cut to black
     @Override
     public void onElevatorDrop() {
@@ -190,7 +197,10 @@ public class PlayLevelScreen extends Screen implements GameListener {
     @Override
     public void onCutscene1Completed() {
         System.out.println("Level completed!");
-        loadMap(new Level1NewMap(), PlayLevelScreenState.RUNNING, true);
+        // both levels open their BlockedWallTile2 doors with the simon says puzzle -- reset it so level 2's door starts locked
+        MiniGame2.setWinGame(false);
+        flagManager.unsetFlag("hasCheckedLock");
+        loadMap(new Level1Map(), PlayLevelScreenState.RUNNING, true);
     }
 
     //from level 1 (the elevator in Level1NewMap) to level 2, the map with the killer
@@ -201,6 +211,7 @@ public class PlayLevelScreen extends Screen implements GameListener {
         MiniGame2.setWinGame(false);
         // level 2 starts the danger entity's stages from minigame 1, so a win from before a death can't carry over
         MiniGame.setIsCorrect(false);
+        flagManager.unsetFlag("hasCheckedLock");
         loadMap(new Level1Map(), PlayLevelScreenState.RUNNING, true);
     }
 

@@ -2,6 +2,7 @@ package Scripts;
 
 import java.util.ArrayList;
 import Level.Script;
+import ScriptActions.ChangeFlagScriptAction;
 import ScriptActions.MiniGameScriptAction;
 import ScriptActions.ScriptAction;
 

@@ -87,7 +87,7 @@ public class DaveScript extends Script {
                 });
 
                 addScriptAction(new TextboxScriptAction() {{
-                    addText("Hurry...");
+                    addText("Dave: Hurry...");
                     //addText("I'm going to let you in on a little secret...\nYou can push some rocks out of the way.");
                 }});
             }});
@@ -101,7 +101,7 @@ public class DaveScript extends Script {
                     }
                 });
                 
-                addScriptAction(new TextboxScriptAction("Tyson, do something!!"));
+                addScriptAction(new TextboxScriptAction("Dave: Tyson, do something!!"));
             }});
         }});
 
