@@ -67,7 +67,7 @@ public class ItemInspectionScreen extends Screen {
 
         float scale = Math.min((panelWidth - 40f) / image.getWidth(),
                 (panelHeight - 110f) / image.getHeight());
-        if (scale >= 1) scale = (float) Math.floor(scale);
+        //if (scale >= 1) scale = (float) Math.floor(scale);
         int width = Math.max(1, Math.round(image.getWidth() * scale));
         int height = Math.max(1, Math.round(image.getHeight() * scale));
         Graphics2D graphics = graphicsHandler.getGraphics();
