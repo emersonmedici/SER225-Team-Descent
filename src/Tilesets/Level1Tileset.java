@@ -7,6 +7,7 @@ import GameObject.Frame;
 import Level.Surface;
 import Level.TileType;
 import Level.Tileset;
+import Utils.ImageUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -151,16 +152,18 @@ public class Level1Tileset extends Tileset {
         mapTiles.add(ventFloorTile);
 
         // 9: Vent entrance
-        Frame ventEntranceFrame = new FrameBuilder(getSubImage(0, 6))
+        // top layer, so its filled pixels are made see-through again to show the vent floor underneath
+        Frame ventEntranceFrame = new FrameBuilder(ImageUtils.transformColorToTransparency(getSubImage(0, 6), FILL_COLOR))
                 .withScale(tileScale)
                 .build();
 
-        MapTileBuilder ventEntranceTile = new MapTileBuilder(ventEntranceFrame)
+        MapTileBuilder ventEntranceTile = new MapTileBuilder(ventFloorFrame)
                 .withSurface(Surface.METAL)
+                .withTopLayer(ventEntranceFrame)
                 .withTileType(TileType.VENT);
 
         mapTiles.add(ventEntranceTile);
-
+ 
         // 10: Elevator
         Frame elevatorFrame = new FrameBuilder(getSubImage(0, 4))
                 .withScale(tileScale)

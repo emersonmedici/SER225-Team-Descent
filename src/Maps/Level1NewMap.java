@@ -39,8 +39,9 @@ public class Level1NewMap extends Map {
         enhancedMapTiles.add(simonSays);
 
         // post under the puzzle sign
-        enhancedMapTiles.add(new Mg(getMapTile(43, 91).getLocation(), "w"));
-
+        Mg simonsays2 = new Mg(getMapTile(43, 91).getLocation(), "w");
+        enhancedMapTiles.add(simonsays2);
+        simonsays2.setInteractScript(new MiniGame2Script());
         return enhancedMapTiles;
     }
 

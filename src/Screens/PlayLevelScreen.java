@@ -209,6 +209,8 @@ public class PlayLevelScreen extends Screen implements GameListener {
         System.out.println("Level completed!");
         // both levels open their BlockedWallTile2 doors with the simon says puzzle -- reset it so level 2's door starts locked
         MiniGame2.setWinGame(false);
+        // level 2 starts the danger entity's stages from minigame 1, so a win from before a death can't carry over
+        MiniGame.setIsCorrect(false);
         flagManager.unsetFlag("hasCheckedLock");
         loadMap(new Level1Map(), PlayLevelScreenState.RUNNING, true);
     }

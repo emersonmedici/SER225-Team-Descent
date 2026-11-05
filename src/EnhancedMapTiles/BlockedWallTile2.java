@@ -14,7 +14,7 @@ public class BlockedWallTile2 extends EnhancedMapTile {
         super(
             location.x,
             location.y,
-            new SpriteSheet(ImageLoader.load("BlockedWallTilted.png"), 16, 16),
+            new SpriteSheet(ImageLoader.load("UnlockWallX.png"), 16, 16),
             TileType.NOT_PASSABLE 
     );
     }
@@ -27,5 +27,4 @@ public class BlockedWallTile2 extends EnhancedMapTile {
 
         return new GameObject(x, y, frame);
     }
-
 }

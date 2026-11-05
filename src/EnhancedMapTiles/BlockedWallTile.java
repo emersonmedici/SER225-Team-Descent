@@ -14,9 +14,19 @@ public class BlockedWallTile extends EnhancedMapTile {
         super(
             location.x,
             location.y,
-            new SpriteSheet(ImageLoader.load("BlockedWall.png"), 16, 16),
+            new SpriteSheet(ImageLoader.load("UnlockWallY.png"), 16, 16),
             TileType.NOT_PASSABLE 
     );
+    }
+
+    // Same wall (opens with minigame 1), but with a different image
+    public BlockedWallTile(Point location, String imageName) {
+        super(
+            location.x,
+            location.y,
+            new SpriteSheet(ImageLoader.load(imageName), 16, 16),
+            TileType.NOT_PASSABLE
+        );
     }
 
     @Override
