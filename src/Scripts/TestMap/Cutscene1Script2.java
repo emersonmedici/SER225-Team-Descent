@@ -18,9 +18,9 @@ public class Cutscene1Script2 extends Script {
         scriptActions.add(new LockPlayerScriptAction());
 
         scriptActions.add(new TextboxScriptAction() {{
-            addText("It's so dark, I can't see...");
-            addText("...an elevator?");
-            addText("Let me see what I can--");
+            addText("Tyson: Is this...");
+            addText("Tyson: ...an elevator?");
+            addText("Tyson: Let me see what I can--");
         }});
 
         //scriptActions.add(new ChangeFlagScriptAction("hasEnteredBuilding", true));

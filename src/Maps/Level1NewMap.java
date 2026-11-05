@@ -4,8 +4,9 @@ import EnhancedMapTiles.BlockedWallTile2;
 import EnhancedMapTiles.Mg;
 import Level.*;
 import Scripts.MiniGame2Script;
-//import Scripts.MiniGameScript;
+import Scripts.TestMap.Cutscene1Script2;
 import Scripts.TestMap.ElevatorScript;
+import Scripts.TestMap.LockedDialogueScript;
 import Tilesets.Level1Tileset;
 import Utils.Point;
 
@@ -56,7 +57,10 @@ public class Level1NewMap extends Map {
 
         // one tile in front of the elevator -- walking into it loads the next level
         Point elevatorPoint = getMapTile(27, 72).getLocation();
-        triggers.add(new Trigger(elevatorPoint.x, elevatorPoint.y, 48, 48, new ElevatorScript()));
+        triggers.add(new Trigger(elevatorPoint.x, elevatorPoint.y, 48, 48, new Cutscene1Script2()));
+
+        Point triggerPoint = getMapTile(26, 87).getLocation();
+        triggers.add(new Trigger(triggerPoint.x, triggerPoint.y, 100, 25, new LockedDialogueScript(), "hasCheckedLock"));
 
         return triggers;
     }

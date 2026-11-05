@@ -451,6 +451,11 @@ public class Level1Map extends Map {
         triggers.add(new Trigger(triggerPoint.x, triggerPoint.y, 100, 100, new Level1Script1(), "hasLanded"));
         triggerPoint = getMapTile(88, 34).getLocation();
         triggers.add(new Trigger(triggerPoint.x, triggerPoint.y, 530, 150, new Level1Script2(), "newFlagTest"));
+
+        triggerPoint = getMapTile(81, 94).getLocation();
+        triggers.add(new Trigger(triggerPoint.x, triggerPoint.y, 150, 25, new LockedDialogueScript(), "hasCheckedLock"));
+        triggerPoint = getMapTile(79, 96).getLocation();
+        triggers.add(new Trigger(triggerPoint.x, triggerPoint.y, 25, 150, new LockedDialogueScript(), "hasCheckedLock"));
         
         /*Point triggerPoint2 = getMapTile(78, 95).getLocation();
         triggers.add(new Trigger(triggerPoint2.x, triggerPoint2.y, 100, 100, new BlockedTileScript(), "touchedWall"));*/

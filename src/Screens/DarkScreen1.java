@@ -19,7 +19,7 @@ public class DarkScreen1 extends Screen {
 
     @Override
     public void initialize() {
-        text = new SpriteFont("WOAH!", 35, 472, "Arial", 30, Color.black);
+        text = new SpriteFont("Tyson: WOAH!", 35, 472, "Arial", 30, Color.black);
         keyLocker.lockKey(Key.SPACE);
         //keyLocker.lockKey(Key.ESC);
     }
