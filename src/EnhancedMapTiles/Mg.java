@@ -1,16 +1,15 @@
 package EnhancedMapTiles;
 
-import java.util.HashMap;
+//import java.util.HashMap;
 
 import Builders.FrameBuilder;
-import Engine.GraphicsHandler;
+//import Engine.GraphicsHandler;
 import Engine.ImageLoader;
 import GameObject.Frame;
 import GameObject.GameObject;
-import GameObject.ImageEffect;
+//import GameObject.ImageEffect;
 import GameObject.SpriteSheet;
 import Level.EnhancedMapTile;
-import Level.NPC;
 import Level.TileType;
 import Utils.Point;
 

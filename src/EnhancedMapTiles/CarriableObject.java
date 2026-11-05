@@ -19,6 +19,15 @@ import Utils.Point;
 public class CarriableObject extends EnhancedMapTile {
     private Player carrier;
 
+    public boolean isInspectable() { return false; }
+
+    public String getInspectionTitle() { return "Item"; }
+
+    public java.awt.image.BufferedImage getInspectionImage() {
+        GameObject sprite = getBottomLayer();
+        return sprite.getCurrentAnimation()[sprite.getCurrentFrameIndex()].getImage();
+    }
+
     public CarriableObject(Point location) {
         this(location, new SpriteSheet(ImageLoader.load("Rock.png"), 16, 16));
     }

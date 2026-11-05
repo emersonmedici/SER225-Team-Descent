@@ -52,7 +52,7 @@ public class InventoryScreen extends Screen {
                 drawItemIcon(item, x + 4, 30, graphicsHandler);
             }
         }
-        graphicsHandler.drawString("1-9: select   0: hands   Space: pick up / drop",
+        graphicsHandler.drawString("1-9: select   0: hands   Space: pick up / drop   E: inspect",
                 12, 77, font, Color.WHITE);
     }
 

@@ -9,6 +9,12 @@ import Utils.Point;
 import java.awt.image.BufferedImage;
 
 public class Keycard1 extends CarriableObject {
+    @Override
+    public boolean isInspectable() { return true; }
+
+    @Override
+    public String getInspectionTitle() { return "Keycard 1"; }
+
     public Keycard1(Point location) {
         super(location, loadSpriteSheet());
         setInteractScript(new PickupObjectScript());
