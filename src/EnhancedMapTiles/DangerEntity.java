@@ -334,12 +334,24 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
     public void triggerSpawnEvent(Player player) {
         start(player);
         setIsHidden(false);
-        Point pos = new Point(player.getX(), player.getY());
+        Point pos = new Point(player.getX() + player.getWidth() / 2.0f, player.getY() + player.getHeight() / 2.0f);
         NodeBase startNode = spawnPosition(pos);
-        setLocation(startNode.getX() * 48, startNode.getY() * 48);
+        if (startNode != null) {
+            setLocation(startNode.getX() * 48, startNode.getY() * 48);
+        }
         path = null;
         lastPlayerPos = null;
         isAttacking = false;
+    }
+
+    // Takes him out of the game until triggerSpawnEvent brings him back
+    // Hidden entities aren't updated or drawn, and stop counting as hunting the player
+    public void despawn() {
+        setIsHidden(true);
+        path = null;
+        lastPlayerPos = null;
+        isAttacking = false;
+        setAnimation("WALK_LEFT");
     }
 
 
@@ -347,6 +359,9 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
         BreadthFirstSearch farPosScript = new BreadthFirstSearch(nodes);
         Point playerPos = map.getTileIndexByPosition(reference.x, reference.y);
         ArrayList<NodeBase> farthestNodes = farPosScript.findFarthest(nodes[(int)playerPos.x][(int)playerPos.y], spawnDistance);
+        if (farthestNodes.isEmpty()) {
+            return null;
+        }
         Random rand = new Random();
         int randomIndex = rand.nextInt(farthestNodes.size());
         NodeBase startNode = farthestNodes.get(randomIndex);

@@ -18,6 +18,7 @@ import ScriptActions.*;
 import EnhancedMapTiles.DangerEntity;
 import EnhancedMapTiles.VentEntity;
 import Screens.MiniGame;
+import Screens.MiniGame2;
 
 import Scripts.TestMap.*;
 import Tilesets.Level1Tileset;
@@ -39,7 +40,25 @@ public class Level1Map extends Map {
 
 
     private DangerEntity dangerEntity;
-    private boolean spawnedIn;
+
+    // The order the danger entity goes through during the level
+    private enum DangerStage {
+        WAITING_FOR_FIRST_PUZZLE,    // hidden until minigame 1 is won
+        FIRST_CHASE,                 // in the map until the player gets away
+        WAITING_NEAR_SECOND_PUZZLE,  // hidden until the player gets close to minigame 2
+        SECOND_CHASE,                // in the map until the player gets away
+        WAITING_FOR_SECOND_PUZZLE,   // hidden until minigame 2 is won
+        FINAL_CHASE                  // stays in the map until the level is over
+    }
+
+    // How far the player has to get from him to despawn him (bigger than his spawn distance of 13 tiles)
+    private static final float DESPAWN_DISTANCE = 18;
+    // How close to minigame 2 the player has to get to bring him back
+    private static final float SECOND_PUZZLE_SPAWN_DISTANCE = 20;
+    private static final int SECOND_PUZZLE_TILE_X = 44;
+    private static final int SECOND_PUZZLE_TILE_Y = 76;
+
+    private DangerStage dangerStage;
 
     public Level1Map() {
         super("Level1Map.txt", new Level1Tileset());
@@ -47,7 +66,7 @@ public class Level1Map extends Map {
         this.showHealthUI = true;
         this.ambientTrack = "level1_ambience.wav";
         this.chaseTrack = "chase.wav";
-        this.spawnedIn = false;
+        this.dangerStage = DangerStage.WAITING_FOR_FIRST_PUZZLE;
 
        // this.screen = null;
        // this.screen = null;
@@ -144,6 +163,8 @@ public class Level1Map extends Map {
         // Room 1
         Desk desk1 = new Desk(centerOnTile(82, 96), new Point(0, 0));
         enhancedMapTiles.add(desk1);
+        TableChair chair1 = new TableChair(getMapTile(82, 95).getLocation(), TableChair.CHAIR_FORWARD);
+        enhancedMapTiles.add(chair1);
         Cabinet cabinet1 = new Cabinet(centerOnTile(85, 95), new Point(1, 1));
         enhancedMapTiles.add(cabinet1);
         Cabinet cabinet2 = new Cabinet(centerOnTile(79, 99), new Point(1, 2));
@@ -156,6 +177,10 @@ public class Level1Map extends Map {
         enhancedMapTiles.add(couch2);
         Desk desk2 = new Desk(centerOnTile(54, 93), new Point(0, 1));
         enhancedMapTiles.add(desk2);
+        TableChair chair2 = new TableChair(getMapTile(53, 93).getLocation(), TableChair.CHAIR_RIGHT);
+        enhancedMapTiles.add(chair2);
+        TableChair table1 = new TableChair(getMapTile(57, 92).getLocation(), TableChair.TABLE);
+        enhancedMapTiles.add(table1);
 
         // Room 10
         Couch couch3 = new Couch(centerOnTile(41, 78), new Point(0, 1));
@@ -174,8 +199,12 @@ public class Level1Map extends Map {
         enhancedMapTiles.add(couch8);
         Desk desk3 = new Desk(centerOnTile(77, 79), new Point(0, 0));
         enhancedMapTiles.add(desk3);
-        Desk desk4 = new Desk(centerOnTile(86, 81), new Point(0, 0));
+        TableChair chair3 = new TableChair(getMapTile(77, 78).getLocation(), TableChair.CHAIR_FORWARD);
+        enhancedMapTiles.add(chair3);
+        Desk desk4 = new Desk(centerOnTile(86, 81), new Point(1, 1));
         enhancedMapTiles.add(desk4);
+        TableChair chair4 = new TableChair(getMapTile(86, 82).getLocation(), TableChair.CHAIR_BACKWARD);
+        enhancedMapTiles.add(chair4);
         Cabinet cabinet3 = new Cabinet(centerOnTile(83, 78), new Point(0, 0));
         enhancedMapTiles.add(cabinet3);
 
@@ -188,7 +217,7 @@ public class Level1Map extends Map {
         enhancedMapTiles.add(bed2);
         Curtain curtain2 = new Curtain(centerOnTile(63, 67), new Point(0, 0));
         enhancedMapTiles.add(curtain2);
-        HeartMonitor heartMonitor1 = new HeartMonitor(centerOnTile(64, 62), new Point(1, 0));
+        HeartMonitor heartMonitor1 = new HeartMonitor(centerOnTile(65, 62), new Point(1, 0));
         enhancedMapTiles.add(heartMonitor1);
         HeartMonitor heartMonitor2 = new HeartMonitor(centerOnTile(65, 68), new Point(1, 0));
         enhancedMapTiles.add(heartMonitor2);
@@ -266,8 +295,16 @@ public class Level1Map extends Map {
         enhancedMapTiles.add(cabinet18);
         Cabinet cabinet19 = new Cabinet(centerOnTile(136, 98), new Point(0, 1));
         enhancedMapTiles.add(cabinet19);
-        // Table table1 = new Table(centerOnTile(135, 95), new Point(0, 0));
-        // enhancedMapTiles.add(table1);
+        TableChair table2 = new TableChair(getMapTile(135, 95).getLocation(), TableChair.TABLE);
+        enhancedMapTiles.add(table2);
+        TableChair chair5 = new TableChair(getMapTile(136, 95).getLocation(), TableChair.CHAIR_LEFT);
+        enhancedMapTiles.add(chair5);
+        TableChair chair6 = new TableChair(getMapTile(134, 95).getLocation(), TableChair.CHAIR_RIGHT);
+        enhancedMapTiles.add(chair6);
+        TableChair chair7 = new TableChair(getMapTile(135, 94).getLocation(), TableChair.CHAIR_FORWARD);
+        enhancedMapTiles.add(chair7);
+        TableChair chair8 = new TableChair(getMapTile(135, 96).getLocation(), TableChair.CHAIR_BACKWARD);
+        enhancedMapTiles.add(chair8);
 
         // Room 4
         Bed bed5 = new Bed(centerOnTile(128, 78), new Point(1, 0));
@@ -304,6 +341,16 @@ public class Level1Map extends Map {
         enhancedMapTiles.add(couch10);
         Cabinet cabinet29 = new Cabinet(centerOnTile(155, 58), new Point(0, 1));
         enhancedMapTiles.add(cabinet29);
+        TableChair table3 = new TableChair(getMapTile(150, 55).getLocation(), TableChair.TABLE);
+        enhancedMapTiles.add(table3);
+        TableChair chair9 = new TableChair(getMapTile(149, 55).getLocation(), TableChair.CHAIR_RIGHT);
+        enhancedMapTiles.add(chair9);
+        TableChair chair10 = new TableChair(getMapTile(151, 55).getLocation(), TableChair.CHAIR_LEFT);
+        enhancedMapTiles.add(chair10);
+        TableChair chair11 = new TableChair(getMapTile(150, 54).getLocation(), TableChair.CHAIR_FORWARD);
+        enhancedMapTiles.add(chair11);
+        TableChair chair12 = new TableChair(getMapTile(150, 56).getLocation(), TableChair.CHAIR_BACKWARD);
+        enhancedMapTiles.add(chair12);
 
         // Room 6
         Bed bed7 = new Bed(centerOnTile(101, 58), new Point(0, 0));
@@ -414,10 +461,62 @@ public class Level1Map extends Map {
     @Override 
     public void update(Player player) {
         super.update(player);
-        if(MiniGame.getIsCorrect() == true && spawnedIn == false) {
-            dangerEntity.triggerSpawnEvent(player);
-            spawnedIn = true;
+        updateDangerStage(player);
+    }
+
+    private void updateDangerStage(Player player) {
+        if (dangerStage == DangerStage.FINAL_CHASE) {
+            return;
         }
+
+        // Winning minigame 2 skips to the last stage from anywhere, whether he's in the map or not
+        if (MiniGame2.getWinGame() == true) {
+            if (dangerEntity.isHidden()) {
+                dangerEntity.triggerSpawnEvent(player);
+            }
+            dangerStage = DangerStage.FINAL_CHASE;
+        }
+        else if (dangerStage == DangerStage.WAITING_FOR_FIRST_PUZZLE) {
+            if (MiniGame.getIsCorrect() == true) {
+                dangerEntity.triggerSpawnEvent(player);
+                dangerStage = DangerStage.FIRST_CHASE;
+            }
+        }
+        else if (dangerStage == DangerStage.FIRST_CHASE) {
+            if (isPlayerAwayFromDanger(player)) {
+                dangerEntity.despawn();
+                dangerStage = DangerStage.WAITING_NEAR_SECOND_PUZZLE;
+            }
+        }
+        else if (dangerStage == DangerStage.WAITING_NEAR_SECOND_PUZZLE) {
+            if (isPlayerNearSecondPuzzle(player)) {
+                dangerEntity.triggerSpawnEvent(player);
+                dangerStage = DangerStage.SECOND_CHASE;
+            }
+        }
+        else if (dangerStage == DangerStage.SECOND_CHASE) {
+            if (isPlayerAwayFromDanger(player)) {
+                dangerEntity.despawn();
+                dangerStage = DangerStage.WAITING_FOR_SECOND_PUZZLE;
+            }
+        }
+    }
+
+    private boolean isPlayerAwayFromDanger(Player player) {
+        Point center = dangerEntity.getThreatCenter();
+        return getTileDistance(player, center) >= DESPAWN_DISTANCE;
+    }
+
+    private boolean isPlayerNearSecondPuzzle(Player player) {
+        Point puzzle = getMapTile(SECOND_PUZZLE_TILE_X, SECOND_PUZZLE_TILE_Y).getLocation();
+        return getTileDistance(player, puzzle) <= SECOND_PUZZLE_SPAWN_DISTANCE;
+    }
+
+    // Straight line distance from the player to a pixel position, in tiles
+    private float getTileDistance(Player player, Point position) {
+        float dx = player.getX() + player.getWidth() / 2.0f - position.x;
+        float dy = player.getY() + player.getHeight() / 2.0f - position.y;
+        return (float) Math.sqrt(dx * dx + dy * dy) / getTileset().getScaledSpriteWidth();
     }
 
     public DangerEntity getDangerEntity() {
