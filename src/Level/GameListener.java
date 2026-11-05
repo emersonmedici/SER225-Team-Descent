@@ -10,5 +10,5 @@ public interface GameListener {
     void onCutscene1Completed();
     void onLevel1Completed();
     void onLevel2Completed();
-
+    void onLobbyTraversedTest();
 }
