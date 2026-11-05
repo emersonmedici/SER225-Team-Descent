@@ -325,7 +325,6 @@ public class MiniGame {
 		frame.setLayout(new GridBagLayout());
 	    frame.add(miniGame.getPanel());
 
-   		frame.setLocationRelativeTo(null);
     	frame.setVisible(true);
 	}
 }
