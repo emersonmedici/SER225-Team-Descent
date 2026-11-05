@@ -5,6 +5,7 @@ import Engine.Key;
 import Engine.KeyLocker;
 import Engine.Keyboard;
 import Engine.Screen;
+import Utils.Mouse;
 import Game.GameState;
 import Game.ScreenCoordinator;
 import Level.*;
@@ -45,6 +46,7 @@ public class PlayLevelScreen extends Screen implements GameListener {
     }
 
     public void initialize() {
+        Mouse.discardClicks();
         // setup state
         flagManager = new FlagManager();
         flagManager.addFlag("hasLostBall", false);
@@ -99,6 +101,8 @@ public class PlayLevelScreen extends Screen implements GameListener {
     }
 
     public void update() {
+        // Read once even when blocked, so ignored clicks cannot activate an item later.
+        boolean usePressed = Mouse.consumeLeftClick();
         // the music follows whichever map is loaded, so every map transition picks up its new track automatically
         // this goes BEFORE the switch: the win screen can call goBackToMenu() inside the switch, and running
         // the director after that would start the music right back up over the menu
@@ -128,6 +132,9 @@ public class PlayLevelScreen extends Screen implements GameListener {
         switch (playLevelScreenState) {
             // if level is "running" update player and map to keep game logic for the platformer level going
             case RUNNING:
+                if (usePressed && !player.isLocked()) {
+                    player.useEquippedItem();
+                }
                 player.update();
                 map.update(player);
                 inventoryScreen.update();

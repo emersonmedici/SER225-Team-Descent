@@ -82,6 +82,10 @@ public abstract class Player extends GameObject {
 
     public int getSelectedInventorySlot() { return selectedInventorySlot; }
     public CarriableObject getCarriedObject() { return carriedObject; }
+
+    public boolean useEquippedItem() {
+        return map != null && map.tryUseEquippedItem(this);
+    }
     public boolean isLocked() { return isLocked; }
 
     public void suppressInspectionInputsUntilRelease() {

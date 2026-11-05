@@ -3,6 +3,7 @@ package Engine;
 import GameObject.Rectangle;
 import SpriteFont.SpriteFont;
 import Utils.Colors;
+import Utils.Mouse;
 
 import javax.swing.*;
 import java.awt.*;
@@ -46,6 +47,13 @@ public class GamePanel extends JPanel {
 
 		// attaches Keyboard class's keyListener to this JPanel
 		this.addKeyListener(Keyboard.getKeyListener());
+		this.addMouseListener(Mouse.getMouseListener());
+		this.addFocusListener(new java.awt.event.FocusAdapter() {
+			@Override
+			public void focusLost(java.awt.event.FocusEvent event) {
+				Mouse.reset();
+			}
+		});
 
 		graphicsHandler = new GraphicsHandler();
 
@@ -122,6 +130,8 @@ public class GamePanel extends JPanel {
 
 		if (!isGamePaused) {
 			screenManager.update();
+		} else {
+			Mouse.discardClicks();
 		}
 	}
 

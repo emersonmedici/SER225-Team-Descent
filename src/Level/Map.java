@@ -507,6 +507,26 @@ public abstract class Map {
         return activeScript;
     }
 
+    public boolean tryUseEquippedItem(Player player) {
+        if (player != this.player || player.isLocked() || textbox.isActive()
+                || activeScript != null || player.getCarriedObject() == null) {
+            return false;
+        }
+        for (Trigger trigger : triggers) {
+            if (!(trigger instanceof ItemUseTarget) || trigger.isHidden()
+                    || trigger.getMapEntityStatus() == MapEntityStatus.REMOVED
+                    || !trigger.exists()) continue;
+            ItemUseTarget target = (ItemUseTarget) trigger;
+            if (target.accepts(player.getCarriedObject())
+                    && target.intersects(player.getInteractionRange())
+                    && target.getTriggerScript() != null) {
+                setActiveScript(target.getTriggerScript());
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setActiveScript(Script script) {
         activeScript = script;
 

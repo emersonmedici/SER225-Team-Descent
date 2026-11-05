@@ -7,9 +7,8 @@ import Level.Script;
 import Level.ScriptState;
 import ScriptActions.*;
 
-// The Level 1 exit requires the keycard to be selected above the cat.
+// Run by the exit's ItemUseTarget after a left-click with the correct item equipped.
 public class Level1Script2 extends Script {
-    private boolean hintShown;
 
     @Override
     public ArrayList<ScriptAction> loadScriptActions() {
@@ -33,26 +32,6 @@ public class Level1Script2 extends Script {
         });
         exit.addConditionalScriptActionGroup(unlocked);
 
-        ConditionalScriptActionGroup locked = new ConditionalScriptActionGroup();
-        locked.addRequirement(new CustomRequirement() {
-            @Override
-            public boolean isRequirementMet() {
-                return !hintShown;
-            }
-        });
-        locked.addScriptAction(new LockPlayerScriptAction());
-        locked.addScriptAction(new TextboxScriptAction(
-                "This exit needs a keycard.\nSelect it with its number key, then approach the exit."));
-        locked.addScriptAction(new ScriptAction() {
-            @Override
-            public ScriptState execute() {
-                // Avoid reopening dialogue every frame while touching the exit.
-                hintShown = true;
-                return ScriptState.COMPLETED;
-            }
-        });
-        locked.addScriptAction(new UnlockPlayerScriptAction());
-        exit.addConditionalScriptActionGroup(locked);
         actions.add(exit);
         return actions;
     }

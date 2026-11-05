@@ -454,7 +454,10 @@ public class Level1Map extends Map {
         Point triggerPoint = getMapTile(82, 97).getLocation();
         triggers.add(new Trigger(triggerPoint.x, triggerPoint.y, 100, 100, new Level1Script1(), "hasLanded"));
         triggerPoint = getMapTile(88, 34).getLocation();
-        triggers.add(new Trigger(triggerPoint.x, triggerPoint.y, 530, 150, new Level1Script2(), "newFlagTest"));
+        triggers.add(new Trigger(triggerPoint.x, triggerPoint.y, 530, 150,
+                new Level1ExitHintScript(), "newFlagTest"));
+        triggers.add(new ItemUseTarget(triggerPoint.x, triggerPoint.y, 530, 150,
+                Keycard1.class, new Level1Script2(), "newFlagTest"));
 
         triggerPoint = getMapTile(81, 94).getLocation();
         triggers.add(new Trigger(triggerPoint.x, triggerPoint.y, 150, 25, new LockedDialogueScript(), "hasCheckedLock"));
