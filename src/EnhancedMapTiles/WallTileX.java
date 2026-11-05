@@ -9,12 +9,12 @@ import Level.EnhancedMapTile;
 import Level.TileType;
 import Utils.Point;
 
-public class WallTile extends EnhancedMapTile {
-    public WallTile(Point location) {
+public class WallTileX extends EnhancedMapTile {
+    public WallTileX(Point location) {
         super(
             location.x,
             location.y,
-            new SpriteSheet(ImageLoader.load("BlockedWallTilted.png"), 16, 16),
+            new SpriteSheet(ImageLoader.load("BlockedWallX.png"), 16, 16),
             TileType.NOT_PASSABLE 
     );
     }
