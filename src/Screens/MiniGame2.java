@@ -160,16 +160,29 @@ public class MiniGame2 {
         playerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+				playerButtons(playerButton);
 				checkCorrect(playerButton, placeHolder);
             }
         });
     }
+
+	public void playerButtons (JButton playerButton) {
+		playerButton.setBorder(BorderFactory.createLineBorder(Color.PINK, 3));
+	}
+
+	public void clearButtons () {
+		for(int i=0; i<buttonChoices.length; i++) {
+			buttonChoices[i].setBorder(BorderFactory.createEmptyBorder());
+		}
+	}
 
 	public void checkCorrect (JButton playerButton, int[] placeHolder) {
 		GridBagConstraints n = new GridBagConstraints();
 		n.gridx = 0;
 		n.gridy = 4;
 		n.anchor = GridBagConstraints.CENTER;
+
+		playerButtons(playerButton);
 
 			if (clickCounter < sCounter && playerButton == buttonChoices[placeHolder[clickCounter -1]]) {
 				clickCounter++;
@@ -199,11 +212,19 @@ public class MiniGame2 {
 				timer2.setRepeats(false);
 
 			} else if (clickCounter == sCounter && playerButton == buttonChoices[placeHolder[clickCounter-1]]) {
-				sCounter++;
-				sLabel.setText("Stage: " + sCounter);
-				clickCounter = 1;
-				stageController(buttonChoices);
+				Timer buttonTimer = new Timer(500, e -> {
+					clearButtons();
+					sCounter++;
+					sLabel.setText("Stage: " + sCounter);
+					clickCounter = 1;
+					stageController(buttonChoices);
+					mainPanel.revalidate();
+					mainPanel.repaint();
+				});
+				buttonTimer.setRepeats(false);
+				buttonTimer.start();
 			} else {
+				clearButtons();
 				mainPanel.add(losePanel, n);
 				setWinGame(false);
 				mainPanel.revalidate();
@@ -217,6 +238,7 @@ public class MiniGame2 {
 
 	public void stageController(JButton[] buttonChoices) {
 		if (sCounter == 1) {
+			clearButtons();
 			int randomButton = (int) (Math.random() * (8 - 0 + 1) + 0);
 			placeHolder[0] = randomButton;
 				Timer timer = new Timer(1000, e -> { 
@@ -230,9 +252,11 @@ public class MiniGame2 {
 				});
 				timer2.start();
 				timer2.setRepeats(false);
+				clearButtons();
 		}
 
 		if (sCounter == 2) {
+			clearButtons();
 			int randomButton = (int) (Math.random() * (8 - 0 + 1) + 0);
 			placeHolder[0] = randomButton;
 				Timer timer = new Timer(1000, e -> { 
@@ -260,10 +284,10 @@ public class MiniGame2 {
 				});
 				timer4.start();
 				timer4.setRepeats(false);
-
 		}
 
 		if (sCounter == 3) {
+			clearButtons();
 			int randomButton = (int) (Math.random() * (8 - 0 + 1) + 0);
 			placeHolder[0] = randomButton;
 				Timer timer = new Timer(1000, e -> { 
@@ -322,6 +346,14 @@ public class MiniGame2 {
 		return mainPanel;
 	}
 	public static void main(String[] args) {
-        new MiniGame2("Minigame 2", 500, 500);
-    }
+    	MiniGame2 miniGame2 = new MiniGame2("Minigame 2", 500, 500);
+		JFrame frame = new JFrame("Minigame 2");
+		frame.setSize(500, 500);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		frame.setLayout(new GridBagLayout());
+	    frame.add(miniGame2.getPanel());
+
+    	frame.setVisible(true);   
+	 }
 }
