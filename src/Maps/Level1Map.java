@@ -95,10 +95,10 @@ public class Level1Map extends Map {
         BlockedWallTile wall3 = new BlockedWallTile(getMapTile(78, 98).getLocation());
         enhancedMapTiles.add(wall3);
 
-        BlockedWallTile wall17 = new BlockedWallTile(getMapTile(94, 95).getLocation(), "UnlockWallX.png");
+        BlockedWallTile wall17 = new BlockedWallTile(getMapTile(94, 94).getLocation(), "UnlockWallX.png");
         enhancedMapTiles.add(wall17);
         
-        BlockedWallTile wall18 = new BlockedWallTile(getMapTile(107, 84).getLocation());
+        BlockedWallTile wall18 = new BlockedWallTile(getMapTile(106, 84).getLocation());
         enhancedMapTiles.add(wall18);
 
         BlockedWallTile2 wall4 = new BlockedWallTile2(getMapTile(43, 72).getLocation());
@@ -483,14 +483,12 @@ public class Level1Map extends Map {
 
         // Winning minigame 2 skips to the last stage from anywhere, whether he's in the map or not
         if (MiniGame2.getWinGame() == true) {
-            if (dangerEntity.isHidden()) {
-                dangerEntity.triggerSpawnEvent(player);
+            if (dangerEntity.isHidden() == false || dangerEntity.triggerSpawnEvent(player) == true) {
+                dangerStage = DangerStage.FINAL_CHASE;
             }
-            dangerStage = DangerStage.FINAL_CHASE;
         }
         else if (dangerStage == DangerStage.WAITING_FOR_FIRST_PUZZLE) {
-            if (MiniGame.getIsCorrect() == true) {
-                dangerEntity.triggerSpawnEvent(player);
+            if (MiniGame.getIsCorrect() == true && dangerEntity.triggerSpawnEvent(player) == true) {
                 dangerStage = DangerStage.FIRST_CHASE;
             }
         }
@@ -501,8 +499,7 @@ public class Level1Map extends Map {
             }
         }
         else if (dangerStage == DangerStage.WAITING_NEAR_SECOND_PUZZLE) {
-            if (isPlayerNearSecondPuzzle(player)) {
-                dangerEntity.triggerSpawnEvent(player);
+            if (isPlayerNearSecondPuzzle(player) && dangerEntity.triggerSpawnEvent(player) == true) {
                 dangerStage = DangerStage.SECOND_CHASE;
             }
         }
