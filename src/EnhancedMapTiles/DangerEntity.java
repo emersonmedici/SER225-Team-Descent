@@ -331,17 +331,22 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
         return nodes[(int)entityPos.x][(int)entityPos.y];
     }
 
-    public void triggerSpawnEvent(Player player) {
-        start(player);
-        setIsHidden(false);
+    // Returns false if there's nowhere to spawn yet, like when the player is inside a vent
+    // He stays hidden in that case, so call this again later
+    public boolean triggerSpawnEvent(Player player) {
+        nodes = map.getLargeEntityNodes();
         Point pos = new Point(player.getX() + player.getWidth() / 2.0f, player.getY() + player.getHeight() / 2.0f);
         NodeBase startNode = spawnPosition(pos);
-        if (startNode != null) {
-            setLocation(startNode.getX() * 48, startNode.getY() * 48);
+        if (startNode == null) {
+            return false;
         }
+
+        setLocation(startNode.getX() * 48, startNode.getY() * 48);
+        setIsHidden(false);
         path = null;
         lastPlayerPos = null;
         isAttacking = false;
+        return true;
     }
 
     // Takes him out of the game until triggerSpawnEvent brings him back
