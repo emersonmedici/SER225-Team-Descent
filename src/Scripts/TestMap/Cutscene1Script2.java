@@ -6,6 +6,8 @@ import Level.GameListener;
 import Level.Script;
 import Level.ScriptState;
 import ScriptActions.*;
+import Sound.SoundEffect;
+import Sound.SoundManager;
 
 
 // trigger script at beginning of game to set that heavy emotional plot
@@ -30,6 +32,8 @@ public class Cutscene1Script2 extends Script {
         scriptActions.add(new ScriptAction() {
             @Override
             public ScriptState execute() {
+                // starts as the screen cuts to black, so the ride down is heard in the dark
+                SoundManager.play(SoundEffect.ELEVATOR);
                 for (GameListener listener: listeners) {
                     listener.onElevatorDrop();
                 }

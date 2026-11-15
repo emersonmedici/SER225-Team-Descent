@@ -5,6 +5,7 @@ import Engine.ImageLoader;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
 import Scripts.PickupObjectScript;
+import Sound.SoundEffect;
 import Utils.Point;
 import java.awt.image.BufferedImage;
 
@@ -14,6 +15,9 @@ public class Keycard2 extends CarriableObject {
 
     @Override
     public String getInspectionTitle() { return "Keycard 2"; }
+
+    @Override
+    public SoundEffect getPickupSound() { return SoundEffect.CARD_PICKUP; }
 
     public Keycard2(Point location) {
         super(location, loadSpriteSheet());

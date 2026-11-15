@@ -96,12 +96,16 @@ public abstract class Map {
     protected NodeBase[][] ventEntityNodes;
 
     // lighting: ambientDarkness 0 = lighting off (title screen, maps without lights)
-    // only maps that set this to true show the health hearts
+    // only maps that set these to true show the health hearts / stamina bar
+    // (a level with no danger can show just the stamina bar, since the player can still sprint there)
     protected boolean showHealthUI = false;
+    protected boolean showStaminaUI = false;
     protected HealthUI healthUI = new HealthUI();
 
     public boolean isShowHealthUI() { return showHealthUI; }
     public void setShowHealthUI(boolean showHealthUI) { this.showHealthUI = showHealthUI; }
+    public boolean isShowStaminaUI() { return showStaminaUI; }
+    public void setShowStaminaUI(boolean showStaminaUI) { this.showStaminaUI = showStaminaUI; }
     protected ArrayList<Light> lights = new ArrayList<>();
     protected float ambientDarkness = 0f;
     protected Color ambientColor = new Color(10, 10, 26);
@@ -802,9 +806,9 @@ public void draw(Player player, GraphicsHandler graphicsHandler) {
     frameLights.addAll(player.getLights());
     drawLighting(graphicsHandler, frameLights);
 
-    // hearts go over the darkness so they're always readable, but under the textbox
-    if (showHealthUI) {
-        healthUI.draw(graphicsHandler, player);
+    // hearts and stamina go over the darkness so they're always readable, but under the textbox
+    if (showHealthUI || showStaminaUI) {
+        healthUI.draw(graphicsHandler, player, showHealthUI, showStaminaUI);
     }
 
     if (textbox.isActive()) {

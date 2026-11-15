@@ -14,6 +14,16 @@ All files here were cut and processed from the originals: sliced into single hit
 | `chase_intro.wav`, `chase_outro.wav` | "CC0 deep monster roar" | trazzz123 | [OpenGameArt](https://opengameart.org/content/cc0-deep-monster-roar) | CC0 |
 | `pickup_1-2.wav` | "Synthetic Coat Rubbed" (#1104) | Joseph Sardin | [BigSoundBank](https://bigsoundbank.com/synthetic-coat-rubbed-s1104.html) | CC0 |
 | `drop_1-3.wav` | "Canvas bag on floor" (#0576, hits 4, 5, 8) | Joseph Sardin | [BigSoundBank](https://bigsoundbank.com/canvas-bag-on-floor-s0576.html) | CC0 |
+| `elevator.wav` | "Creaky Elevator Descending.wav" (#467284) | XfiXy8 | [Freesound](https://freesound.org/s/467284/) | CC0 |
+| `door_open.wav` | "Opening an elevator door sample.wav" (#202604) | Rshai | [Freesound](https://freesound.org/s/202604/) | CC0 |
+| `card_pickup_1.wav` | "PickupCard04" (#817550) | SilverDubloons | [Freesound](https://freesound.org/s/817550/) | CC0 |
+| `card_pickup_2.wav` | "slideCard05" (#817580) | SilverDubloons | [Freesound](https://freesound.org/s/817580/) | CC0 |
+| `paper_pickup_1.wav` | "pickup_paper.wav" (#509878) | slamaxu | [Freesound](https://freesound.org/s/509878/) | CC0 |
+| `paper_pickup_2.wav` | "Pickup_Note_01.wav" (#566189) | scholzi982 | [Freesound](https://freesound.org/s/566189/) | CC0 |
+| `vent_enter_1-4.wav` | "Vent cover hitting" (#785772, hits 1-4) | Zoidoi1709 | [Freesound](https://freesound.org/s/785772/) | CC0 |
+| `slash_1.wav` | "sword slash" (#868049) | zackz31 | [Freesound](https://freesound.org/s/868049/) | CC0 |
+| `slash_2.wav` | "Slash" (#442903) | qubodup | [Freesound](https://freesound.org/s/442903/) | CC0 |
+| `slash_3.wav` | "samurai slash" (#370204) | nekoninja | [Freesound](https://freesound.org/s/370204/) | CC0 |
 | `puzzle_complete.wav` | "Industrial switch #1" (#3061) + "Electric strike #1" (#3442) | Joseph Sardin | [BigSoundBank #3061](https://bigsoundbank.com/industrial-switch-1-s3061.html), [#3442](https://bigsoundbank.com/electric-strike-1-s3442.html) | CC0 |
 
 ## Extra processing
@@ -24,6 +34,9 @@ All files here were cut and processed from the originals: sliced into single hit
 - **chase_intro:** the roar trimmed to 5.5 s with a 1.5 s fade-out.
 - **chase_outro:** the same roar pitched 20% lower, low-passed at 1.1 kHz, with a long reverb tail so it reads as the same creature, far away.
 - **puzzle_complete:** the switch clunk, then the electric-lock buzz 0.25 s later at about -4 dB, cut to 2.2 s with a fade.
+
+- **elevator:** 7 s of the creaking descent (3-10 s into the original), crossfaded over 0.6 s into the stop clunk at the end (25.8-28.6 s), so the whole ride fits in about 9 s.
+- **Freesound files** were made from Freesound's 128 kbps MP3 previews (the full-quality originals need a login), then processed the same way as everything else.
 
 ## Replacing a sound
 

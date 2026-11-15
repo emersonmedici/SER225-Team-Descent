@@ -62,6 +62,7 @@ public class Level1Map extends Map {
         super("Level1Map.txt", new Level1Tileset());
         this.playerStartPosition = getMapTile(82, 97).getLocation();
         this.showHealthUI = true;
+        this.showStaminaUI = true;
         this.ambientTrack = "level1_ambience.wav";
         this.chaseTrack = "chase.wav";
         this.dangerStage = DangerStage.WAITING_FOR_FIRST_PUZZLE;

@@ -6,6 +6,8 @@ import Level.GameListener;
 import Level.Script;
 import Level.ScriptState;
 import ScriptActions.*;
+import Sound.SoundEffect;
+import Sound.SoundManager;
 
 // Run by the exit's ItemUseTarget after a left-click with the correct item equipped.
 public class Level1Script2 extends Script {
@@ -24,6 +26,8 @@ public class Level1Script2 extends Script {
         unlocked.addScriptAction(new ScriptAction() {
             @Override
             public ScriptState execute() {
+                // the keycard worked -- the exit door opens as the next map loads
+                SoundManager.play(SoundEffect.DOOR_OPEN);
                 for (GameListener listener : listeners) {
                     listener.onLevel2Completed();
                 }
