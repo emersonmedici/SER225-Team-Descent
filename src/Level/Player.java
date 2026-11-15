@@ -58,17 +58,28 @@ public abstract class Player extends GameObject {
 
     protected boolean isLocked = false;
 
-    // stamina is counted in frames -- update() runs Config.TARGET_FPS (60) times a second
-    // a full bar is 5 seconds of sprinting, and it refills at the same speed
-    protected static final int MAX_STAMINA = 5 * Config.TARGET_FPS;
+    // stamina is how full the bar is: 1 = full, 0 = empty
+    // update() runs Config.TARGET_FPS (60) times a second, so per-frame amounts are a second's worth divided by that
+    protected static final float MAX_STAMINA = 1f;
+    // a full bar lasts 3 seconds of sprinting...
+    protected static final float SPRINT_DRAIN_SECONDS = 3f;
+    // ...and takes 8 seconds to refill from empty
+    protected static final float FULL_REFILL_SECONDS = 8f;
+    // how curved the refill is (see regenerateStamina):
+    //   above 0 -- starts slow and speeds up as the bar fills (exponential growth); bigger = slower start, faster finish
+    //   below 0 -- starts fast and slows down near the top
+    //   0       -- a straight line, same speed the whole way
+    protected static final float REGEN_CURVE = 2f;
     // after running out, Shift won't work again until the bar refills to 30%
-    protected static final int STAMINA_RECOVER_AMOUNT = (int) (MAX_STAMINA * 0.3f);
-    protected int stamina = MAX_STAMINA;
+    protected static final float STAMINA_RECOVER_AMOUNT = 0.3f;
+    protected float stamina = MAX_STAMINA;
     protected boolean isSprinting = false;
     protected boolean isExhausted = false;
 
     // one footstep every 44 pixels walked: about 3 steps a second walking, 7 running, 1.5 in mud
     protected StepCounter footsteps = new StepCounter(44);
+    // whether the player was standing on a vent tile last frame, so the vent sound only plays on the way in
+    private boolean wasInVent = false;
 
     // values for player pick up, drop, and inventory
 
@@ -116,6 +127,7 @@ public abstract class Player extends GameObject {
         moveAmountY = 0;
         lastAmountMovedX = 0;
         lastAmountMovedY = 0;
+        wasInVent = false;
         currentWalkingXDirection = Direction.NONE;
         currentWalkingYDirection = Direction.NONE;
         lastWalkingXDirection = Direction.NONE;
@@ -198,16 +210,24 @@ public abstract class Player extends GameObject {
             }
         }
 
+        // the walls are only in these lists until the frame they're removed, so each door's sound plays exactly once
+        if (MiniGame.getIsCorrect() == true && !sortedBlockedTiles.isEmpty()) {
+            SoundManager.play(SoundEffect.DOOR_OPEN);
+        }
+        if (MiniGame2.getWinGame() == true && !sortedBlockedTiles2.isEmpty()) {
+            SoundManager.play(SoundEffect.DOOR_OPEN);
+        }
+
         for (int j = 0; j<sortedBlockedTiles.size(); j++) {
             if (MiniGame.getIsCorrect() == true) {
                 map.enhancedMapTiles.remove(sortedBlockedTiles.get(j));
             }
         }
-        
+
         for (int j = 0; j<sortedBlockedTiles2.size(); j++) {
             if (MiniGame2.getWinGame() == true) {
                 map.enhancedMapTiles.remove(sortedBlockedTiles2.get(j));
-            }  
+            }
         }
        
         handleInventoryKeys();
@@ -229,6 +249,7 @@ public abstract class Player extends GameObject {
             lastAmountMovedX = super.moveXHandleCollision(moveAmountX);
 
             updateFootsteps();
+            updateVentSound();
 
             handleFlashlightToggle();
         }
@@ -374,22 +395,45 @@ public abstract class Player extends GameObject {
         }
     }
 
-    // spends 1 stamina per frame while sprinting, and refills 1 per frame otherwise
+    // drains at a steady rate while sprinting, and refills along a curve otherwise
     // uses how far the player ACTUALLY moved, so holding Shift against a wall doesn't drain it
     protected void updateStamina() {
         boolean moved = lastAmountMovedX != 0 || lastAmountMovedY != 0;
 
         if (isSprinting && moved) {
-            stamina = Math.max(0, stamina - 1);
-            if (stamina == 0) {
+            stamina -= MAX_STAMINA / (SPRINT_DRAIN_SECONDS * Config.TARGET_FPS);
+            // float math can leave a tiny crumb above 0 after 180 subtractions, so treat "almost empty" as empty
+            if (stamina <= 0.0001f) {
+                stamina = 0f;
                 isExhausted = true;
             }
         } else {
-            stamina = Math.min(MAX_STAMINA, stamina + 1);
+            stamina = regenerateStamina(stamina, 1f / Config.TARGET_FPS);
             if (isExhausted && stamina >= STAMINA_RECOVER_AMOUNT) {
                 isExhausted = false;
             }
         }
+    }
+
+    // The bar refills along the curve  fill(t) = (e^(k*t/T) - 1) / (e^k - 1)
+    // where T is FULL_REFILL_SECONDS and k is REGEN_CURVE. It's 0 at t = 0 and exactly 1 at t = T,
+    // so an empty bar always takes FULL_REFILL_SECONDS to fill, whatever the curve's shape.
+    // Each frame: work backwards from the current amount to "how many seconds into the refill" it is,
+    // step that forward by one frame, and read the new amount off the curve.
+    // Speed depends only on how full the bar is, so stopping halfway and resting again picks up right where it left off.
+    protected static float regenerateStamina(float current, float seconds) {
+        if (REGEN_CURVE == 0f) {
+            return Math.min(MAX_STAMINA, current + MAX_STAMINA * seconds / FULL_REFILL_SECONDS);
+        }
+        double k = REGEN_CURVE;
+        double refillTime = FULL_REFILL_SECONDS;
+        double scale = Math.exp(k) - 1;
+        double fraction = current / MAX_STAMINA;
+
+        // the inverse of fill(t): how far into the refill this amount of stamina is
+        double elapsed = refillTime / k * Math.log(1 + fraction * scale);
+        double next = (Math.exp(k * (elapsed + seconds) / refillTime) - 1) / scale;
+        return (float) Math.min(MAX_STAMINA, next * MAX_STAMINA);
     }
 
     // plays a footstep for whatever the player is standing on, once per stride
@@ -615,7 +659,7 @@ public abstract class Player extends GameObject {
         object.setEquipped(false);
         // filling a previously selected empty slot must not equip it
         if (selectedInventorySlot == freeSlot) selectedInventorySlot = -1;
-        SoundManager.play(SoundEffect.PICKUP);
+        SoundManager.play(object.getPickupSound());
         return true;
     }
 
@@ -636,9 +680,18 @@ public abstract class Player extends GameObject {
         return this.maxHealth;
     }
 
-    public int getStamina() { return stamina; }
-    public int getMaxStamina() { return MAX_STAMINA; }
+    public float getStamina() { return stamina; }
+    public float getMaxStamina() { return MAX_STAMINA; }
     public boolean isExhausted() { return isExhausted; }
+
+    // clank of the vent cover on the one frame the player goes from the room into a vent tile
+    private void updateVentSound() {
+        boolean inVent = isPlayerInVent();
+        if (inVent && !wasInVent) {
+            SoundManager.play(SoundEffect.VENT_ENTER);
+        }
+        wasInVent = inVent;
+    }
 
     public boolean isPlayerInVent() {
         float playerCenterX =
@@ -651,7 +704,8 @@ public abstract class Player extends GameObject {
 
         MapTile tile = map.getMapTile((int)playerPos.x, (int)playerPos.y);
 
-        if(tile.tileType == TileType.VENT) {
+        // off the edge of the map there's no tile at all, and that's definitely not a vent
+        if(tile != null && tile.tileType == TileType.VENT) {
             return true;
         }
         else {

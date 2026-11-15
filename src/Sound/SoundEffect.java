@@ -18,10 +18,20 @@ public enum SoundEffect {
     CHASE_INTRO("chase_intro", 1f, 30f),
     CHASE_OUTRO("chase_outro", 0.8f, 40f),
 
+    // the monster's attack -- positioned, so a swing that misses still tells you which side it came from
+    SLASH("slash", 0.8f, 10f),
+
     // interaction feedback -- kept quiet on purpose: a loud "ding" in a horror game breaks the tension
     PICKUP("pickup", 0.5f, 0f),
+    CARD_PICKUP("card_pickup", 0.5f, 0f),
+    PAPER_PICKUP("paper_pickup", 0.5f, 0f),
     DROP("drop", 0.5f, 0f),
-    PUZZLE_COMPLETE("puzzle_complete", 0.7f, 0f);
+    PUZZLE_COMPLETE("puzzle_complete", 0.7f, 0f),
+
+    // the world reacting to the player
+    DOOR_OPEN("door_open", 0.6f, 0f),
+    VENT_ENTER("vent_enter", 0.4f, 0f),
+    ELEVATOR("elevator", 0.8f, 0f);
 
     private final String fileName;
     private final float volume;

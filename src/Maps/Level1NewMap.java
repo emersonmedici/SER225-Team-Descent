@@ -22,6 +22,7 @@ public class Level1NewMap extends Map {
         super("level1_new.txt", new Level1Tileset());
         this.playerStartPosition = getMapTile(14, 90).getLocation();
         this.showHealthUI = true;
+        this.showStaminaUI = true;
         this.ambientTrack = "level1_ambience.wav";
         this.chaseTrack = "chase.wav";
     }

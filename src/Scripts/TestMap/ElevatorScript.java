@@ -5,6 +5,8 @@ import Level.GameListener;
 import Level.Script;
 import Level.ScriptState;
 import ScriptActions.ScriptAction;
+import Sound.SoundEffect;
+import Sound.SoundManager;
 
 // Walking up to the elevator in the level 2 room sends the player on to the next level.
 public class ElevatorScript extends Script {
@@ -15,6 +17,7 @@ public class ElevatorScript extends Script {
         actions.add(new ScriptAction() {
             @Override
             public ScriptState execute() {
+                SoundManager.play(SoundEffect.ELEVATOR);
                 for (GameListener listener : listeners) {
                     listener.onLevel1Completed();
                 }

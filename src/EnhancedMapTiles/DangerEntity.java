@@ -103,6 +103,9 @@ public class DangerEntity extends EnhancedMapTile implements Threat {
                 // Deal damage once, on the frame where the weapon lands
                 if (frame == HIT_FRAME && hasHitThisSwing == false) {
                     hasHitThisSwing = true;
+                    // the swing makes noise whether or not it connects -- a miss you can hear is scarier than silence
+                    Point center = getThreatCenter();
+                    SoundManager.playAt(SoundEffect.SLASH, center.x, center.y);
                     if (isPlayerInReach(player) == true) {
                         player.decreaseHealth(1);
                         System.out.println("ATTACK");

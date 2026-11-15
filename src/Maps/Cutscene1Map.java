@@ -21,6 +21,8 @@ public class Cutscene1Map extends Map {
     public Cutscene1Map() {
         super("Cutscene1Map.txt", new Level1Tileset());
         this.playerStartPosition = getMapTile(12, 10).getLocation();
+        // the lobby is walkable but safe, so just the stamina bar
+        this.showStaminaUI = true;
     }
 
     @Override
