@@ -4,6 +4,7 @@ import EnhancedMapTiles.MudObject;
 import EnhancedMapTiles.PushableRock;
 import Level.*;
 import NPCs.Dave;
+import NPCs.ParkedCar;
 import Scripts.TestMap.*;
 import Tilesets.CommonTileset;
 import Utils.Point;
@@ -35,8 +36,16 @@ public class ProlougeMap extends Map {
     public ArrayList<NPC> loadNPCs() {
         ArrayList<NPC> npcs = new ArrayList<>();
 
-        Dave dave = new Dave(4, getMapTile(15, 35).getLocation().subtractX(200));
+        // The car stays where Dave used to be drawn as a car
+        Point carLocation = getMapTile(15, 35).getLocation().subtractX(200);
+        ParkedCar car = new ParkedCar(5, carLocation);
+        npcs.add(car);
+
+        // Dave stands just right of the car (the car is 128px wide) and keeps his talk script
+        Dave dave = new Dave(4, carLocation.addX(0).addY(85));
         dave.setInteractScript(new DaveScript());
+        // Dave turns to look at the player as they move around
+        dave.setFacesPlayer(true);
         npcs.add(dave);
 
         return npcs;

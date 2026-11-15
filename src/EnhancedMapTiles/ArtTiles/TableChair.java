@@ -1,5 +1,7 @@
 package EnhancedMapTiles.ArtTiles;
 
+import java.awt.image.BufferedImage;
+
 import Builders.FrameBuilder;
 import Engine.ImageLoader;
 import GameObject.Frame;
@@ -44,7 +46,9 @@ public class TableChair extends EnhancedMapTile {
             imageEffect = ImageEffect.FLIP_HORIZONTAL;
         }
 
-        Frame frame = new FrameBuilder(spriteSheet.getSubImage(0, sheetIndex))
+        BufferedImage subImage = spriteSheet.getSubImage(0, sheetIndex);
+        Frame frame = new FrameBuilder(subImage)
+            .withBounds(ArtTileBounds.fitToImage(subImage, imageEffect))
             .withScale(3)
             .withImageEffect(imageEffect)
             .build();

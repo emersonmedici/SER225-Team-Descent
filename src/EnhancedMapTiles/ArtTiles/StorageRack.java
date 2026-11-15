@@ -1,5 +1,7 @@
 package EnhancedMapTiles.ArtTiles;
 
+import java.awt.image.BufferedImage;
+
 import Builders.FrameBuilder;
 import Engine.ImageLoader;
 import GameObject.Frame;
@@ -26,7 +28,9 @@ public class StorageRack extends EnhancedMapTile {
     // image is (x = column, y = row) in the sprite sheet
     private static GameObject loadImage(Point location, Point image) {
         SpriteSheet spriteSheet = new SpriteSheet(ImageLoader.load("StorageRack.png"), 32, 32);
-        Frame frame = new FrameBuilder(spriteSheet.getSubImage((int)image.y, (int)image.x))
+        BufferedImage subImage = spriteSheet.getSubImage((int)image.y, (int)image.x);
+        Frame frame = new FrameBuilder(subImage)
+            .withBounds(ArtTileBounds.fitToImage(subImage))
             .withScale(SCALE)
             .build();
 
