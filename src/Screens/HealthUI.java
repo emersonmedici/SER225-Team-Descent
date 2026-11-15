@@ -31,23 +31,31 @@ public class HealthUI {
     private final Color staminaColor = new Color(240, 200, 40);
     private final Color exhaustedColor = new Color(140, 110, 30);  // dimmer yellow while the player can't sprint
 
-    public void draw(GraphicsHandler graphicsHandler, Player player) {
+    // showHearts / showStamina come from the map, so a level with no danger can show just the stamina bar
+    public void draw(GraphicsHandler graphicsHandler, Player player, boolean showHearts, boolean showStamina) {
         int heartWidth = HEART_SHAPE[0].length * PIXEL_SIZE;
         int maxHealth = player.getMaxHealth();
 
         // width of the whole row (hearts plus the gaps between them), so it can sit against the right edge
+        // the stamina bar uses the same width even when the hearts are hidden, so it's the same size on every level
         int rowWidth = maxHealth * heartWidth + (maxHealth - 1) * HEART_SPACING;
         int startX = ScreenManager.getScreenWidth() - MARGIN_X - rowWidth;
 
-        for (int i = 0; i < maxHealth; i++) {
-            // hearts below current health are full, the rest are empty
-            Color color = i < player.getHealth() ? fullColor : emptyColor;
-            int heartX = startX + i * (heartWidth + HEART_SPACING);
-            drawHeart(graphicsHandler, heartX, START_Y, color);
+        int staminaY = START_Y;
+        if (showHearts) {
+            for (int i = 0; i < maxHealth; i++) {
+                // hearts below current health are full, the rest are empty
+                Color color = i < player.getHealth() ? fullColor : emptyColor;
+                int heartX = startX + i * (heartWidth + HEART_SPACING);
+                drawHeart(graphicsHandler, heartX, START_Y, color);
+            }
+            // with hearts showing, the bar sits underneath them; without, it moves up into the corner
+            staminaY = START_Y + HEART_SHAPE.length * PIXEL_SIZE + STAMINA_GAP;
         }
 
-        int staminaY = START_Y + HEART_SHAPE.length * PIXEL_SIZE + STAMINA_GAP;
-        drawStaminaBar(graphicsHandler, player, startX, staminaY, rowWidth);
+        if (showStamina) {
+            drawStaminaBar(graphicsHandler, player, startX, staminaY, rowWidth);
+        }
     }
 
     // a bar the same width as the row of hearts, filled in by how much stamina is left

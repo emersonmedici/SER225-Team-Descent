@@ -14,6 +14,8 @@ public class ProlougeMap extends Map {
         super("ProlougeMap.txt", new CommonTileset());
         this.playerStartPosition = getMapTile(15, 33).getLocation();
         this.ambientTrack = "prologue_ambience.wav";
+        // nothing can hurt the player here, so no hearts -- but they can still sprint
+        this.showStaminaUI = true;
     }
 
     @Override

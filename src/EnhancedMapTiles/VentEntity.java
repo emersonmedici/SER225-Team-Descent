@@ -90,6 +90,8 @@ public class VentEntity extends EnhancedMapTile implements Threat {
 
             // Attack the player if touching them
             if (player.touching(this) == true && canAttack() == true) {
+                Point center = getThreatCenter();
+                SoundManager.playAt(SoundEffect.SLASH, center.x, center.y);
                 player.decreaseHealth(1);
                 System.out.println("ATTACK");
             }

@@ -14,6 +14,7 @@ import Level.MapTile;
 import Level.NPC;
 import Level.Player;
 import Level.TileType;
+import Sound.SoundEffect;
 import Utils.Point;
 
 public class CarriableObject extends EnhancedMapTile {
@@ -22,6 +23,9 @@ public class CarriableObject extends EnhancedMapTile {
     public boolean isInspectable() { return false; }
 
     public String getInspectionTitle() { return "Item"; }
+
+    // what the player hears when picking this up -- items made of something specific (paper, plastic) override it
+    public SoundEffect getPickupSound() { return SoundEffect.PICKUP; }
 
     public java.awt.image.BufferedImage getInspectionImage() {
         GameObject sprite = getBottomLayer();

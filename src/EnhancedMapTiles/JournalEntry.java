@@ -5,6 +5,7 @@ import Engine.ImageLoader;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
 import Scripts.PickupObjectScript;
+import Sound.SoundEffect;
 import Utils.Point;
 import java.awt.image.BufferedImage;
 
@@ -35,6 +36,9 @@ public abstract class JournalEntry extends CarriableObject {
 
     @Override
     public String getInspectionTitle() { return "Journal entry " + entryNumber; }
+
+    @Override
+    public SoundEffect getPickupSound() { return SoundEffect.PAPER_PICKUP; }
 
     @Override
     public BufferedImage getInspectionImage() {

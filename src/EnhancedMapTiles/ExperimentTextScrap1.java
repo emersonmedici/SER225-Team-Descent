@@ -5,6 +5,7 @@ import Engine.ImageLoader;
 import GameObject.GameObject;
 import GameObject.SpriteSheet;
 import Scripts.PickupObjectScript;
+import Sound.SoundEffect;
 import Utils.Point;
 import java.awt.image.BufferedImage;
 
@@ -32,6 +33,9 @@ public class ExperimentTextScrap1 extends CarriableObject {
 
     @Override
     public String getInspectionTitle() { return "Experiment text scrap"; }
+
+    @Override
+    public SoundEffect getPickupSound() { return SoundEffect.PAPER_PICKUP; }
 
     @Override
     public BufferedImage getInspectionImage() {
