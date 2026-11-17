@@ -5,6 +5,7 @@ import Level.Player;
 import java.awt.Color;
 
 import Lighting.Light;
+import Lighting.LightBlockers;
 import Lighting.LightingRenderer;
 import Lighting.PointLight;
 import Lighting.SpotLight;
@@ -110,6 +111,7 @@ public abstract class Map {
     protected float ambientDarkness = 0f;
     protected Color ambientColor = new Color(10, 10, 26);
     protected LightingRenderer lightingRenderer;
+    protected LightBlockers lightBlockers;   // which tiles stop light, rebuilt every frame
 
     public ArrayList<Light> getLights() { return lights; }
     public float getAmbientDarkness() { return ambientDarkness; }
@@ -166,6 +168,9 @@ public abstract class Map {
 
         this.camera = new Camera(0, 0, tileset.getScaledSpriteWidth(), tileset.getScaledSpriteHeight(), this);
         this.lightingRenderer = new LightingRenderer(Math.round(tileset.getTileScale()));
+        // one true/false per map tile; width/height are known because loadMapFile already ran
+        this.lightBlockers = new LightBlockers(width, height, tileset.getScaledSpriteWidth());
+        this.lightingRenderer.setBlockers(lightBlockers);
         this.textbox = new Textbox(this);
     }
 
@@ -821,11 +826,41 @@ protected void drawLighting(GraphicsHandler graphicsHandler, ArrayList<Light> fr
     if (ambientDarkness <= 0) {
         return;
     }
+    refreshLightBlockers();
     int camX = Math.round(camera.getX());
     int camY = Math.round(camera.getY());
     lightingRenderer.render(graphicsHandler, frameLights, ambientDarkness, ambientColor,
             camX, camY, ScreenManager.getScreenWidth(), ScreenManager.getScreenHeight(),
             camX, camY);
+}
+
+// marks every tile that stops light. redone every frame so a wall the player opens
+// (the BlockedWallTile2s after simon says) stops casting a shadow right away
+protected void refreshLightBlockers() {
+    lightBlockers.clear();
+
+    // regular map tiles: the tileset decides (solid tiles block unless marked see-through, like bushes)
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            MapTile tile = getMapTile(x, y);
+            if (tile != null && tile.blocksLight()) {
+                lightBlockers.setSolid(x, y);
+            }
+        }
+    }
+
+    // enhanced map tiles only if they say they're walls (BlockedWallTile, WallTileX, ...)
+    for (EnhancedMapTile enhancedMapTile : enhancedMapTiles) {
+        if (enhancedMapTile.blocksLight()) {
+            Point index = getTileIndexByPosition(enhancedMapTile.getX(), enhancedMapTile.getY());
+            lightBlockers.setSolid((int) index.x, (int) index.y);
+        }
+    }
+}
+
+// the player uses this to keep the flashlight from starting inside a wall
+public boolean blocksLightAt(float x, float y) {
+    return lightBlockers.isSolidAt(x, y);
 }
 
     public FlagManager getFlagManager() { return flagManager; }

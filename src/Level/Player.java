@@ -50,7 +50,7 @@ public abstract class Player extends GameObject {
 
     // flashlight: a cone that follows the player and points where they last walked
     // the glow is a small circle of spill light so the player's own sprite isn't pitch black
-    protected SpotLight flashlight = new SpotLight(0, 0, 288, 30);   // 6 tiles long, 60 degrees wide
+    protected SpotLight flashlight = new SpotLight(0, 0, 288, 45);   // 6 tiles long, 90 degrees wide
     protected PointLight flashlightGlow = new PointLight(0, 0, 60);
     protected boolean flashlightOn = false;
     // how far in front of the player's center the beam starts (world px)
@@ -193,6 +193,9 @@ public abstract class Player extends GameObject {
         flashlight.setSteps(24);
         flashlightGlow.setIntensity(0.6f);
         flashlightGlow.setSteps(24);;  
+        // walls stop both the beam and the little glow around the player
+        flashlight.setCastsShadows(true);
+        flashlightGlow.setCastsShadows(true);
     }
 
     public void update() {
@@ -490,7 +493,15 @@ public abstract class Player extends GameObject {
         float centerY = getY() + getHeight() / 2f;
         flashlightGlow.setPosition(centerX, centerY);
         // start the beam a little in front of the player, like it's held out in their hand
-        flashlight.setPosition(centerX + flashlight.getDirX() * flashlightOffset, centerY + flashlight.getDirY() * flashlightOffset);
+        float beamX = centerX + flashlight.getDirX() * flashlightOffset;
+        float beamY = centerY + flashlight.getDirY() * flashlightOffset;
+        // walking up into a wall pushes this "hand" point inside the wall, and a beam that
+        // starts inside a wall shines out the other side -- so pull it back to the player's center
+        if (map.blocksLightAt(beamX, beamY)) {
+            beamX = centerX;
+            beamY = centerY;
+        }
+        flashlight.setPosition(beamX, beamY);
     }
 
     // lights the player is carrying this frame (the map adds these to its own lights when drawing)
