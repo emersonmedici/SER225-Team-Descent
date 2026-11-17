@@ -20,6 +20,11 @@ public class LightingRenderer {
     private float[] lightLevel;
     private int cols, rows;
 
+    // which tiles stop light; null = no walls (the map editor preview never sets this)
+    private LightBlockers blockers;
+
+    public void setBlockers(LightBlockers blockers) { this.blockers = blockers; }
+
     public LightingRenderer(int pixelSize) {
         this.pixelSize = pixelSize;
     }
@@ -78,11 +83,19 @@ public class LightingRenderer {
         int minRow = Math.max(0, (int) Math.floor((ly - r - originY) / P));
         int maxRow = Math.min(rows - 1, (int) Math.ceil((ly + r - originY) / P));
 
+        // only lights that opted in pay for wall checks, and only if the map handed us a wall grid
+        boolean shadows = blockers != null && light.castsShadows();
+
         for (int row = minRow; row <= maxRow; row++) {
             float wy = originY + row * P + P / 2f;          // world y of this cell's center
             for (int col = minCol; col <= maxCol; col++) {
                 float wx = originX + col * P + P / 2f;      // world x of this cell's center
                 float b = light.brightnessAt(wx - lx, wy - ly);
+                // a wall between the light and this cell = this light adds nothing here
+                // (b > 0 first, so we never trace rays for cells outside the cone)
+                if (b > 0 && shadows && !blockers.canLight(lx, ly, wx, wy)) {
+                    continue;
+                }
                 int i = row * cols + col;
                 // overlapping lights combine: each light removes part of the darkness that's left
                 lightLevel[i] = 1f - (1f - lightLevel[i]) * (1f - b);

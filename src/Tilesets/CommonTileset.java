@@ -39,7 +39,8 @@ public class CommonTileset extends Tileset {
                 .build();
 
         MapTileBuilder signTile = new MapTileBuilder(signFrame)
-                .withTileType(TileType.NOT_PASSABLE);
+                .withTileType(TileType.NOT_PASSABLE)
+                .withBlocksLight(false);   // outdoor scenery, the flashlight shines past it
 
         mapTiles.add(signTile);
 
@@ -59,7 +60,8 @@ public class CommonTileset extends Tileset {
                 .build();
 
         MapTileBuilder rockTile = new MapTileBuilder(rockFrame)
-                .withTileType(TileType.NOT_PASSABLE);
+                .withTileType(TileType.NOT_PASSABLE)
+                .withBlocksLight(false);   // outdoor scenery, the flashlight shines past it
 
         mapTiles.add(rockTile);
 
@@ -187,7 +189,8 @@ public class CommonTileset extends Tileset {
                 .build();
 
         MapTileBuilder treeTrunkBottomTile = new MapTileBuilder(treeTrunkBottomFrame)
-                .withTileType(TileType.NOT_PASSABLE);
+                .withTileType(TileType.NOT_PASSABLE)
+                .withBlocksLight(false);   // outdoor scenery, the flashlight shines past it
 
         mapTiles.add(treeTrunkBottomTile);
 
@@ -221,7 +224,8 @@ public class CommonTileset extends Tileset {
                 .build();
 
         MapTileBuilder bushTile = new MapTileBuilder(bushFrame)
-                .withTileType(TileType.NOT_PASSABLE);
+                .withTileType(TileType.NOT_PASSABLE)
+                .withBlocksLight(false);   // outdoor scenery, the flashlight shines past it
 
         mapTiles.add(bushTile);
 
@@ -332,7 +336,8 @@ public class CommonTileset extends Tileset {
         };
 
         MapTileBuilder topWaterTile = new MapTileBuilder(topWaterFrames)
-                .withTileType(TileType.NOT_PASSABLE);
+                .withTileType(TileType.NOT_PASSABLE)
+                .withBlocksLight(false);   // outdoor scenery, the flashlight shines past it
 
         mapTiles.add(topWaterTile);
 

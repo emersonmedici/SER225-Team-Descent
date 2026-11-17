@@ -6,6 +6,7 @@ public abstract class Light {
     protected float intensity = 1f;  // 0..1
     protected int steps = 6;         // number of brightness bands
     protected boolean enabled = true;
+    protected boolean castsShadows = false;  // true = walls stop this light (opt-in, since it costs a ray per lit pixel)
 
     public Light(float x, float y, float radius) {
         this.x = x;
@@ -32,4 +33,6 @@ public int getSteps() { return steps; }
 public void setSteps(int steps) { this.steps = Math.max(1, steps); } // 0 steps would divide by zero in band()
 public boolean isEnabled() { return enabled; }
 public void setEnabled(boolean enabled) { this.enabled = enabled; }
+public boolean castsShadows() { return castsShadows; }
+public void setCastsShadows(boolean castsShadows) { this.castsShadows = castsShadows; }
 }
