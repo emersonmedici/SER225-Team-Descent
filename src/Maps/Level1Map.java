@@ -102,6 +102,9 @@ public class Level1Map extends Map {
         BlockedWallTile wall18 = new BlockedWallTile(getMapTile(106, 84).getLocation());
         enhancedMapTiles.add(wall18);
 
+        BlockedWallTile wall22 = new BlockedWallTile(getMapTile(99, 62).getLocation());
+        enhancedMapTiles.add(wall22);
+
         BlockedWallTile2 wall4 = new BlockedWallTile2(getMapTile(43, 72).getLocation());
         enhancedMapTiles.add(wall4); 
 
