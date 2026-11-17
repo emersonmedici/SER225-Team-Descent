@@ -28,4 +28,9 @@ public class WallTileY extends EnhancedMapTile {
         return new GameObject(x, y, frame);
     }
 
+    // it's a wall, so the flashlight stops here (Map.refreshLightBlockers reads this)
+    @Override
+    public boolean blocksLight() {
+        return true;
+    }
 }

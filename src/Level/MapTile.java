@@ -25,6 +25,10 @@ public class MapTile extends MapEntity {
     // what this tile is made of -- decides the footstep sound when something walks on it
     protected Surface surface = Surface.DIRT;
 
+    // whether this tile stops light (walls do); tilesets decide this through MapTileBuilder.withBlocksLight
+    // enhanced map tiles start as false (furniture, pushable rocks) and wall classes override blocksLight()
+    protected boolean blocksLight = false;
+
     public MapTile(float x, float y, GameObject bottomLayer, GameObject topLayer, TileType tileType, int tileIndex) {
         super(x, y);
         this.bottomLayer = bottomLayer;
@@ -68,6 +72,9 @@ public class MapTile extends MapEntity {
 
     public Surface getSurface() { return surface; }
     public void setSurface(Surface surface) { this.surface = surface; }
+
+    public boolean blocksLight() { return blocksLight; }
+    public void setBlocksLight(boolean blocksLight) { this.blocksLight = blocksLight; }
 
     public int getTileIndex() {
         return tileIndex;
